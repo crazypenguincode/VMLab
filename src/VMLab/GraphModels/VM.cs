@@ -17,7 +17,7 @@ namespace VMLab.GraphModels
         public string Name { get; set; }
         public Action<IVMControl> OnProvision { get; set; }
         public Action<IVMControl> OnDestroy { get; set; }
-        public Action AfterDestroy { get; set; }
+        public System.Action AfterDestroy { get; set; }
 
         public VM()
         {

@@ -176,6 +176,7 @@
     <Compile Include="CommandHandler\IParamHandler.cs" />
     <Compile Include="CommandHandler\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
+    <Compile Include="GraphModels\Action.cs" />
     <Compile Include="GraphModels\Credential.cs" />
     <Compile Include="GraphModels\DSC.cs" />
     <Compile Include="GraphModels\FloppyFile.cs" />

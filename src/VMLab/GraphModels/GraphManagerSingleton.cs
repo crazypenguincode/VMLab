@@ -8,12 +8,14 @@ namespace VMLab.GraphModels
         private readonly List<Template> _templates;
         private readonly List<VM> _vms;
         private readonly List<string> _locks;
+        private readonly List<Action> _actions;
 
         public GraphManagerSingleton()
         {
             _templates = new List<Template>();
             _vms = new List<VM>();
             _locks = new List<string>();
+            _actions = new List<Action>();
         }
 
         public IEnumerable<Template> Templates => _templates;
@@ -23,6 +25,7 @@ namespace VMLab.GraphModels
         public string LabDescription { get; set; }
 
         public IEnumerable<string> Locks => _locks;
+        public IEnumerable<Action> Actions => _actions;
 
         public void AddTemplate(Template template)
         {
@@ -37,6 +40,11 @@ namespace VMLab.GraphModels
         public void AddLock(string name)
         {
             _locks.Add(name);
+        }
+
+        public void AddAction(Action action)
+        {
+            _actions.Add(action);
         }
     }
 }

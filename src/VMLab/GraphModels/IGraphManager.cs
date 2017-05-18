@@ -10,9 +10,11 @@ namespace VMLab.GraphModels
         string LabAuthor { get; set; }
         string LabDescription { get; set; }
         IEnumerable<string> Locks { get; }
+        IEnumerable<Action> Actions { get; }
 
         void AddTemplate(Template template);
         void AddVM(VM vm);
         void AddLock(string name);
+        void AddAction(Action action);
     }
 }

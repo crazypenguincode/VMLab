@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using VMLab.GraphModels;
 using VMLab.Helper;
+using Action = System.Action;
 
 namespace VMLab.Script.FluentInterface
 {
