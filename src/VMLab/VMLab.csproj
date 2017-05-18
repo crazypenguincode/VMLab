@@ -54,6 +54,9 @@
     <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.2.1.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.4.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -167,19 +170,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandHandler\CommandHandler.cs" />
+    <Compile Include="CommandHandler\DebugHandler.cs" />
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\InitHandler.cs" />
     <Compile Include="CommandHandler\IParamHandler.cs" />
+    <Compile Include="CommandHandler\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
     <Compile Include="GraphModels\Credential.cs" />
+    <Compile Include="GraphModels\DSC.cs" />
     <Compile Include="GraphModels\FloppyFile.cs" />
+    <Compile Include="GraphModels\GraphManagerSingleton.cs" />
     <Compile Include="GraphModels\HardDisk.cs" />
-    <Compile Include="GraphModels\IAction.cs" />
+    <Compile Include="GraphModels\IGraphManager.cs" />
     <Compile Include="GraphModels\ISO.cs" />
     <Compile Include="GraphModels\Network.cs" />
     <Compile Include="GraphModels\SharedFolder.cs" />
     <Compile Include="GraphModels\Template.cs" />
+    <Compile Include="GraphModels\VM.cs" />
+    <Compile Include="Helper\Config.cs" />
     <Compile Include="Helper\Console.cs" />
+    <Compile Include="Helper\IConfig.cs" />
     <Compile Include="Helper\IConsole.cs" />
     <Compile Include="Helper\IResource.cs" />
     <Compile Include="Helper\Resource.cs" />
@@ -194,6 +204,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Script\FluentInterface\IExecResult.cs" />
+    <Compile Include="Script\FluentInterface\ISession.cs" />
+    <Compile Include="Script\FluentInterface\ITemplate.cs" />
+    <Compile Include="Script\FluentInterface\IVM.cs" />
+    <Compile Include="Script\FluentInterface\IVMControl.cs" />
+    <Compile Include="Script\FluentInterface\TemplateFluentHandler.cs" />
+    <Compile Include="Script\FluentInterface\VMFluentHandler.cs" />
+    <Compile Include="Script\IScriptEngine.cs" />
+    <Compile Include="Script\IScriptGlobal.cs" />
+    <Compile Include="Script\ScriptEngine.cs" />
+    <Compile Include="Script\ScriptGlobal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

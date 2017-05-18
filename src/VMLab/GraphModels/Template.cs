@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using VMLab.Script.FluentInterface;
 
 namespace VMLab.GraphModels
 {
@@ -42,5 +44,17 @@ namespace VMLab.GraphModels
         public int CPUs { get; set; }
         public int CPUCores { get; set; }
         public List<FloppyFile> FloppyFiles { get; set; }
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public List<Network> Networks { get; set; }
+        public Action<IVMControl> OnProvision { get; set; }
+
+        public Template()
+        {
+            Credentials = new List<Credential>();
+            HardDisks = new List<HardDisk>();
+            FloppyFiles = new List<FloppyFile>();
+            Networks = new List<Network>();
+        }
     }
 }

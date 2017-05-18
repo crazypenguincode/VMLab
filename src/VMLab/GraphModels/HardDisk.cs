@@ -15,7 +15,7 @@ namespace VMLab.GraphModels
 
     public class HardDisk
     {
-        private long Size { get; set; }
+        public int Size { get; set; }
         public DiskBus Bus { get; set; }
     }
 }

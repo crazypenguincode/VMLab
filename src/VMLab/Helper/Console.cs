@@ -41,5 +41,13 @@ namespace VMLab.Helper
         {
             _log.ForContext("Console", true).Warning(message, props);
         }
+
+        public void Pause(string message = "")
+        {
+            if(!string.IsNullOrEmpty(message))
+                Information(message);
+
+            System.Console.ReadKey();
+        }
     }
 }
