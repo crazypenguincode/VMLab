@@ -9,8 +9,9 @@ namespace VMLab.IOC
         public Bootstrap()
         {
             var builder = new ContainerBuilder();
-            //builder.RegisterAssemblyModules<Module>();
-
+            builder.RegisterModule<ConventionModule>();
+            builder.RegisterModule<LoggingModule>();
+            builder.RegisterModule<SystemWrapperModule>();
             _container = builder.Build();
         }
 

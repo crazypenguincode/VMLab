@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using VMLab.CommandHandler;
+using VMLab.IOC;
 
 namespace VMLab
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
+            new Bootstrap().Start<ICommandHandler>().Parse(args);
         }
     }
 }

@@ -166,19 +166,49 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHandler\CommandHandler.cs" />
+    <Compile Include="CommandHandler\ICommandHandler.cs" />
+    <Compile Include="CommandHandler\InitHandler.cs" />
+    <Compile Include="CommandHandler\IParamHandler.cs" />
+    <Compile Include="CommandHandler\VersionHandler.cs" />
+    <Compile Include="GraphModels\Credential.cs" />
+    <Compile Include="GraphModels\FloppyFile.cs" />
+    <Compile Include="GraphModels\HardDisk.cs" />
+    <Compile Include="GraphModels\IAction.cs" />
+    <Compile Include="GraphModels\ISO.cs" />
+    <Compile Include="GraphModels\Network.cs" />
+    <Compile Include="GraphModels\SharedFolder.cs" />
+    <Compile Include="GraphModels\Template.cs" />
+    <Compile Include="Helper\Console.cs" />
+    <Compile Include="Helper\IConsole.cs" />
+    <Compile Include="Helper\IResource.cs" />
+    <Compile Include="Helper\Resource.cs" />
     <Compile Include="IOC\Bootstrap.cs" />
     <Compile Include="IOC\ConventionModule.cs" />
     <Compile Include="IOC\LoggingModule.cs" />
+    <Compile Include="IOC\SystemWrapperModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\VMLabTemplate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
