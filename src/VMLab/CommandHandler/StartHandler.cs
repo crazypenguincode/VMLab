@@ -16,9 +16,9 @@ namespace VMLab.CommandHandler
             _scriptEngine = scriptEngine;
         }
 
-        public bool RootCommand => true;
+        public string Group => "root";
 
-        public bool CanHandle(string[] args)
+        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
         {
             if (args.Length < 1)
                 return false;

@@ -169,8 +169,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHandler\BuildHandler.cs" />
     <Compile Include="CommandHandler\CommandHandler.cs" />
-    <Compile Include="CommandHandler\DebugHandler.cs" />
+    <Compile Include="CommandHandler\Debug\DebugGraphHandler.cs" />
+    <Compile Include="CommandHandler\Debug\DebugHandler.cs" />
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\InitHandler.cs" />
     <Compile Include="CommandHandler\IParamHandler.cs" />
@@ -231,6 +233,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\VMLabTemplate.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VMLab.Contract\VMLab.Contract.csproj">
+      <Project>{2e25ab75-5542-4dfa-a7e0-58a7593a4ada}</Project>
+      <Name>VMLab.Contract</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

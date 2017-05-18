@@ -1,9 +1,12 @@
-﻿namespace VMLab.CommandHandler
+﻿using System.Collections.Generic;
+
+namespace VMLab.CommandHandler
 {
     public interface IParamHandler
     {
-        bool RootCommand { get; }
-        bool CanHandle(string[] args);
+
+        string Group { get; }
+        bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers);
         void Handle(string[] args);
     }
 }

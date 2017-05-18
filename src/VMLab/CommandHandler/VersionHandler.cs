@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using VMLab.Helper;
 
@@ -6,7 +7,7 @@ namespace VMLab.CommandHandler
 {
     public class VersionHandler : IParamHandler
     {
-        public bool RootCommand => true;
+        public string Group => "root";
 
         private readonly IConsole _console;
 
@@ -15,7 +16,7 @@ namespace VMLab.CommandHandler
             _console = console;
         }
 
-        public bool CanHandle(string[] args)
+        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
         {
             if (args.Length < 1)
                 return false;

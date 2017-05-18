@@ -10,7 +10,7 @@ namespace VMLab.CommandHandler
 {
     public class InitHandler : IParamHandler
     {
-        public bool RootCommand => true;
+        public string Group => "root";
 
         private readonly IResource _resource;
         private readonly IFile _file;
@@ -23,7 +23,7 @@ namespace VMLab.CommandHandler
             _console = console;
         }
 
-        public bool CanHandle(string[] args)
+        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
         {
             if (args.Length < 1)
                 return false;

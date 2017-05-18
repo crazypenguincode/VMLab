@@ -76,3 +76,5 @@ tools/
 reports/
 release/
 build/
+
+*AssemblyInfo.cs

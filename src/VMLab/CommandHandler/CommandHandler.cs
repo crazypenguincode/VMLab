@@ -10,12 +10,12 @@ namespace VMLab.CommandHandler
 
         public CommandHandler(IEnumerable<IParamHandler> handlers)
         {
-            _handlers = handlers.Where(h => h.RootCommand).ToArray();
+            _handlers = handlers.ToArray();
         }
 
         public void Parse(string[] args)
         {
-            var useableHandler = _handlers.FirstOrDefault(h => h.CanHandle(args));
+            var useableHandler = _handlers.FirstOrDefault(h => h.Group == "root" && h.CanHandle(args, _handlers));
 
             if(useableHandler != null)
                 useableHandler.Handle(args);
