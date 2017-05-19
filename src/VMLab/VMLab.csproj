@@ -176,6 +176,8 @@
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\InitHandler.cs" />
     <Compile Include="CommandHandler\IParamHandler.cs" />
+    <Compile Include="CommandHandler\List\ListHandler.cs" />
+    <Compile Include="CommandHandler\List\PluginListHandler.cs" />
     <Compile Include="CommandHandler\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
     <Compile Include="GraphModels\Action.cs" />
@@ -199,6 +201,7 @@
     <Compile Include="IOC\Bootstrap.cs" />
     <Compile Include="IOC\ConventionModule.cs" />
     <Compile Include="IOC\LoggingModule.cs" />
+    <Compile Include="IOC\PluginModule.cs" />
     <Compile Include="IOC\SystemWrapperModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

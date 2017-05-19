@@ -26,14 +26,12 @@ namespace VMLab.CommandHandler
 
         public void Handle(string[] args)
         {
-            var asm = Assembly.GetExecutingAssembly();
 
-            if (asm.Location == null)
-                return;
+            // ReSharper disable once AssignNullToNotNullAttribute
+            var versioninfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
-            var filever = FileVersionInfo.GetVersionInfo(asm.Location);
-
-            _console.Information("Version: {Version}", filever.FileVersion);
+            _console.Information("{FileVersion}", versioninfo.FileVersion);
+            _console.Information("{ProductVersion}", versioninfo.ProductVersion);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
 using Autofac;
 using Autofac.Extras.AttributeMetadata;
 using Autofac.Features.AttributeFilters;
@@ -10,15 +11,18 @@ namespace VMLab.IOC
     {
         protected override void Load(ContainerBuilder builder)
         {
+
+            var asm = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.Contains("VMLab")).ToArray();
+
             builder.RegisterModule<AttributedMetadataModule>();
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(asm)
                 .Where(t => !t.Name.EndsWith("Singleton"))
                 .AsImplementedInterfaces()
                 .WithAttributeFiltering();
 
 
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            builder.RegisterAssemblyTypes(asm)
                 .Where(t => t.Name.EndsWith("Singleton"))
                 .AsImplementedInterfaces()
                 .SingleInstance()
