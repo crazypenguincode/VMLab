@@ -43,7 +43,7 @@ namespace VMLab.GraphModels
         public int Memory { get; set; }
         public int CPUs { get; set; }
         public int CPUCores { get; set; }
-        public List<FloppyFile> FloppyFiles { get; set; }
+        public string FloppyImage { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
         public List<Network> Networks { get; set; }
@@ -53,7 +53,6 @@ namespace VMLab.GraphModels
         {
             Credentials = new List<Credential>();
             HardDisks = new List<HardDisk>();
-            FloppyFiles = new List<FloppyFile>();
             Networks = new List<Network>();
         }
     }

@@ -15,7 +15,7 @@ namespace VMLab.Script.FluentInterface
         ITemplate Network(string type, string name="");
         ITemplate CPU(int cpus, int cores);
         ITemplate Memory(int size);
-        ITemplate FloppyFile(string sourcePath, string destinationName);
+        ITemplate FloppyImage(string path);
         ITemplate WithHypervisor(string hypervisor, Action<ITemplate> action);
         ITemplate OnProvision(Action<IVMControl> action);
     }

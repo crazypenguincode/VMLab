@@ -40,10 +40,6 @@ namespace VMLab.CommandHandler
 
         public void Handle(string[] args)
         {
-
-            _console.Warning("This feature is currently disabled due to floppy defects!");
-            return;
-
             _scriptEngine.Execute();
 
             foreach (var template in _graphManager.Templates)

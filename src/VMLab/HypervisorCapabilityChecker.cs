@@ -22,7 +22,7 @@ namespace VMLab
             if(!_capabilities.SupportedArch.Contains(template.Arch))
                 return new Tuple<bool, string>(false, "Hypervisor does not support target architecture!");
 
-            if(template.FloppyFiles.Count > 0 && !_capabilities.HypervisorCapabilities.Contains("VM_FLOPPYIMAGE"))
+            if(!string.IsNullOrEmpty(template.FloppyImage) && !_capabilities.HypervisorCapabilities.Contains("VM_FLOPPYIMAGE"))
                 return new Tuple<bool, string>(false, "Hypervisor doesn't support floppy disk images.");
 
             if(template.HardDisks.Count > 0 && !_capabilities.HypervisorCapabilities.Contains("VM_HDDISK"))

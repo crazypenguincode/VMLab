@@ -12,21 +12,21 @@ namespace VMLab.Hypervisor.VMwareWorkstation
     {
         private readonly Func<IVMXCollection> _vmxFactory;
         private readonly IHardDriveBuilder _driveBuilder;
+        private readonly IFile _file;
         private readonly IDirectory _directory;
-        private readonly IFloppyBuilder _floppyBuilder;
         private readonly IPVNHelper _ipvnHelper;
         private readonly IGuestOSTranslator _osTranslator;
         private readonly IEnvironment _environment;
 
-        public VMBuilder(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IDirectory directory, IFloppyBuilder floppyBuilder, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment)
+        public VMBuilder(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IDirectory directory,  IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFile file)
         {
             _vmxFactory = vmxFactory;
             _driveBuilder = driveBuilder;
             _directory = directory;
-            _floppyBuilder = floppyBuilder;
             _ipvnHelper = ipvnHelper;
             _osTranslator = osTranslator;
             _environment = environment;
+            _file = file;
         }
 
         public bool CanBuild(Template template)
@@ -105,12 +105,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 index++;
             }
 
-            if (template.FloppyFiles.Count > 0)
+            if (!string.IsNullOrEmpty(template.FloppyImage))
             {
                 vmx.WriteValue("floppy0.fileType", "file");
                 vmx.WriteValue("floppy0.fileName", "autoinst.flp");
                 vmx.WriteValue("floppy0.clientDevice", "FALSE");
-                _floppyBuilder.Build($"{templateFolder}\\autoinst.flp", template.FloppyFiles);
+
+                _file.Copy(template.FloppyImage, $"{templateFolder}\\autoinst.flp");
             }
 
             index = 0;

@@ -145,9 +145,9 @@ namespace VMLab.Script.FluentInterface
             return this;
         }
 
-        public ITemplate FloppyFile(string sourcePath, string destinationName)
+        public ITemplate FloppyImage(string path)
         {
-            _template.FloppyFiles.Add(new FloppyFile{SourcePath = sourcePath, FileName = destinationName});
+            _template.FloppyImage = path;
             return this;
         }
 

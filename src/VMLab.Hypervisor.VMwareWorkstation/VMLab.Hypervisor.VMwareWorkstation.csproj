@@ -132,9 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Capabilities.cs" />
-    <Compile Include="DiskHelpers\FloppyBuilder.cs" />
     <Compile Include="DiskHelpers\HardDriveBuilder.cs" />
-    <Compile Include="DiskHelpers\IFloppyBuilder.cs" />
     <Compile Include="DiskHelpers\IHardDriveBuilder.cs" />
     <Compile Include="VMBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

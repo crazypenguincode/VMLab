@@ -10,6 +10,6 @@
     public interface IConfig
     {
         string GetSetting(string setting, ConfigScope scope = ConfigScope.Merged);
-        string WriteSetting(string setting, string value, ConfigScope scope);
+        void WriteSetting(string setting, string value, ConfigScope scope);
     }
 }

@@ -48,7 +48,6 @@
     <Compile Include="GraphModels\Action.cs" />
     <Compile Include="GraphModels\Credential.cs" />
     <Compile Include="GraphModels\DSC.cs" />
-    <Compile Include="GraphModels\FloppyFile.cs" />
     <Compile Include="GraphModels\GraphManagerSingleton.cs" />
     <Compile Include="GraphModels\HardDisk.cs" />
     <Compile Include="GraphModels\IGraphManager.cs" />
