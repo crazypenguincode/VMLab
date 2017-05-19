@@ -101,26 +101,9 @@ namespace VMLab.Script.FluentInterface
             return this;
         }
 
-        public ITemplate HardDisk(string type, int size)
+        public ITemplate HardDisk(int size)
         {
-            var disk = new HardDisk {Size = size};
-            switch (type.ToLower())
-            {
-                case "ide":
-                    disk.Bus = DiskBus.IDE;
-                    break;
-                case "sata":
-                    disk.Bus = DiskBus.SATA;
-                    break;
-                case "scsi":
-                    disk.Bus = DiskBus.SCSI;
-                    break;
-                default:
-                    throw new ArgumentException("type");
-            }
-
-            _template.HardDisks.Add(disk);
-
+            _template.HardDisks.Add(new HardDisk { Size = size });
             return this;
         }
 

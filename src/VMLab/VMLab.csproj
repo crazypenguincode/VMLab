@@ -180,24 +180,14 @@
     <Compile Include="CommandHandler\List\PluginListHandler.cs" />
     <Compile Include="CommandHandler\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
-    <Compile Include="GraphModels\Action.cs" />
-    <Compile Include="GraphModels\Credential.cs" />
-    <Compile Include="GraphModels\DSC.cs" />
-    <Compile Include="GraphModels\FloppyFile.cs" />
-    <Compile Include="GraphModels\GraphManagerSingleton.cs" />
-    <Compile Include="GraphModels\HardDisk.cs" />
-    <Compile Include="GraphModels\IGraphManager.cs" />
-    <Compile Include="GraphModels\ISO.cs" />
-    <Compile Include="GraphModels\Network.cs" />
-    <Compile Include="GraphModels\SharedFolder.cs" />
-    <Compile Include="GraphModels\Template.cs" />
-    <Compile Include="GraphModels\VM.cs" />
     <Compile Include="Helper\Config.cs" />
     <Compile Include="Helper\Console.cs" />
     <Compile Include="Helper\IConfig.cs" />
     <Compile Include="Helper\IConsole.cs" />
     <Compile Include="Helper\IResource.cs" />
     <Compile Include="Helper\Resource.cs" />
+    <Compile Include="HypervisorCapabilityChecker.cs" />
+    <Compile Include="IHypervisorCapabilityChecker.cs" />
     <Compile Include="IOC\Bootstrap.cs" />
     <Compile Include="IOC\ConventionModule.cs" />
     <Compile Include="IOC\LoggingModule.cs" />
@@ -210,11 +200,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Script\FluentInterface\IExecResult.cs" />
-    <Compile Include="Script\FluentInterface\ISession.cs" />
-    <Compile Include="Script\FluentInterface\ITemplate.cs" />
     <Compile Include="Script\FluentInterface\IVM.cs" />
-    <Compile Include="Script\FluentInterface\IVMControl.cs" />
     <Compile Include="Script\FluentInterface\TemplateFluentHandler.cs" />
     <Compile Include="Script\FluentInterface\VMFluentHandler.cs" />
     <Compile Include="Script\IScriptEngine.cs" />

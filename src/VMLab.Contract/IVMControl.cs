@@ -23,5 +23,6 @@ namespace VMLab.Script.FluentInterface
         void RemoveSnapshot(string name);
         void RevertToSnapshot(string name);
 
+        void SetCredentials(string group);
     }
 }

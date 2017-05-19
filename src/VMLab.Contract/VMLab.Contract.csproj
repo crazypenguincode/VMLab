@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VMLab.Contract</RootNamespace>
     <AssemblyName>VMLab.Contract</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +33,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,7 +44,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICapabilities.cs" />
+    <Compile Include="GraphModels\Action.cs" />
+    <Compile Include="GraphModels\Credential.cs" />
+    <Compile Include="GraphModels\DSC.cs" />
+    <Compile Include="GraphModels\FloppyFile.cs" />
+    <Compile Include="GraphModels\GraphManagerSingleton.cs" />
+    <Compile Include="GraphModels\HardDisk.cs" />
+    <Compile Include="GraphModels\IGraphManager.cs" />
+    <Compile Include="GraphModels\ISO.cs" />
+    <Compile Include="GraphModels\Network.cs" />
+    <Compile Include="GraphModels\SharedFolder.cs" />
+    <Compile Include="GraphModels\Template.cs" />
+    <Compile Include="GraphModels\VM.cs" />
+    <Compile Include="IExecResult.cs" />
+    <Compile Include="ISession.cs" />
+    <Compile Include="ITemplate.cs" />
+    <Compile Include="IVMBuilder.cs" />
+    <Compile Include="IVMControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
