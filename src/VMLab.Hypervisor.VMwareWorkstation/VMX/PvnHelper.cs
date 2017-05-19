@@ -2,9 +2,9 @@
 
 namespace VMLab.Hypervisor.VMwareWorkstation.VMX
 {
-    public class PVNHelper
+    public class PVNHelper : IPVNHelper
     {
-        public string GetPVNFor(string name)
+        public string GetPVN(string name) 
         {
             throw new NotImplementedException();
         }

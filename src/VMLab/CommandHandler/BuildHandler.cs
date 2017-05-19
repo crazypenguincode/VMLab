@@ -40,6 +40,10 @@ namespace VMLab.CommandHandler
 
         public void Handle(string[] args)
         {
+
+            _console.Warning("This feature is currently disabled due to floppy defects!");
+            return;
+
             _scriptEngine.Execute();
 
             foreach (var template in _graphManager.Templates)
@@ -59,7 +63,7 @@ namespace VMLab.CommandHandler
             }
 
             foreach (var t in _graphManager.Templates)
-                _builder.Build(t, $"{_environment.CurrentDirectory}\\_vmlab\\template\\{t.Name}");
+                _builder.Build(t, $"{_environment.CurrentDirectory}\\_vmlab\\template\\{Guid.NewGuid()}\\{t.Name}");
         }
     }
 }

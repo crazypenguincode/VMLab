@@ -31,8 +31,86 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Quamotion.DiscUtils, Version=1.0.3.0, Culture=neutral, PublicKeyToken=c9975db8d649ebd1, processorArchitecture=MSIL">
-      <HintPath>..\packages\Quamotion.DiscUtils.1.0.3\lib\net45\Quamotion.DiscUtils.dll</HintPath>
+    <Reference Include="Autofac, Version=4.6.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.0\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Extras.AttributeMetadata, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Extras.AttributeMetadata.4.0.0\lib\net45\Autofac.Extras.AttributeMetadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mef, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Mef.4.0.0\lib\net45\Autofac.Integration.Mef.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.0.12.0-alpha\lib\net45\LordMike.DiscUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.BootConfig, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.BootConfig.0.12.0-alpha\lib\net45\LordMike.DiscUtils.BootConfig.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Complete, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Complete.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Complete.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Dmg, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Dmg.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Dmg.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Ext, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Ext.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Ext.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Fat, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Fat.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Fat.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.HfsPlus, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.HfsPlus.0.12.0-alpha\lib\net45\LordMike.DiscUtils.HfsPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Iscsi, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Iscsi.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Iscsi.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Iso9660, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Iso9660.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Iso9660.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Net, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Net.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Nfs, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Nfs.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Nfs.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Ntfs, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Ntfs.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Ntfs.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.OpticalDiscSharing, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.OpticalDiscSharing.0.12.0-alpha\lib\net45\LordMike.DiscUtils.OpticalDiscSharing.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.OpticalDisk, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.OpticalDisk.0.12.0-alpha\lib\net45\LordMike.DiscUtils.OpticalDisk.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Registry, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Registry.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Registry.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Sdi, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Sdi.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Sdi.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.SquashFs, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.SquashFs.0.12.0-alpha\lib\net45\LordMike.DiscUtils.SquashFs.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Udf, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Udf.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Udf.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Vdi, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Vdi.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Vdi.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Vhd, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Vhd.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Vhd.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Vhdx, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Vhdx.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Vhdx.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Vmdk, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Vmdk.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Vmdk.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Wim, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Wim.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Wim.dll</HintPath>
+    </Reference>
+    <Reference Include="LordMike.DiscUtils.Xva, Version=0.12.0.0, Culture=neutral, PublicKeyToken=5fa5b410cc9c6289, processorArchitecture=MSIL">
+      <HintPath>..\packages\LordMike.DiscUtils.Xva.0.12.0-alpha\lib\net45\LordMike.DiscUtils.Xva.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,6 +138,7 @@
     <Compile Include="DiskHelpers\IHardDriveBuilder.cs" />
     <Compile Include="VMBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VMX\GuestOSTranslator.cs" />
     <Compile Include="VMX\IGuestOSTranslator.cs" />
     <Compile Include="VMX\IPVNHelper.cs" />
     <Compile Include="VMX\IVMXCollection.cs" />
@@ -74,6 +153,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

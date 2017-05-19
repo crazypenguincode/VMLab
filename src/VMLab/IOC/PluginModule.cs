@@ -26,6 +26,8 @@ namespace VMLab.IOC
             var asm = Assembly.LoadFile(pluginPath);
 
             AppDomain.CurrentDomain.AssemblyResolve -= AsmResolve;
+
+            builder.RegisterAssemblyModules(asm);
         }
     }
 }

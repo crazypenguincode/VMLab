@@ -1,4 +1,5 @@
 ﻿using System;
+using SystemInterface;
 using SystemInterface.IO;
 using VMLab.Contract;
 using VMLab.GraphModels;
@@ -15,8 +16,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IFloppyBuilder _floppyBuilder;
         private readonly IPVNHelper _ipvnHelper;
         private readonly IGuestOSTranslator _osTranslator;
+        private readonly IEnvironment _environment;
 
-        public VMBuilder(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IDirectory directory, IFloppyBuilder floppyBuilder, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator)
+        public VMBuilder(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IDirectory directory, IFloppyBuilder floppyBuilder, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment)
         {
             _vmxFactory = vmxFactory;
             _driveBuilder = driveBuilder;
@@ -24,6 +26,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _floppyBuilder = floppyBuilder;
             _ipvnHelper = ipvnHelper;
             _osTranslator = osTranslator;
+            _environment = environment;
         }
 
         public bool CanBuild(Template template)
@@ -68,13 +71,27 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vmx.WriteValue("sound.virtualDev", "hdaudio");
             vmx.WriteValue("sound.fileName", "-1");
             vmx.WriteValue("sound.autodetect", "TRUE");
+            vmx.WriteValue("pciBridge0.present", "TRUE");
+            vmx.WriteValue("pciBridge4.present", "TRUE");
+            vmx.WriteValue("pciBridge4.virtualDev", "pcieRootPort");
+            vmx.WriteValue("pciBridge4.functions", "8");
+            vmx.WriteValue("pciBridge5.present", "TRUE");
+            vmx.WriteValue("pciBridge5.virtualDev", "pcieRootPort");
+            vmx.WriteValue("pciBridge5.functions", "8");
+            vmx.WriteValue("pciBridge6.present", "TRUE");
+            vmx.WriteValue("pciBridge6.virtualDev", "pcieRootPort");
+            vmx.WriteValue("pciBridge6.functions", "8");
+            vmx.WriteValue("pciBridge7.present", "TRUE");
+            vmx.WriteValue("pciBridge7.virtualDev", "pcieRootPort");
+            vmx.WriteValue("pciBridge7.functions", "8");
+            vmx.WriteValue("bios.bootOrder", "cdrom, hdd, floppy");
 
             var index = 0;
 
             if (template.ISO != null)
             {
                 vmx.WriteValue("sata0:1.present", "TRUE");
-                vmx.WriteValue("sata0:1.fileName", template.ISO.LocalPath);
+                vmx.WriteValue("sata0:1.fileName", _environment.CurrentDirectory + "\\" + template.ISO.LocalPath);
                 vmx.WriteValue("sata0:1.deviceType", "cdrom-image");
             }
 
@@ -83,7 +100,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 vmx.WriteValue($"scsi0:{index}.present", "TRUE");
                 vmx.WriteValue($"scsi0:{index}.fileName", $"disk{index}.vmdk");
 
-                _driveBuilder.BuildDrive($"{templateFolder}\\disk{index}.vmdk", disk.Size * 1024 * 1024 /* Converting GiB into Bytes */); 
+                var sizeinBytes = (long)disk.Size * 1024 * 1024 * 1024; // Converting GiB into Bytes
+                _driveBuilder.BuildDrive($"{templateFolder}\\disk{index}.vmdk", sizeinBytes); 
                 index++;
             }
 
@@ -127,6 +145,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 vmx.WriteValue($"ethernet{index}.wakeOnPcktRcv", "FALSE");
                 vmx.WriteValue($"ethernet{index}.addressType", "generated");
             }
+
+            vmx.WriteToFile($"{templateFolder}\\{template.Name}.vmx");
         }
     }
 }

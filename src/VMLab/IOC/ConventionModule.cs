@@ -3,6 +3,7 @@ using System.Linq;
 using Autofac;
 using Autofac.Extras.AttributeMetadata;
 using Autofac.Features.AttributeFilters;
+using VMLab.GraphModels;
 using Module = Autofac.Module;
 
 namespace VMLab.IOC
@@ -11,7 +12,8 @@ namespace VMLab.IOC
     {
         protected override void Load(ContainerBuilder builder)
         {
-
+            var hd = new HardDisk(); //This is to make sure VMLab.Contract is loaded in properly.
+            
             var asm = AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.Contains("VMLab")).ToArray();
 
             builder.RegisterModule<AttributedMetadataModule>();

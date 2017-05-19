@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DiscUtils;
 using DiscUtils.Fat;
@@ -11,6 +12,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation.DiskHelpers
         public void Build(string path, IEnumerable<FloppyFile> files)
         {
             using (var image = File.Create(path))
+
+                
             {
                 using (var floppy = FatFileSystem.FormatFloppy(image, FloppyDiskType.HighDensity, "unattend"))
                 {
