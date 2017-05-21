@@ -18,5 +18,6 @@ namespace VMLab.Script.FluentInterface
         ITemplate FloppyImage(string path);
         ITemplate WithHypervisor(string hypervisor, Action<ITemplate> action);
         ITemplate OnProvision(Action<IVMControl> action);
+        ITemplate Healdess(bool headless);
     }
 }

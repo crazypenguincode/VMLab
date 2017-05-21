@@ -36,6 +36,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VMX
             item.Value = value;
         }
 
+        public void ClearValue(string pattern)
+        {
+            _vmxdata.RemoveAll(v => Regex.IsMatch(v.Name, pattern));
+        }
+
         public void ReadFromFile(string path)
         {
             _vmxdata.Clear();

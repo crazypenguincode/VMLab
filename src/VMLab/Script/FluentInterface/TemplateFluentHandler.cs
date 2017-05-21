@@ -166,5 +166,11 @@ namespace VMLab.Script.FluentInterface
             _template.OnProvision = action;
             return this;
         }
+
+        public ITemplate Healdess(bool headless)
+        {
+            _template.HeadLess = headless;
+            return this;
+        }
     }
 }

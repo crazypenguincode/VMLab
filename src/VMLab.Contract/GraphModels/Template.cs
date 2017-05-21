@@ -48,12 +48,13 @@ namespace VMLab.GraphModels
         public string Version { get; set; }
         public List<Network> Networks { get; set; }
         public Action<IVMControl> OnProvision { get; set; }
-
+        public bool HeadLess { get; set; }
         public Template()
         {
             Credentials = new List<Credential>();
             HardDisks = new List<HardDisk>();
             Networks = new List<Network>();
+            OnProvision = control => { };
         }
     }
 }

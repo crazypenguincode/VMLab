@@ -6,5 +6,6 @@
         string ReadValue(string name);
         void WriteToFile(string path);
         void WriteValue(string name, string value);
+        void ClearValue(string pattern);
     }
 }

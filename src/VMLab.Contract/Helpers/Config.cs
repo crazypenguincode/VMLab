@@ -94,6 +94,7 @@ namespace VMLab.Helper
             result.Add("GlobalSettingsDir", _environment.ExpandEnvironmentVariables("%ProgramData%\\VMLab"));
             result.Add("UserSettingsDir", _environment.ExpandEnvironmentVariables("%LOCALAPPDATA%\\VMLab"));
             result.Add("TemplateDir", _environment.ExpandEnvironmentVariables("%ProgramData%\\VMLab\\Templates"));
+            result.Add("TempDir", _environment.ExpandEnvironmentVariables("%Temp%\\VMLab"));
 
             return result;
         }

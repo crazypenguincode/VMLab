@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using VMLab.Contract;
+using VMLab.GraphModels;
+using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler
@@ -6,10 +9,16 @@ namespace VMLab.CommandHandler
     public class StartHandler : IParamHandler
     {
         private readonly IScriptEngine _scriptEngine;
+        private readonly IGraphManager _graphManager;
+        private readonly IVMBuilder _builder;
+        private readonly IConsole _console;
 
-        public StartHandler(IScriptEngine scriptEngine)
+        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console)
         {
             _scriptEngine = scriptEngine;
+            _graphManager = graphManager;
+            _builder = builder;
+            _console = console;
         }
 
         public string Group => "root";
@@ -26,6 +35,25 @@ namespace VMLab.CommandHandler
         {
             _scriptEngine.Execute();
 
+            foreach(var vm in _graphManager.VMs)
+            {
+                var control = _builder.GetVM(vm.Name);
+
+                if (control == null)
+                {
+                    if (!_builder.TemplateExist(vm.Template))
+                    {
+                        _console.Error("Can't create lab as Template {template} doesn't exist!", vm.Template);
+                        return;
+                    }
+
+                    _builder.BuildVMFromTemplate(vm);
+                }
+                else
+                {
+                    control.Start();
+                }
+            }
         }
     }
 }

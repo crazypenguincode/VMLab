@@ -18,11 +18,12 @@ namespace VMLab.Script.FluentInterface
         void Start();
         void CopyFileToVM(string hostPath, string guestPath);
         void CopyFileFromVM(string guestPath, string hostPath);
+        void DeleteFileFromVM(string path);
         IEnumerable<string> GetSnapshots();
         void NewSnapshot(string name);
         void RemoveSnapshot(string name);
         void RevertToSnapshot(string name);
-
+        void ShowUI();
         void SetCredentials(string group);
     }
 }

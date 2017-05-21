@@ -6,10 +6,15 @@ namespace VMLab.Hypervisor.VMwareWorkstation.DiskHelpers
     {
         public void BuildDrive(string path, long size)
         {
-            Disk.Initialize(path, new DiskParameters
+            using (Disk.Initialize(path, new DiskParameters
             {
-                AdapterType = DiskAdapterType.LsiLogicScsi, Capacity = size, CreateType = DiskCreateType.MonolithicSparse
-            });
+                AdapterType = DiskAdapterType.LsiLogicScsi,
+                Capacity = size,
+                CreateType = DiskCreateType.MonolithicSparse
+            }))
+            {
+                
+            }
         }
     }
 }

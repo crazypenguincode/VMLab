@@ -174,16 +174,16 @@
     <Compile Include="CommandHandler\Debug\DebugGraphHandler.cs" />
     <Compile Include="CommandHandler\Debug\DebugHandler.cs" />
     <Compile Include="CommandHandler\ICommandHandler.cs" />
+    <Compile Include="CommandHandler\Template\ListTemplateHandler.cs" />
+    <Compile Include="CommandHandler\Template\RemoveTemplateHandler.cs" />
+    <Compile Include="CommandHandler\Template\TemplateHandler.cs" />
+    <Compile Include="CommandHandler\Template\ImportTemplateHandler.cs" />
     <Compile Include="CommandHandler\InitHandler.cs" />
     <Compile Include="CommandHandler\IParamHandler.cs" />
     <Compile Include="CommandHandler\List\ListHandler.cs" />
     <Compile Include="CommandHandler\List\PluginListHandler.cs" />
     <Compile Include="CommandHandler\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
-    <Compile Include="Helper\Config.cs" />
-    <Compile Include="Helper\Console.cs" />
-    <Compile Include="Helper\IConfig.cs" />
-    <Compile Include="Helper\IConsole.cs" />
     <Compile Include="Helper\IResource.cs" />
     <Compile Include="Helper\Resource.cs" />
     <Compile Include="HypervisorCapabilityChecker.cs" />
@@ -227,6 +227,10 @@
     <ProjectReference Include="..\VMLab.Contract\VMLab.Contract.csproj">
       <Project>{2e25ab75-5542-4dfa-a7e0-58a7593a4ada}</Project>
       <Name>VMLab.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VMLab.Hypervisor.VMwareWorkstation\VMLab.Hypervisor.VMwareWorkstation.csproj">
+      <Project>{5fb930f2-1a4e-4f69-b78e-635ed6a49750}</Project>
+      <Name>VMLab.Hypervisor.VMwareWorkstation</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
