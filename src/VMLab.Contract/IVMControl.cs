@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace VMLab.Script.FluentInterface
 {
+    public enum VMPower
+    {
+        Ready,
+        Pending,
+        Off
+    }
+
     public interface IVMControl
     {
         void Exec(string path, string args, bool wait = true);
@@ -25,5 +32,6 @@ namespace VMLab.Script.FluentInterface
         void RevertToSnapshot(string name);
         void ShowUI();
         void SetCredentials(string group);
+        VMPower PowerState { get; }
     }
 }

@@ -17,15 +17,15 @@ namespace VMLab.CommandHandler.List
             if (args.Length < 2)
                 return false;
 
-            return args[0].ToLower() == "list";
+            return args[0].ToLower() == "plugin";
         }
 
         public void Handle(string[] args)
         {
-            var useableHandler = _handlers.FirstOrDefault(h => h.Group == "list" && h.CanHandle(args.Skip(1).ToArray(), _handlers));
+            var useableHandler = _handlers.FirstOrDefault(h => h.Group == "plugin" && h.CanHandle(args.Skip(1).ToArray(), _handlers));
 
             if (useableHandler != null)
-                useableHandler.Handle(args);
+                useableHandler.Handle(args.Skip(1).ToArray());
             else
                 throw new NotImplementedException("Useage handler needs to be created here");
         }

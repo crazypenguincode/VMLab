@@ -27,10 +27,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VMX
         {
             var item = _vmxdata.FirstOrDefault(i => i.Name == name);
 
-            if(item == default(VMXItem))
+            if (item == default(VMXItem))
+            {
                 item = new VMXItem();
-
-            _vmxdata.Add(item);
+                _vmxdata.Add(item);
+            }
 
             item.Name = name;
             item.Value = value;

@@ -24,6 +24,9 @@ namespace VMLab.GraphModels
             Credentials = new List<Credential>();
             Networks = new List<Network>();
             SharedFolders = new List<SharedFolder>();
+            OnProvision = control => { };
+            OnDestroy = control => { };
+            AfterDestroy = () => { };
         }
     }
 }

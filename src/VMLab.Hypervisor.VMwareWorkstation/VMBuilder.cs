@@ -104,6 +104,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _console.Information("Shutting down vm.");
             vm.Stop();
 
+            vm.NewSnapshot("Template");
+
             //To give vmware enough time to close properly and delete temp files.
             _thread.Sleep(60);
 
@@ -131,9 +133,24 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         }
 
+        private void ProvisionVM(GraphModels.VM vm, string vmxpath)
+        {
+            var vmx = _vmxFactory();
+            vmx.ReadFromFile(vmxpath);
+
+            vmx.WriteValue("displayName", vm.Name);
+            vmx.WriteValue("memsize", vm.Memeory.ToString());
+            vmx.WriteValue("numvcpus", (vm.CPUCores * vm.CPUs).ToString());
+            vmx.WriteValue("cpuid.coresPerSocket", vm.CPUCores.ToString());
+
+            ProvisionNetwork(vm.Networks, GuestOS.Windows10, vmx);
+
+            vmx.WriteToFile(vmxpath);
+        }
+
         public bool TemplateExist(string name)
         {
-            var templatePath = $"{_config.GetSetting("TemplateDir")}\\name";
+            var templatePath = $"{_config.GetSetting("TemplateDir")}\\{name}";
 
             return _directory.Exists(templatePath);
         }
@@ -153,6 +170,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _vix.Clone($"{vmFolder}\\{vm.Name}.vmx", templateVM, snapshot, true);
             _vix.CloseObject(snapshot);
             _vix.CloseObject(templateVM);
+
+            ProvisionVM(vm, $"{vmFolder}\\{vm.Name}.vmx");
 
             var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx");
             vmcontrol.Start();
@@ -189,6 +208,22 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             if (_directory.Exists($"{_config.GetSetting("TemplateDir")}\\{name}"))
                 _directory.Delete($"{_config.GetSetting("TemplateDir")}\\{name}", true);
             
+        }
+
+        public void DestroyVM(GraphModels.VM vm, IVMControl control)
+        {
+            var vmfolder = (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
+                where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
+                select dir).First();
+
+            if (control.PowerState != VMPower.Off)
+            {
+                control.Stop(true);
+            }
+
+            _directory.Delete(vmfolder, true);
+
+
         }
 
         private void CleanUpVMX(Template template, string templateFolder, string vmxpath)
@@ -285,11 +320,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 _file.Copy(template.FloppyImage, $"{templateFolder}\\autoinst.flp");
             }
 
-            index = 0;
-
             if (template.Networks.Count <= 0) return;
 
-            foreach (var nic in template.Networks)
+            ProvisionNetwork(template.Networks, template.GuestOS, vmx);
+
+            vmx.WriteToFile(vmxpath);
+        }
+
+        private void ProvisionNetwork(IEnumerable<Network> networks, GuestOS os, IVMXCollection vmx)
+        {
+            var index = 0;
+            foreach (var nic in networks)
             {
                 vmx.WriteValue($"ethernet{index}.present", "TRUE");
 
@@ -309,16 +350,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                         throw new ArgumentOutOfRangeException();
                 }
 
-                if (template.GuestOS == GuestOS.Windows7 || template.GuestOS == GuestOS.Windows2008R2 || template.GuestOS == GuestOS.Windows2008R2Core)
+                if (os == GuestOS.Windows7 || os == GuestOS.Windows2008R2 ||
+                    os == GuestOS.Windows2008R2Core)
                     vmx.WriteValue($"ethernet{index}.virtualDev", "e1000");
                 else
                     vmx.WriteValue($"ethernet{index}.virtualDev", "e1000e");
 
                 vmx.WriteValue($"ethernet{index}.wakeOnPcktRcv", "FALSE");
                 vmx.WriteValue($"ethernet{index}.addressType", "generated");
-            }
 
-            vmx.WriteToFile(vmxpath);
+                index++;
+            }
         }
     }
 }

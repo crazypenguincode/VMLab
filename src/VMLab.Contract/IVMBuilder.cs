@@ -13,5 +13,6 @@ namespace VMLab.Contract
 
         void ImportTemplate(string path);
         void RemoveTemplate(string name);
+        void DestroyVM(VM vm, IVMControl control);
     }
 }

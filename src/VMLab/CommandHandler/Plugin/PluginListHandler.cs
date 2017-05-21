@@ -21,13 +21,13 @@ namespace VMLab.CommandHandler.List
             _config = config;
         }
 
-        public string Group => "list";
+        public string Group => "plugin";
         public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
         {
             if (args.Length < 1)
                 return false;
 
-            return args[0].ToLower() == "hypervisor";
+            return args[0].ToLower() == "list";
         }
 
         public void Handle(string[] args)

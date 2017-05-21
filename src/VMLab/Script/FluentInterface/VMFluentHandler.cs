@@ -27,7 +27,7 @@ namespace VMLab.Script.FluentInterface
 
         public IVM Template(string name)
         {
-            _vm.Name = name;
+            _vm.Template = name;
             return this;
         }
 

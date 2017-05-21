@@ -296,6 +296,30 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                 _currentCredential = cred;
         }
 
+        public VMPower PowerState
+        {
+            get
+            {
+                var vm = _vix.ConnectToVM(_vmx);
+                var state = _vix.GetState(vm);
+                _vix.CloseObject(vm);
+
+                switch (state)
+                {
+                    case VixPowerState.Off:
+                        return VMPower.Off;
+                    case VixPowerState.Ready:
+                        return VMPower.Ready;
+                    case VixPowerState.Pending:
+                        return VMPower.Pending;
+                    case VixPowerState.Suspended:
+                        return VMPower.Off;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         public void ShowUI()
         {
             _vix.OpenLocalUI(_vmx, "C:\\Program Files (x86)\\VMware\\VMware Workstation");
