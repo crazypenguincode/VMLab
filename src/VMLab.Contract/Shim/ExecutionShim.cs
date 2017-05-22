@@ -52,9 +52,11 @@ namespace VMLab.Contract.Shim
 
             var errindex = 0;
             var outindex = 0;
+            var firstRun = true;
 
-            while (!FileExist(stdret))
+            while (!FileExist(stdret) || firstRun)
             {
+                firstRun = false;
                 Thread.Sleep(1000);
 
                 var outtext = GetFileAction(stdout).Skip(outindex).ToArray();

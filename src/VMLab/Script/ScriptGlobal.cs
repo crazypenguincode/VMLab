@@ -28,6 +28,11 @@ namespace VMLab.Script
             _console.Information(text);
         }
 
+        public void Pause(string text)
+        {
+            _console.Pause(text);
+        }
+
         public ITemplate Template(string name, string version)
         {
             var template = _templateFactory();

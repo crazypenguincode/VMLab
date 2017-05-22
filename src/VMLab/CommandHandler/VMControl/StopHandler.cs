@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VMLab.Contract;
+﻿using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler
 {
-    public class StopHandler : IParamHandler
+    public class StopHandler : BaseParamHandler
     {
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IVMBuilder _builder;
         private readonly IConsole _console;
 
-        public StopHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console)
+        public StopHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
@@ -25,25 +20,20 @@ namespace VMLab.CommandHandler
             _console = console;
         }
 
-        public string Group => "root";
+        public override string Group => "root";
+        public override string[] Handles => new[] { "stop"};
 
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
-
-            return args[0].ToLower() == "stop";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _scriptEngine.Execute();
 
             foreach (var vm in _graphManager.VMs)
             {
-                var control = _builder.GetVM(vm.Name);
+                var control = _builder.GetVM(vm);
                 control?.Stop();
             }
         }
+
+        public override string UsageDescription => "Shutdown all virtual machines in lab. ";
     }
 }

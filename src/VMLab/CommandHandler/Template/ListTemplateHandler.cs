@@ -5,29 +5,23 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Template
 {
-    public class ListTemplateHandler : IParamHandler
+    public class ListTemplateHandler : BaseParamHandler
     {
         private readonly IConfig _config;
         private readonly IDirectory _directory;
         private readonly IConsole _console;
 
-        public ListTemplateHandler(IConfig config, IDirectory directory, IConsole console)
+        public ListTemplateHandler(IConfig config, IDirectory directory, IConsole console, IUsage usage)  : base(usage)
         {
             _config = config;
             _directory = directory;
             _console = console;
         }
 
-        public string Group => "template";
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
+        public override string Group => "template";
+        public override string[] Handles => new[] {"list", "l"};
 
-            return args[0].ToLower() == "list";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _console.Information("Templates:");
             foreach (var template in _directory.GetDirectories(_config.GetSetting("TemplateDir")))
@@ -35,5 +29,7 @@ namespace VMLab.CommandHandler.Template
                 _console.Information(Path.GetFileName(template));
             }
         }
+
+        public override string UsageDescription => "Gets list of available templates.";
     }
 }

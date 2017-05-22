@@ -9,7 +9,7 @@ namespace VMLab.Contract
         void Build(Template template, string templateFolder);
         bool TemplateExist(string name);
         void BuildVMFromTemplate(VM vm);
-        IVMControl GetVM(string name);
+        IVMControl GetVM(VM vm);
 
         void ImportTemplate(string path);
         void RemoveTemplate(string name);

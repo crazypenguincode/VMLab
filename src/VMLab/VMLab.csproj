@@ -169,7 +169,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandler\VMControl\BuildHandler.cs" />
+    <Compile Include="CommandHandler\Actions\ActionHandler.cs" />
+    <Compile Include="CommandHandler\BaseParamHandler.cs" />
+    <Compile Include="CommandHandler\Config\ConfigHandler.cs" />
+    <Compile Include="CommandHandler\Config\GetConfigHandler.cs" />
+    <Compile Include="CommandHandler\Config\SetConfigHandler.cs" />
+    <Compile Include="CommandHandler\Config\ViewConfigHandler.cs" />
+    <Compile Include="CommandHandler\Debug\SwitchDebugHandler.cs" />
+    <Compile Include="CommandHandler\HubParamHandler.cs" />
+    <Compile Include="CommandHandler\ISwitchParser.cs" />
+    <Compile Include="CommandHandler\IUsage.cs" />
+    <Compile Include="CommandHandler\SwitchParser.cs" />
+    <Compile Include="CommandHandler\Usage.cs" />
+    <Compile Include="CommandHandler\Template\BuildHandler.cs" />
     <Compile Include="CommandHandler\CommandHandler.cs" />
     <Compile Include="CommandHandler\Debug\DebugGraphHandler.cs" />
     <Compile Include="CommandHandler\Debug\DebugHandler.cs" />
@@ -180,10 +192,10 @@
     <Compile Include="CommandHandler\Template\RemoveTemplateHandler.cs" />
     <Compile Include="CommandHandler\Template\TemplateHandler.cs" />
     <Compile Include="CommandHandler\Template\ImportTemplateHandler.cs" />
-    <Compile Include="CommandHandler\InitHandler.cs" />
+    <Compile Include="CommandHandler\VMControl\InitHandler.cs" />
     <Compile Include="CommandHandler\IParamHandler.cs" />
-    <Compile Include="CommandHandler\Plugin\PluginHandler.cs" />
-    <Compile Include="CommandHandler\Plugin\PluginListHandler.cs" />
+    <Compile Include="CommandHandler\Hypervisor\HypervisorHandler.cs" />
+    <Compile Include="CommandHandler\Hypervisor\HypervisorListHandler.cs" />
     <Compile Include="CommandHandler\VMControl\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
     <Compile Include="Helper\IResource.cs" />

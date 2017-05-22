@@ -3,28 +3,23 @@ using VMLab.Contract;
 
 namespace VMLab.CommandHandler.Import
 {
-    public class ImportTemplateHandler : IParamHandler
+    public class ImportTemplateHandler : BaseParamHandler
     {
         private readonly IVMBuilder _builder;
 
-        public ImportTemplateHandler(IVMBuilder builder)
+        public ImportTemplateHandler(IVMBuilder builder, IUsage usage) : base(usage)
         {
             _builder = builder;
         }
 
-        public string Group => "template";
+        public override string Group => "template";
+        public override string[] Handles => new[] { "import", "i" };
 
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 2)
-                return false;
-
-            return args[0].ToLower() == "import";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _builder.ImportTemplate(args[1]);
         }
+
+        public override string UsageDescription => "Imports a template into the VMLab template store!";
     }
 }

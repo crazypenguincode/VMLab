@@ -4,29 +4,16 @@ using System.Linq;
 
 namespace VMLab.CommandHandler.Import
 {
-    public class ImportHandler : IParamHandler
+    public class TemplateHandler : HubParamHandler
     {
-        private IParamHandler[] _handlers;
+        public override string Group => "root";
+        public override string UsageDescription => "Allows for installation and removal of templates.";
+        public override string[] Handles => new[] {"template"};
 
-        public string Group => "root";
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
+        public TemplateHandler(IUsage usage) : base(usage)
         {
-            _handlers = handlers.ToArray();
-
-            if (args.Length < 2)
-                return false;
-
-            return args[0].ToLower() == "template";
         }
 
-        public void Handle(string[] args)
-        {
-            var useableHandler = _handlers.FirstOrDefault(h => h.Group == "template" && h.CanHandle(args.Skip(1).ToArray(), _handlers));
-
-            if (useableHandler != null)
-                useableHandler.Handle(args.Skip(1).ToArray());
-            else
-                throw new NotImplementedException("Useage handler needs to be created here");
-        }
+        protected override string SubGroup => "template";
     }
 }

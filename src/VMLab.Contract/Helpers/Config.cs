@@ -21,7 +21,6 @@ namespace VMLab.Helper
 
         public string GetSetting(string setting, ConfigScope scope = ConfigScope.Merged)
         {
-
             if (scope != ConfigScope.Merged)
             {
                 var store = GetSettings(scope);
@@ -55,6 +54,11 @@ namespace VMLab.Helper
 
             WriteSettings(settings, scope);
 
+        }
+
+        public string Dump(ConfigScope scope)
+        {
+            return JsonConvert.SerializeObject(GetSettings(scope), Formatting.Indented);
         }
 
         private Dictionary<string, string> GetSettings(ConfigScope scope)
@@ -123,7 +127,7 @@ namespace VMLab.Helper
             if (!_directory.Exists(path))
                 _directory.CreateDirectory(path);
 
-            _file.WriteAllText($"{path}\\settings.json", JsonConvert.SerializeObject(settings));
+            _file.WriteAllText($"{path}\\settings.json", JsonConvert.SerializeObject(settings, Formatting.Indented));
         }
     }
 }

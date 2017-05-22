@@ -81,7 +81,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                     
                     _vix.CopyFileToHost(vm, file, localfile);
 
-                    return _file.ReadAllLines(path);
+                    return _file.ReadAllLines(localfile);
                 };
                 shim.PutFileAction = (local, guest) => _vix.CopyFileToGuest(vm, local, guest);
                 shim.RemoveFile = p => _vix.DeleteFileInGuest(vm, p);
@@ -290,7 +290,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void SetCredentials(string group)
         {
-            var cred = _credentials.FirstOrDefault(c => c.Group == group);
+            var cred = _credentials.FirstOrDefault(c => string.Equals(c.Group, group, StringComparison.CurrentCultureIgnoreCase));
 
             if (cred != null)
                 _currentCredential = cred;

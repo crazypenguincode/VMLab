@@ -9,9 +9,10 @@ using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.CommandHandler
 {
-    public class BuildHandler : IParamHandler
+    public class BuildHandler : BaseParamHandler
     {
-        public string Group => "root";
+        public override string Group => "template";
+        public override string[] Handles => new []{"build", "b"};
 
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
@@ -20,7 +21,7 @@ namespace VMLab.CommandHandler
         private readonly IHypervisorCapabilityChecker _capabilityChecker;
         private readonly IEnvironment _environment;
 
-        public BuildHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment)
+        public BuildHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment, IUsage usage) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
@@ -30,15 +31,7 @@ namespace VMLab.CommandHandler
             _environment = environment;
         }
 
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
-
-            return args[0].ToLower() == "build";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _scriptEngine.Execute();
 
@@ -61,5 +54,7 @@ namespace VMLab.CommandHandler
             foreach (var t in _graphManager.Templates)
                 _builder.Build(t, $"{_environment.CurrentDirectory}\\_vmlab\\template\\{Guid.NewGuid()}\\{t.Name}");
         }
+
+        public override string UsageDescription => "Builds a template from vmlab.csx definition in current directory.";
     }
 }

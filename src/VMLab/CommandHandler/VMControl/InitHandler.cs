@@ -1,37 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SystemInterface.IO;
+﻿using SystemInterface.IO;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
 {
-    public class InitHandler : IParamHandler
+    public class InitHandler : BaseParamHandler
     {
-        public string Group => "root";
+        public override string Group => "root";
+        public override string[] Handles => new[] {"init", "i"};
 
         private readonly IResource _resource;
         private readonly IFile _file;
         private readonly IConsole _console;
 
-        public InitHandler(IResource resource, IFile file, IConsole console)
+        public InitHandler(IResource resource, IFile file, IConsole console, IUsage usage) : base(usage)
         {
             _resource = resource;
             _file = file;
             _console = console;
         }
 
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
-
-            return args[0].ToLower() == "init";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             if (_file.Exists("vmlab.csx"))
             {
@@ -56,5 +44,7 @@ namespace VMLab.CommandHandler
 
             _file.WriteAllText("vmlab.csx", template);
         }
+
+        public override string UsageDescription => "Create a vmlab.csx file with target template.";
     }
 }

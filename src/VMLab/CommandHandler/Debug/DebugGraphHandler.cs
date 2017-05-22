@@ -6,33 +6,30 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Debug
 {
-    public class DebugGraphHandler : IParamHandler
+    public class DebugGraphHandler : BaseParamHandler
     {
         private readonly IGraphManager _graphManager;
         private readonly IScriptEngine _scriptEngine;
         private readonly IConsole _console;
 
-        public DebugGraphHandler(IGraphManager graphManager, IScriptEngine scriptEngine, IConsole console)
+
+        public DebugGraphHandler(IGraphManager graphManager, IScriptEngine scriptEngine, IConsole console, IUsage usage) : base(usage)
         {
             _graphManager = graphManager;
             _scriptEngine = scriptEngine;
             _console = console;
         }
 
-        public string Group => "debug";
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
+        public override string Group => "debug";
 
-            return args[0].ToLower() == "graph";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _scriptEngine.Execute();
             _console.Information(JsonConvert.SerializeObject(_graphManager, Formatting.Indented));
             _console.Pause("Press any key to continue...");
         }
+
+        public override string UsageDescription => "Prints the VM graph to the console.";
+        public override string[] Handles => new[] { "graph", "g" };
     }
 }

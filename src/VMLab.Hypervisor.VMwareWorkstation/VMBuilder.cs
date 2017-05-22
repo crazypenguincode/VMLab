@@ -78,7 +78,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             GenerateVMFiles(template, templateFolder, vmxpath);
 
-            var vm = _loader.GetVMFromPath(vmxpath) as VMControl;
+            var vm = _loader.GetVMFromPath(vmxpath, template.Credentials) as VMControl;
 
             if(vm == null)
                 throw new NullReferenceException("Can't load VM controller object!");
@@ -173,19 +173,19 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             ProvisionVM(vm, $"{vmFolder}\\{vm.Name}.vmx");
 
-            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx");
+            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", vm.Credentials);
             vmcontrol.Start();
             vm.OnProvision(vmcontrol);
         }
 
-        public IVMControl GetVM(string name)
+        public IVMControl GetVM(GraphModels.VM vm)
         {
             if (!_directory.Exists($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\"))
                 return null;
 
             return (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
-                    where _file.Exists($"{dir}\\{name}\\{name}.vmx")
-                    select _loader.GetVMFromPath($"{dir}\\{name}\\{name}.vmx")).FirstOrDefault();
+                    where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
+                    select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials)).FirstOrDefault();
         }
 
         public void ImportTemplate(string path)

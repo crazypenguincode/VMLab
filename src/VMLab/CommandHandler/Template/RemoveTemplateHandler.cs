@@ -7,28 +7,24 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Template
 {
-    public class RemoveTemplateHandler : IParamHandler
+    public class RemoveTemplateHandler : BaseParamHandler
     {
         private readonly IVMBuilder _builder;
 
-        public RemoveTemplateHandler(IVMBuilder builder)
+        public RemoveTemplateHandler(IVMBuilder builder, IUsage usage) : base(usage)
         {
             _builder = builder;
         }
 
-        public string Group => "template";
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 2)
-                return false;
+        public override string Group => "template";
+        public override string[] Handles => new []{"remove", "r"};
 
-            return args[0].ToLower() == "remove";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             _builder.RemoveTemplate(args[1]);
 
         }
+
+        public override string UsageDescription => "Removes a template from vmlab.";
     }
 }

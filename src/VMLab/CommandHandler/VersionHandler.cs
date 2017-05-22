@@ -1,30 +1,21 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
 {
-    public class VersionHandler : IParamHandler
+    public class VersionHandler : BaseParamHandler
     {
-        public string Group => "root";
-
+        public override string Group => "root";
+        public override string[] Handles => new[] {"version", "v"};
         private readonly IConsole _console;
 
-        public VersionHandler(IConsole console)
+        public VersionHandler(IConsole console, IUsage usage) : base(usage)
         {
             _console = console;
         }
 
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
-
-            return args[0].ToLower() == "version";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -33,5 +24,8 @@ namespace VMLab.CommandHandler
             _console.Information("{FileVersion}", versioninfo.FileVersion);
             _console.Information("{ProductVersion}", versioninfo.ProductVersion);
         }
+
+        public override string UsageDescription => "Returns the version of VMLab.";
+        public override string UsageName => "version";
     }
 }

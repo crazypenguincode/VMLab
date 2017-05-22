@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,29 +7,23 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.List
 {
-    public class PluginListHandler : IParamHandler
+    public class PluginListHandler : BaseParamHandler
     {
         private readonly IDirectory _directory;
         private readonly IConsole _console;
         private readonly IConfig _config;
 
-        public PluginListHandler(IDirectory directory, IConsole console, IConfig config)
+        public PluginListHandler(IDirectory directory, IConsole console, IConfig config, IUsage usage) : base(usage)
         {
             _directory = directory;
             _console = console;
             _config = config;
         }
 
-        public string Group => "plugin";
-        public bool CanHandle(string[] args, IEnumerable<IParamHandler> handlers)
-        {
-            if (args.Length < 1)
-                return false;
+        public override string Group => "hypervisor";
+        public override string[] Handles => new[] {"list", "l"};
 
-            return args[0].ToLower() == "list";
-        }
-
-        public void Handle(string[] args)
+        public override void OnHandle(string[] args)
         {
             var asmFolder = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path));
 
@@ -53,5 +46,7 @@ namespace VMLab.CommandHandler.List
                     : $" - {hypervisor}");
             }
         }
+
+        public override string UsageDescription => "Lists available hypervisor plugins.";
     }
 }
