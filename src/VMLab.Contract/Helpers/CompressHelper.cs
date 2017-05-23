@@ -17,9 +17,15 @@ namespace VMLab.Contract.Helpers
                     {
                         var stream = entry.Open();
                         var memoryStream = new MemoryStream();
-                        var buffer = new byte[stream.Length];
-                        stream.Read(buffer, 0, buffer.Length);
-                        memoryStream.Write(buffer, 0, buffer.Length);
+                        var buffer = new byte[16384];
+
+                        int read;
+
+                        while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            memoryStream.Write(buffer, 0, read);
+                        }
+
                         stream.Close();
 
                         return memoryStream;
@@ -31,7 +37,9 @@ namespace VMLab.Contract.Helpers
 
         public string GetTextFromZip(string archive, string filename)
         {
-            return new StreamReader(GetFileFromZip(archive, filename)).ReadToEnd();
+            var data = GetFileFromZip(archive, filename);
+            data.Seek(0, SeekOrigin.Begin);
+            return new StreamReader(data).ReadToEnd();
         }
 
         public void ExtractToFolder(string archive, string path)

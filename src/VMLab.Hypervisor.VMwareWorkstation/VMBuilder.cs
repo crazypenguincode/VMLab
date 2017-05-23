@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using SystemInterface;
@@ -163,13 +162,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vmx.WriteToFile(vmxpath);
         }
 
-        public bool TemplateExist(string name)
-        {
-            var templatePath = $"{_config.GetSetting("TemplateDir")}\\{name}";
-
-            return _directory.Exists(templatePath);
-        }
-
         public void BuildVMFromTemplate(GraphModels.VM vm)
         {
             var manifest = default(TemplateManifest);
@@ -248,7 +240,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         public void ImportTemplate(string path)
         {
-            var manifest = JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json"));
+            var data = _compressHelper.GetTextFromZip(path, "manifest.json");
+            var manifest = JsonConvert.DeserializeObject<TemplateManifest>(data);
             var templateDir = $"{_config.GetSetting("TemplateDir")}\\Vmwareworkstation\\{manifest.Name}_{manifest.Version}";
 
             if (_directory.Exists(templateDir))
@@ -293,7 +286,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 SearchOption.AllDirectories))
             {
                 var folder = Path.GetDirectoryName(vmx);
-                var vmxFile = Path.GetFileName(vmx);
+                var vmxFile = Path.GetFileName(vmx) ?? "";
                 _directory.CreateDirectory($"{folder}_full");
 
                 var vm = _vix.ConnectToVM(vmx);
@@ -303,7 +296,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 _thread.Sleep(1000);
 
                 _directory.Delete(folder, true);
-                _directory.Move($"{path}_full", path);
+                _directory.Move($"{folder}_full", folder);
+
+                //Stop vm name from having clone of in the name.
+                var vmxData = _vmxFactory();
+                vmxData.ReadFromFile(vmx);
+                vmxData.WriteValue("displayName", vmxFile.Replace(".vmx", ""));
+                vmxData.WriteToFile(vmx);
             }
 
             _compressHelper.CreateFromDirectory(_environment.CurrentDirectory, path, CompressionLevel.Optimal, false, Encoding.UTF8, filter => true);

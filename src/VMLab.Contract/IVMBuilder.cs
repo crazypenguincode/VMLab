@@ -9,7 +9,6 @@ namespace VMLab.Contract
     {
         bool CanBuild(Template template);
         void Build(Template template, string templateFolder);
-        bool TemplateExist(string name);
         void BuildVMFromTemplate(VM vm);
         IVMControl GetVM(VM vm);
         TemplateManifest GetTemplateManifestFromArchive(string path);

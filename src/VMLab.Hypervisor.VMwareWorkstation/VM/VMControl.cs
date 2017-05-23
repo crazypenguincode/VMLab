@@ -201,6 +201,10 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void Restart(bool force = false)
         {
             var vm = _vix.ConnectToVM(_vmx);
+
+            if (!force)
+                WaitReady();
+
             _vix.Restart(vm, force);
             _vix.CloseObject(vm);
         }
@@ -208,6 +212,10 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void Stop(bool force = false)
         {
             var vm = _vix.ConnectToVM(_vmx);
+
+            if(!force)
+                WaitReady();
+
             _vix.PowerOff(vm, force);
             _vix.CloseObject(vm);
         }

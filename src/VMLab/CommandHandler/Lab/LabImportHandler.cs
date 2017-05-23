@@ -42,7 +42,7 @@ namespace VMLab.CommandHandler.Lab
             var switches = _switchParser.Parse(args.Skip(2).ToArray());
 
             if (_directory.GetFiles(_environment.CurrentDirectory).Length > 0 ||
-                _directory.GetDirectories(_environment.CurrentDirectory).Length > 0)
+                _directory.GetDirectories(_environment.CurrentDirectory).Where(d => !d.EndsWith("_vmlab")).ToArray().Length > 0)
             {
                 if (!switches.ContainsKey("force"))
                 {

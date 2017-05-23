@@ -16,45 +16,36 @@ namespace VMLab.CommandHandler.GUI
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IVMBuilder _builder;
+        private readonly ISwitchParser _switchParser;
 
-        public GUIHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder) : base(usage)
+        public GUIHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, ISwitchParser switchParser) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _builder = builder;
+            _switchParser = switchParser;
         }
 
         public override string Group => "root";
         public override string[] Handles => new[] {"gui", "ui", "g"};
         public override void OnHandle(string[] args)
         {
-            if (args.Length < 2)
-            {
-                _console.Error("Expected vm parameter. vmlab.exe gui <vmname>");
-                return;
-            }
-
             _scriptEngine.Execute();
 
-            var vm = _graphManager.VMs.FirstOrDefault(
-                v => string.Equals(v.Name, args[1], StringComparison.CurrentCultureIgnoreCase));
+            var switches = _switchParser.Parse(args.Skip(1).ToArray());
 
-            if (vm == default(VM))
+            var vms = _graphManager.VMs;
+
+            if (switches.ContainsKey("vm"))
             {
-                _console.Error("Can't find a provisioned vm named {name}", args[1]);
-                return;
+                vms = _graphManager.VMs.Where(v => switches["vm"].Contains(v.Name));
             }
 
-            var control = _builder.GetVM(vm);
-
-            if (control == null)
+            foreach (var control in vms.Select(v => _builder.GetVM(v)).Where(v => v != null))
             {
-                _console.Error("Can't get gui for vm because it hasn't been provisioned yet. Please run vmlab.exe start first.");
-                return;
+                control.ShowUI();
             }
-
-            control.ShowUI();
         }
 
         public override string UsageDescription => "Shows the hypervisor user interface for target vm.";

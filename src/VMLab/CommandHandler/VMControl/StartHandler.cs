@@ -43,7 +43,12 @@ namespace VMLab.CommandHandler
 
                 if (control == null)
                 {
-                    if (!_builder.TemplateExist(vm.Template))
+                    var templates = _builder.GetInstalledTemplateManifests().Where(t => t.Name == vm.Template);
+
+                    if (vm.Version != "latest")
+                        templates = templates.Where(t => t.Version == vm.Version);
+
+                    if (!templates.Any())
                     {
                         _console.Error("Can't create lab as Template {template} doesn't exist!", vm.Template);
                         return;

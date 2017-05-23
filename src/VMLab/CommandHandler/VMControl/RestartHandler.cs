@@ -44,6 +44,6 @@ namespace VMLab.CommandHandler.VMControl
             }
         }
 
-        public override string UsageDescription => "Restarts target virtual machines."
+        public override string UsageDescription => "Restarts target virtual machines.";
     }
 }

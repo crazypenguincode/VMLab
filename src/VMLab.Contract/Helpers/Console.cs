@@ -6,12 +6,10 @@ namespace VMLab.Helper
     public class Console : IConsole
     {
         private readonly ILogger _log;
-        private readonly IConsole _console;
 
-        public Console(ILogger log, IConsole console)
+        public Console(ILogger log)
         {
             _log = log;
-            _console = console;
         }
 
         public void Information(Exception e, string message, params object[] props)
@@ -54,7 +52,7 @@ namespace VMLab.Helper
 
         public string ReadLine()
         {
-            var input = _console.ReadLine();
+            var input = System.Console.ReadLine();
             _log.Information("User entered: {input}", input);
 
             return input;
