@@ -1,21 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using SystemInterface.IO;
+using VMLab.Contract;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Template
 {
     public class ListTemplateHandler : BaseParamHandler
     {
-        private readonly IConfig _config;
-        private readonly IDirectory _directory;
         private readonly IConsole _console;
+        private readonly IVMBuilder _builder;
 
-        public ListTemplateHandler(IConfig config, IDirectory directory, IConsole console, IUsage usage)  : base(usage)
+        public ListTemplateHandler(IConsole console, IUsage usage, IVMBuilder builder)  : base(usage)
         {
-            _config = config;
-            _directory = directory;
             _console = console;
+            _builder = builder;
         }
 
         public override string Group => "template";
@@ -24,9 +23,9 @@ namespace VMLab.CommandHandler.Template
         public override void OnHandle(string[] args)
         {
             _console.Information("Templates:");
-            foreach (var template in _directory.GetDirectories(_config.GetSetting("TemplateDir")))
+            foreach (var template in _builder.GetInstalledTemplateManifests())
             {
-                _console.Information(Path.GetFileName(template));
+                _console.Information("{name} - {version}", template.Name, template.Version);
             }
         }
 

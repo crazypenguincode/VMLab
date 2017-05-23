@@ -25,9 +25,10 @@ namespace VMLab.Script.FluentInterface
             set => _vm.Name = value;
         }
 
-        public IVM Template(string name)
+        public IVM Template(string name, string version = "latest")
         {
             _vm.Template = name;
+            _vm.Version = version;
             return this;
         }
 
@@ -78,12 +79,6 @@ namespace VMLab.Script.FluentInterface
         public IVM ShareFolder(string hostpath, string guestpath)
         {
             _vm.SharedFolders.Add(new SharedFolder{HostPath = hostpath, GuestPath = guestpath});
-            return this;
-        }
-
-        public IVM DSC(string path, string configPath)
-        {
-            _vm.DSC = new DSC{Path = path, ConfigPath = configPath};
             return this;
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 
@@ -11,5 +12,8 @@ namespace VMLab.Contract.Helpers
             Func<string, bool> filter);
 
         void ExtractToFolder(string archive, string path);
+
+        Stream GetFileFromZip(string archive, string filename);
+        string GetTextFromZip(string archive, string filename);
     }
 }

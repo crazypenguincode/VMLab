@@ -7,6 +7,7 @@ namespace VMLab.GraphModels
     public class VM
     {
         public string Template { get; set; }
+        public string Version { get; set; }
         public List<Credential> Credentials { get; set; }
         public List<Network> Networks { get; set; }
         public int CPUs { get; set; }

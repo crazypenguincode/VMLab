@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using SystemInterface;
 using SystemInterface.IO;
 using SystemInterface.Threading;
-using VixCOM;
+using Newtonsoft.Json;
 using VMLab.Contract;
+using VMLab.Contract.GraphModels;
 using VMLab.Contract.Helpers;
+using VMLab.Contract.SemVer;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Hypervisor.VMwareWorkstation.DiskHelpers;
@@ -122,6 +125,18 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             if(_file.Exists($"{templateFolder}\\nvram"))
                 _file.Delete($"{templateFolder}\\nvram");
+
+            //Building manfiest
+            var manifest = new TemplateManifest
+            {
+                Name = template.Name,
+                Hypervisor = "Vmwareworkstation",
+                OS = template.GuestOS,
+                Arch = template.Arch,
+                Version = template.Version
+            };
+
+            _file.WriteAllText($"{templateFolder}\\manifest.json", JsonConvert.SerializeObject(manifest));
             
             _console.Information("Compressing template");
             _compressHelper.CreateFromDirectory(templateFolder, $"{_environment.CurrentDirectory}\\{template.Name}.vmlabtemplate", CompressionLevel.Optimal, false, Encoding.UTF8, f => !f.EndsWith(".lck"));
@@ -157,12 +172,33 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         public void BuildVMFromTemplate(GraphModels.VM vm)
         {
-            var templatePath = $"{_config.GetSetting("TemplateDir")}\\{vm.Template}";
+            var manifest = default(TemplateManifest);
+
+            if (vm.Version == "latest")
+            {
+                manifest = GetInstalledTemplateManifests()
+                    .Where(m => m.Name.ToLower() == vm.Template.ToLower())
+                    .Where(m => Regex.IsMatch(m.Version, "^[0-9]{1,5}\\.[0-9]{1,5}\\.[0-9]{1,5}$")) //Remove prerelease versions.
+                    .OrderByDescending(m => new SemVer(m.Version)) //Sort by versions.
+                    .FirstOrDefault();
+            }
+            else
+            {
+                manifest = GetInstalledTemplateManifests()
+                    .FirstOrDefault(m => m.Name == vm.Template && m.Version == vm.Version);
+            }
+
+            if (manifest == default(TemplateManifest))
+            {
+                _console.Error("Can't find template {name} version: {version}", vm.Template, vm.Version);
+                return;
+            }
+
+            var templatePath = manifest.Path;
             var id = Guid.NewGuid();
             var vmFolder = $"{_environment.CurrentDirectory}\\_vmlab\\VMs\\{id}\\{vm.Name}";
 
             _directory.CreateDirectory(vmFolder);
-            
 
             var templateVM = _vix.ConnectToVM($"{templatePath}\\{vm.Template}.vmx");
             var snapshot = _vix.GetSnapshots(templateVM).First(s => _vix.GetSnapshotName(s) == "Template");
@@ -170,6 +206,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _vix.Clone($"{vmFolder}\\{vm.Name}.vmx", templateVM, snapshot, true);
             _vix.CloseObject(snapshot);
             _vix.CloseObject(templateVM);
+
+            _file.Copy($"{manifest.Path}\\manifest.json", $"{vmFolder}\\manifest.json");
 
             ProvisionVM(vm, $"{vmFolder}\\{vm.Name}.vmx");
 
@@ -188,25 +226,48 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                     select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials)).FirstOrDefault();
         }
 
+        public TemplateManifest GetTemplateManifestFromArchive(string path)
+        {
+            return JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json"));           
+        }
+
+        public IEnumerable<TemplateManifest> GetInstalledTemplateManifests()
+        {
+            var templatedir = _config.GetSetting("TemplateDir");
+       
+            return _directory.GetFiles(templatedir, "manifest.json", SearchOption.AllDirectories).Select(file =>
+                {
+                    var manifest = JsonConvert.DeserializeObject<TemplateManifest>(_file.ReadAllText(file));
+                    manifest.Path = Path.GetDirectoryName(file);
+
+                    return manifest;
+                })
+                .Where(m => m.Hypervisor == "Vmwareworkstation")
+                .ToList();
+        }
+
         public void ImportTemplate(string path)
         {
-            var templateName = Path.GetFileNameWithoutExtension(path);
+            var manifest = JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json"));
+            var templateDir = $"{_config.GetSetting("TemplateDir")}\\Vmwareworkstation\\{manifest.Name}_{manifest.Version}";
 
-            if (_directory.Exists($"{_config.GetSetting("TemplateDir")}\\{templateName}"))
+            if (_directory.Exists(templateDir))
             {
                 _console.Error("Template already exists!");
                 return;
             }
 
-            _directory.CreateDirectory($"{_config.GetSetting("TemplateDir")}\\{templateName}");
+            _directory.CreateDirectory(templateDir);
 
-            _compressHelper.ExtractToFolder(path, $"{_config.GetSetting("TemplateDir")}\\{templateName}");
+            _compressHelper.ExtractToFolder(path, templateDir);
         }
 
         public void RemoveTemplate(string name)
         {
-            if (_directory.Exists($"{_config.GetSetting("TemplateDir")}\\{name}"))
-                _directory.Delete($"{_config.GetSetting("TemplateDir")}\\{name}", true);
+            var manifest = GetInstalledTemplateManifests().FirstOrDefault(m => m.Name == name);
+
+            if (_directory.Exists(manifest.Path))
+                _directory.Delete(manifest.Path, true);
             
         }
 
@@ -224,6 +285,33 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _directory.Delete(vmfolder, true);
 
 
+        }
+
+        public void ExportLab(string path)
+        {
+            foreach (var vmx in _directory.GetFiles(_environment.CurrentDirectory, "*.vmx",
+                SearchOption.AllDirectories))
+            {
+                var folder = Path.GetDirectoryName(vmx);
+                var vmxFile = Path.GetFileName(vmx);
+                _directory.CreateDirectory($"{folder}_full");
+
+                var vm = _vix.ConnectToVM(vmx);
+                _vix.Clone($"{folder}_full\\{vmxFile}", vm, null, false);
+                _vix.CloseObject(vm);
+
+                _thread.Sleep(1000);
+
+                _directory.Delete(folder, true);
+                _directory.Move($"{path}_full", path);
+            }
+
+            _compressHelper.CreateFromDirectory(_environment.CurrentDirectory, path, CompressionLevel.Optimal, false, Encoding.UTF8, filter => true);
+        }
+
+        public void ImportLab(string path)
+        {
+            _compressHelper.ExtractToFolder(path, _environment.CurrentDirectory);
         }
 
         private void CleanUpVMX(Template template, string templateFolder, string vmxpath)

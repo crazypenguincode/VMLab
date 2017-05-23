@@ -58,6 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GraphModels\TemplateManifest.cs" />
     <Compile Include="Helpers\CompressHelper.cs" />
     <Compile Include="Helpers\Config.cs" />
     <Compile Include="Helpers\Console.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="GraphModels\Template.cs" />
     <Compile Include="GraphModels\VM.cs" />
     <Compile Include="IExecResult.cs" />
+    <Compile Include="SemVer\SemVer.cs" />
     <Compile Include="Session\ISession.cs" />
     <Compile Include="Session\ISessionFactory.cs" />
     <Compile Include="ITemplate.cs" />

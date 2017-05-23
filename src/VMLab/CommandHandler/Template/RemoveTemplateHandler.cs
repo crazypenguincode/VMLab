@@ -22,7 +22,6 @@ namespace VMLab.CommandHandler.Template
         public override void OnHandle(string[] args)
         {
             _builder.RemoveTemplate(args[1]);
-
         }
 
         public override string UsageDescription => "Removes a template from vmlab.";

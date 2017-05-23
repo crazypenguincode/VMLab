@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using VMLab.Contract;
+﻿using VMLab.Contract;
 
 namespace VMLab.CommandHandler.Import
 {
@@ -13,7 +12,7 @@ namespace VMLab.CommandHandler.Import
         }
 
         public override string Group => "template";
-        public override string[] Handles => new[] { "import", "i" };
+        public override string[] Handles => new[] { "import", "i", "add" };
 
         public override void OnHandle(string[] args)
         {

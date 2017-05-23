@@ -183,6 +183,9 @@
     <Compile Include="CommandHandler\Hypervisor\HypervisorSetHandler.cs" />
     <Compile Include="CommandHandler\ISwitchParser.cs" />
     <Compile Include="CommandHandler\IUsage.cs" />
+    <Compile Include="CommandHandler\Lab\LabExportHandler.cs" />
+    <Compile Include="CommandHandler\Lab\LabHandler.cs" />
+    <Compile Include="CommandHandler\Lab\LabImportHandler.cs" />
     <Compile Include="CommandHandler\SwitchParser.cs" />
     <Compile Include="CommandHandler\Usage.cs" />
     <Compile Include="CommandHandler\Template\BuildHandler.cs" />

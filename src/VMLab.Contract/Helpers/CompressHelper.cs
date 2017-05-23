@@ -8,6 +8,32 @@ namespace VMLab.Contract.Helpers
     public class CompressHelper : ICompressHelper
     {
 
+        public Stream GetFileFromZip(string archive, string filename)
+        {
+            using (var zip = ZipFile.OpenRead(archive))
+            {
+                foreach (var entry in zip.Entries)
+                    if (entry.Name.ToLower() == filename)
+                    {
+                        var stream = entry.Open();
+                        var memoryStream = new MemoryStream();
+                        var buffer = new byte[stream.Length];
+                        stream.Read(buffer, 0, buffer.Length);
+                        memoryStream.Write(buffer, 0, buffer.Length);
+                        stream.Close();
+
+                        return memoryStream;
+                    }
+            }
+
+            return new MemoryStream();
+        }
+
+        public string GetTextFromZip(string archive, string filename)
+        {
+            return new StreamReader(GetFileFromZip(archive, filename)).ReadToEnd();
+        }
+
         public void ExtractToFolder(string archive, string path)
         {
             ZipFile.ExtractToDirectory(archive, path);
