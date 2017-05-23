@@ -11,5 +11,6 @@ namespace VMLab.Helper
         void Error(Exception e, string message, params object[] props);
         void Error(string message, params object[] props);
         void Pause(string message = "");
+        string ReadLine();
     }
 }

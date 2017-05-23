@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
 
-namespace VMLab.CommandHandler
+namespace VMLab.CommandHandler.VMControl
 {
-    public class StopHandler : BaseParamHandler
+    public class RestartHandler : BaseParamHandler
     {
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
@@ -14,18 +15,17 @@ namespace VMLab.CommandHandler
         private readonly IConsole _console;
         private readonly ISwitchParser _switchParser;
 
-        public StopHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage, ISwitchParser switchParser) : base(usage)
+        public RestartHandler(IUsage usage, ISwitchParser switchParser, IConsole console, IVMBuilder builder, IGraphManager graphManager, IScriptEngine scriptEngine) : base(usage)
         {
-            _scriptEngine = scriptEngine;
-            _graphManager = graphManager;
-            _builder = builder;
-            _console = console;
             _switchParser = switchParser;
+            _console = console;
+            _builder = builder;
+            _graphManager = graphManager;
+            _scriptEngine = scriptEngine;
         }
 
         public override string Group => "root";
-        public override string[] Handles => new[] { "stop"};
-
+        public override string[] Handles => new[] {"restart", "reboot"};
         public override void OnHandle(string[] args)
         {
             _scriptEngine.Execute();
@@ -40,10 +40,10 @@ namespace VMLab.CommandHandler
             foreach (var vm in vms)
             {
                 var control = _builder.GetVM(vm);
-                control?.Stop(switches.ContainsKey("force") || switches.ContainsKey("f"));
+                control?.Restart(switches.ContainsKey("force") || switches.ContainsKey("f"));
             }
         }
 
-        public override string UsageDescription => "Shutdown all virtual machines in lab. ";
+        public override string UsageDescription => "Restarts target virtual machines."
     }
 }

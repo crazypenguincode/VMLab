@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VMLab.Contract;
 using VMLab.GraphModels;
+using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler.VMControl
@@ -14,12 +15,16 @@ namespace VMLab.CommandHandler.VMControl
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IVMBuilder _builder;
+        private readonly ISwitchParser _switchParser;
+        private readonly IConsole _console;
 
-        public DestroyHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IUsage usage) : base(usage)
+        public DestroyHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IUsage usage, ISwitchParser switchParser, IConsole console) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _builder = builder;
+            _switchParser = switchParser;
+            _console = console;
         }
 
         public override string Group => "root";
@@ -29,7 +34,22 @@ namespace VMLab.CommandHandler.VMControl
         {
             _scriptEngine.Execute();
 
-            foreach (var vm in _graphManager.VMs)
+            var switches = _switchParser.Parse(args.Skip(1).ToArray());
+
+            var vms = _graphManager.VMs;
+
+            if (switches.ContainsKey("vm"))
+                vms = vms.Where(v => switches["vm"].Any(s => s == v.Name));
+
+            if (!switches.ContainsKey("force") && !switches.ContainsKey("f"))
+            {
+                _console.Information("Are you sure you want to destroy virtual machines? (use -force to skip this in the future)");
+
+                if (_console.ReadLine().ToLower() != "y")
+                    return;
+            }
+
+            foreach (var vm in vms)
             {
                 var control = _builder.GetVM(vm);
 

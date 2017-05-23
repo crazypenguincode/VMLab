@@ -186,6 +186,11 @@
     <Compile Include="CommandHandler\Lab\LabExportHandler.cs" />
     <Compile Include="CommandHandler\Lab\LabHandler.cs" />
     <Compile Include="CommandHandler\Lab\LabImportHandler.cs" />
+    <Compile Include="CommandHandler\Snapshot\AddSnapshotHandler.cs" />
+    <Compile Include="CommandHandler\Snapshot\ListSnapshotHandler.cs" />
+    <Compile Include="CommandHandler\Snapshot\RemoveSnapshotHandler.cs" />
+    <Compile Include="CommandHandler\Snapshot\RevertSnapshotHandler.cs" />
+    <Compile Include="CommandHandler\Snapshot\SnapshotHandler.cs" />
     <Compile Include="CommandHandler\SwitchParser.cs" />
     <Compile Include="CommandHandler\Usage.cs" />
     <Compile Include="CommandHandler\Template\BuildHandler.cs" />
@@ -194,6 +199,7 @@
     <Compile Include="CommandHandler\Debug\DebugHandler.cs" />
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\VMControl\DestroyHandler.cs" />
+    <Compile Include="CommandHandler\VMControl\RestartHandler.cs" />
     <Compile Include="CommandHandler\VMControl\StopHandler.cs" />
     <Compile Include="CommandHandler\Template\ListTemplateHandler.cs" />
     <Compile Include="CommandHandler\Template\RemoveTemplateHandler.cs" />

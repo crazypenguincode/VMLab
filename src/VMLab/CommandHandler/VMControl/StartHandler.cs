@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -12,13 +12,15 @@ namespace VMLab.CommandHandler
         private readonly IGraphManager _graphManager;
         private readonly IVMBuilder _builder;
         private readonly IConsole _console;
+        private readonly ISwitchParser _switchParser;
 
-        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage) : base(usage)
+        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage, ISwitchParser switchParser) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _builder = builder;
             _console = console;
+            _switchParser = switchParser;
         }
 
         public override string Group => "root";
@@ -28,7 +30,14 @@ namespace VMLab.CommandHandler
         {
             _scriptEngine.Execute();
 
-            foreach(var vm in _graphManager.VMs)
+            var switches = _switchParser.Parse(args.Skip(1).ToArray());
+
+            var vms = _graphManager.VMs;
+
+            if (switches.ContainsKey("vm"))
+                vms = vms.Where(v => switches["vm"].Any(s => s == v.Name));
+
+            foreach (var vm in vms)
             {
                 var control = _builder.GetVM(vm);
 

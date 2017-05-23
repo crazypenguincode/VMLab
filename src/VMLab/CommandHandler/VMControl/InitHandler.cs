@@ -33,7 +33,7 @@ namespace VMLab.CommandHandler
             }
 
             var template = @"VM(""myVM"")
-	.TemplateFluentHandler(""__TEMPLATE__"")
+	.Template(""__TEMPLATE__"")
 	.Credential(""Admin"", ""Administrator"", ""P@ssw0rd01"")
 	.Network(""NAT"")
 	.CPU(1,2)
