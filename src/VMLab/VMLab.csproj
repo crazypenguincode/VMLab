@@ -176,7 +176,11 @@
     <Compile Include="CommandHandler\Config\SetConfigHandler.cs" />
     <Compile Include="CommandHandler\Config\ViewConfigHandler.cs" />
     <Compile Include="CommandHandler\Debug\SwitchDebugHandler.cs" />
+    <Compile Include="CommandHandler\Exec\ExecHandler.cs" />
+    <Compile Include="CommandHandler\Exec\PowershellHandler.cs" />
+    <Compile Include="CommandHandler\GUI\GUIHandler.cs" />
     <Compile Include="CommandHandler\HubParamHandler.cs" />
+    <Compile Include="CommandHandler\Hypervisor\HypervisorSetHandler.cs" />
     <Compile Include="CommandHandler\ISwitchParser.cs" />
     <Compile Include="CommandHandler\IUsage.cs" />
     <Compile Include="CommandHandler\SwitchParser.cs" />
@@ -198,6 +202,8 @@
     <Compile Include="CommandHandler\Hypervisor\HypervisorListHandler.cs" />
     <Compile Include="CommandHandler\VMControl\StartHandler.cs" />
     <Compile Include="CommandHandler\VersionHandler.cs" />
+    <Compile Include="Helper\HypervisorFinder.cs" />
+    <Compile Include="Helper\IHypervisorFinder.cs" />
     <Compile Include="Helper\IResource.cs" />
     <Compile Include="Helper\Resource.cs" />
     <Compile Include="HypervisorCapabilityChecker.cs" />
