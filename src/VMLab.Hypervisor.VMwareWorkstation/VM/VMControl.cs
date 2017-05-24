@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using SystemInterface;
 using SystemInterface.IO;
+using VMLab.Contract.GraphModels;
 using VMLab.Contract.Shim;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -27,6 +28,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private readonly IFile _file;
         private readonly IConsole _console;
         private readonly IEnvironment _environment;
+        private TemplateManifest _manifest;
+        private GraphModels.VM _vm;
 
         public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment)
         {
@@ -43,9 +46,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _credentials = new List<Credential>(credentials);
         }
 
-        internal void SetVMXFile(string vmx)
+        internal void SetVMXFile(string vmx, TemplateManifest manifest, GraphModels.VM vm)
         {
             _vmx = vmx;
+            _manifest = manifest;
+            _vm = vm;
         }
 
         public void Exec(string path, string args, bool wait = true)
@@ -55,60 +60,66 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void Exec(string path, string args, Action<IVMControl, IExecResult> execResult = null, bool wait = true)
         {
-            var vm = _vix.ConnectToVM(_vmx);
-
-            if (!wait)
+            var retry = true;
+            while (retry)
             {
-                if (execResult != null)
+                retry = false;
+                var vm = _vix.ConnectToVM(_vmx);
+
+                if (!wait)
                 {
-                    throw new ApplicationException("Can't use execResult with wait set to null");
-                }
-
-                _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-                _vix.ExecuteCommand(vm, path, args, false, false);
-                _vix.LogoutOfGuest(vm);
-            }
-            else
-            {
-                var shim = _shimFactory();
-
-                shim.ExecutionAction = (p, a) => _vix.ExecuteCommand(vm, p, a, false, false);
-                shim.FileExist = p => _vix.FileExists(vm, p);
-                shim.GetFileAction = file =>
-                {
-
-                    var localfile = $"{_config.GetSetting("TempDir")}\\{Path.GetFileName(file)}";
-                    
-                    _vix.CopyFileToHost(vm, file, localfile);
-
-                    return _file.ReadAllLines(localfile);
-                };
-                shim.PutFileAction = (local, guest) => _vix.CopyFileToGuest(vm, local, guest);
-                shim.RemoveFile = p => _vix.DeleteFileInGuest(vm, p);
-
-                _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-
-                var returnCode = shim.Execute(path, args);
-                var retObj = new ExecResult {ReturnCode = returnCode};
-
-                if (execResult != null)
-                {
-
-                    execResult(this, retObj);
-
-                    if (!string.IsNullOrEmpty(retObj.FailMessage))
+                    if (execResult != null)
                     {
-                        _console.Error(retObj.FailMessage);
-                        throw new ApplicationException("Failed to execute action! See log for details.");
+                        throw new ApplicationException("Can't use execResult with wait set to null");
                     }
 
-                    _console.Information(retObj.SuccessMessage);
+                    _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
+                    _vix.ExecuteCommand(vm, path, args, false, false);
+                    _vix.LogoutOfGuest(vm);
+                }
+                else
+                {
+                    var shim = _shimFactory();
+
+                    shim.ExecutionAction = (p, a) => _vix.ExecuteCommand(vm, p, a, false, false);
+                    shim.FileExist = p => _vix.FileExists(vm, p);
+                    shim.GetFileAction = file =>
+                    {
+
+                        var localfile = $"{_config.GetSetting("TempDir")}\\{Path.GetFileName(file)}";
+
+                        _vix.CopyFileToHost(vm, file, localfile);
+
+                        return _file.ReadAllLines(localfile);
+                    };
+                    shim.PutFileAction = (local, guest) => _vix.CopyFileToGuest(vm, local, guest);
+                    shim.RemoveFile = p => _vix.DeleteFileInGuest(vm, p);
+
+                    _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
+
+                    var returnCode = shim.Execute(path, args);
+                    var retObj = new ExecResult {ReturnCode = returnCode};
+
+                    if (execResult != null)
+                    {
+
+                        execResult(this, retObj);
+                        retry = retObj.Retry;
+
+                        if (!string.IsNullOrEmpty(retObj.FailMessage))
+                        {
+                            _console.Error(retObj.FailMessage);
+                            throw new ApplicationException("Failed to execute action! See log for details.");
+                        }
+
+                        _console.Information(retObj.SuccessMessage);
+                    }
+
+                    _vix.LogoutOfGuest(vm);
                 }
 
-                _vix.LogoutOfGuest(vm);
+                _vix.CloseObject(vm);
             }
-
-            _vix.CloseObject(vm);
         }
 
         public void Powershell(string path, bool wait = true)
@@ -315,6 +326,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             get
             {
                 var vm = _vix.ConnectToVM(_vmx);
+                try { _vix.WaitForTools(vm, 1);} catch { /* skip errors as it will be because the vm is off. */}
                 var state = _vix.GetState(vm);
                 _vix.CloseObject(vm);
 
@@ -333,6 +345,33 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                 }
             }
         }
+
+        public void AddSharedFolder(string name, string hostPath, string guestPath)
+        {
+            hostPath = Path.GetFullPath(hostPath);
+            WaitReady();
+            var vm = _vix.ConnectToVM(_vmx);
+            _vix.EnableSharedFolders(vm);
+            _vix.AddSharedFolder(vm, hostPath, name, true);
+
+            Exec("c:\\windows\\system32\\cmd.exe", $"/c mklink /D \"{guestPath}\" \"\\\\vmware-host\\Shared Folders\\{name}\"", true);
+        }
+
+        public void RemoveSharedFolder(string name, string hostPath, string guestPath)
+        {
+            WaitReady();
+            var vm = _vix.ConnectToVM(_vmx);
+            _vix.RemoveSharedFolder(vm, name);
+
+            Exec("c:\\windows\\system32\\cmd.exe", $"/c rd \"{guestPath}\"", true);
+        }
+
+        public GuestOS OS => _manifest.OS;
+        public Arch Arch => _manifest.Arch;
+        public string Name => _vm?.Name;
+        public int Memory => _vm?.Memeory ?? -1;
+        public int Cpu => _vm?.CPUs ?? -1;
+        public int CpuCore => _vm?.CPUCores ?? -1;
 
         public void ShowUI()
         {

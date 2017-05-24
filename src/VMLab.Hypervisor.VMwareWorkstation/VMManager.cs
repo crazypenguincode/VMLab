@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using SystemInterface;
 using SystemInterface.IO;
 using VMLab.Contract;
+using VMLab.Hypervisor.VMwareWorkstation.VMX;
 using VMLab.Script.FluentInterface;
+using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.VMwareWorkstation
 {
@@ -12,13 +16,19 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IEnvironment _environment;
         private readonly IFile _file;
         private readonly IVMLoader _loader;
+        private readonly IOnStartProvisioner _onStartProvisioner;
+        private readonly Func<IVMXCollection> _vmxFactory;
+        private readonly IConsole _console;
 
-        public VMManager(IDirectory directory, IEnvironment environment, IFile file, IVMLoader loader)
+        public VMManager(IDirectory directory, IEnvironment environment, IFile file, IVMLoader loader, IOnStartProvisioner onStartProvisioner, Func<IVMXCollection> vmxFactory, IConsole console)
         {
             _directory = directory;
             _environment = environment;
             _file = file;
             _loader = loader;
+            _onStartProvisioner = onStartProvisioner;
+            _vmxFactory = vmxFactory;
+            _console = console;
         }
 
         public IVMControl GetVM(GraphModels.VM vm)
@@ -28,7 +38,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             return (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
                 where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
-                select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials)).FirstOrDefault();
+                select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials, vm)).FirstOrDefault();
         }
 
         public void DestroyVM(GraphModels.VM vm, IVMControl control)
@@ -42,7 +52,32 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 control.Stop(true);
             }
 
-            _directory.Delete(vmfolder, true);
+            try
+            {
+                _directory.Delete(vmfolder, true);
+            }
+            catch (IOException)
+            {
+                _console.Information("Can't clean up VM {vm} folder. You will need to remove it manually.", vm.Name);
+            }
+            
+        }
+
+        public void PreStart(GraphModels.VM vm)
+        {
+            var vmxpath = (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
+                where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
+                       select $"{dir}\\{vm.Name}\\{vm.Name}.vmx").First();
+            var vmx = _vmxFactory();
+
+            vmx.ReadFromFile(vmxpath);
+            _onStartProvisioner.PreStart(vmx, vm);
+            vmx.WriteToFile(vmxpath);
+        }
+
+        public void PostStart(IVMControl control, GraphModels.VM vm)
+        {
+            _onStartProvisioner.PostStart(control, vm);
         }
     }
 }

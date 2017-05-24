@@ -15,5 +15,7 @@ namespace VMLab.Script.FluentInterface
         IVM OnProvision(Action<IVMControl> action);
         IVM OnDestroy(Action<IVMControl> action);
         IVM AfterDestroy(Action action);
+        IVM Property(string name, string value);
+        IVM NestedVirtualization();
     }
 }

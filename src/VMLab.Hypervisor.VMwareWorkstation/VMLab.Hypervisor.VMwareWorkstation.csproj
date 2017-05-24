@@ -151,6 +151,8 @@
     <Compile Include="VIX\VixProcess.cs" />
     <Compile Include="VMManager.cs" />
     <Compile Include="VMX\ExecResult.cs" />
+    <Compile Include="VMX\IOnStartProvisioner.cs" />
+    <Compile Include="VMX\OnStartProvisioner.cs" />
     <Compile Include="VM\IVMLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VMX\GuestOSTranslator.cs" />

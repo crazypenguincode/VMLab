@@ -86,6 +86,8 @@
     <Compile Include="ITemplateManager.cs" />
     <Compile Include="IVMManager.cs" />
     <Compile Include="SemVer\SemVer.cs" />
+    <Compile Include="Session\Host.cs" />
+    <Compile Include="Session\IHost.cs" />
     <Compile Include="Session\ISession.cs" />
     <Compile Include="Session\ISessionFactory.cs" />
     <Compile Include="IVMControl.cs" />

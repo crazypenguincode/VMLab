@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VMLab.GraphModels;
 
 namespace VMLab.Script.FluentInterface
 {
@@ -33,5 +34,13 @@ namespace VMLab.Script.FluentInterface
         void ShowUI();
         void SetCredentials(string group);
         VMPower PowerState { get; }
+        void AddSharedFolder(string name, string hostPath, string guestPath);
+        void RemoveSharedFolder(string name, string hostPath, string guestPath);
+        GuestOS OS { get; }
+        Arch Arch { get; }
+        string Name { get; }
+        int Memory { get; }
+        int Cpu { get; }
+        int CpuCore { get; }
     }
 }

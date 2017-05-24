@@ -4,5 +4,6 @@
     {
         void ExportLab(string path);
         void ImportLab(string path);
+        void Clean();
     }
 }

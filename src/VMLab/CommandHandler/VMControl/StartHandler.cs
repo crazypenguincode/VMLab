@@ -4,6 +4,7 @@ using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
+using VMLab.Script.FluentInterface;
 
 namespace VMLab.CommandHandler
 {
@@ -67,7 +68,12 @@ namespace VMLab.CommandHandler
                 }
                 else
                 {
+                    if(control.PowerState != VMPower.Off)
+                        continue;
+
+                    _vmManager.PreStart(vm);
                     control.Start();
+                    _vmManager.PostStart(control, vm);
                 }
             }
         }

@@ -109,5 +109,21 @@ namespace VMLab.Script.FluentInterface
             _vm.AfterDestroy = action;
             return this;
         }
+
+        public IVM Property(string name, string value)
+        {
+            if (_vm.Properties.ContainsKey(name))
+                _vm.Properties[name] = value;
+            else
+                _vm.Properties.Add(name, value);
+
+            return this;
+        }
+
+        public IVM NestedVirtualization()
+        {
+            _vm.NestedVirtualization = true;
+            return this;
+        }
     }
 }

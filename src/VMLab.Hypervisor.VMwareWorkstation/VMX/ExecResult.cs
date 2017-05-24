@@ -17,6 +17,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VMX
             SuccessMessage = message;
         }
 
+        public bool Retry { get; set; }
+
         public int ReturnCode { get; internal set; }
     }
 }

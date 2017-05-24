@@ -1,4 +1,5 @@
 ﻿using System;
+using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script.FluentInterface;
@@ -13,15 +14,19 @@ namespace VMLab.Script
         private readonly Func<IVM> _vmFactory;
         private readonly IGraphManager _graphManager;
         private readonly IConfig _config;
+        private readonly ISessionFactory _sessionFactory;
 
-        public ScriptGlobal(IConsole console, Func<ITemplate> templateFactory, Func<IVM> vmFactory, IGraphManager graphManager, IConfig config)
+        public ScriptGlobal(IConsole console, Func<ITemplate> templateFactory, Func<IVM> vmFactory, IGraphManager graphManager, IConfig config, ISessionFactory sessionFactory)
         {
             _console = console;
             _templateFactory = templateFactory;
             _vmFactory = vmFactory;
             _graphManager = graphManager;
             _config = config;
+            _sessionFactory = sessionFactory;
         }
+
+        public ISession Session => _sessionFactory.Build(_graphManager);
 
         public void Echo(string text)
         {

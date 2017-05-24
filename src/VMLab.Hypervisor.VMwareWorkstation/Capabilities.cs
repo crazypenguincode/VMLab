@@ -7,6 +7,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 {
     public class Capabilities : ICapabilities
     {
+        public string Hypervisor => "Vmwareworkstation";
         public IEnumerable<GuestOS> SupportedGuestOS => (IEnumerable<GuestOS>) Enum.GetValues(typeof(GuestOS));
         public IEnumerable<Arch> SupportedArch => new[] {Arch.X64, Arch.X86};
 

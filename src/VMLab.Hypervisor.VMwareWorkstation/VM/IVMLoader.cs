@@ -6,6 +6,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 {
     public interface IVMLoader
     {
-        IVMControl GetVMFromPath(string vmx, IEnumerable<Credential> creds);
+        IVMControl GetVMFromPath(string vmx, IEnumerable<Credential> creds, GraphModels.VM model = null);
     }
 }

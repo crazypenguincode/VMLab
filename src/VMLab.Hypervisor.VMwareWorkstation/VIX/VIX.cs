@@ -283,8 +283,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VIX
 
         public void WaitForTools(IVM2 vm)
         {
+            WaitForTools(vm, int.MaxValue);
+        }
+
+        public void WaitForTools(IVM2 vm, int timeout)
+        {
             _log.Information("Waiting for VMTools to become ready!");
-            WaitJobNoResults(vm.WaitForToolsInGuest(int.MaxValue, null));
+            WaitJobNoResults(vm.WaitForToolsInGuest(timeout, null));
         }
 
         public string GetSnapshotName(ISnapshot snapshot)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using VMLab.Contract.GraphModels;
+using VMLab.GraphModels;
 
 namespace VMLab.Contract
 {
@@ -7,5 +8,7 @@ namespace VMLab.Contract
     {
         TemplateManifest GetTemplateManifestFromArchive(string path);
         IEnumerable<TemplateManifest> GetInstalledTemplateManifests();
+        TemplateManifest GetManifestFromVM(VM vm);
+        TemplateManifest FromFile(string path);
     }
 }

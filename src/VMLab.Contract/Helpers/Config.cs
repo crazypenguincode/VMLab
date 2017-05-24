@@ -42,7 +42,8 @@ namespace VMLab.Helper
 
             var result = system.ContainsKey(setting) ? system[setting] : null;
 
-            _log.Information("Getting config item {name} with scope {scope}: {value}", setting, scope, result);
+            
+            _log?.Information("Getting config item {name} with scope {scope}: {value}", setting, scope, result);
 
             return result;
         }
@@ -51,7 +52,7 @@ namespace VMLab.Helper
         {
             if (scope == ConfigScope.Merged)
             {
-                _log.Error("Tried to set {name} with {value} at Merged scope! You can only read merged scope not set it.", setting, value);
+                _log?.Error("Tried to set {name} with {value} at Merged scope! You can only read merged scope not set it.", setting, value);
                 throw new ArgumentException("scope");
             }
               
@@ -65,7 +66,7 @@ namespace VMLab.Helper
 
             WriteSettings(settings, scope);
 
-            _log.Information("Setting config item {name} with scope {scope}: {value}", setting, scope, value);
+            _log?.Information("Setting config item {name} with scope {scope}: {value}", setting, scope, value);
 
 
         }
@@ -96,7 +97,7 @@ namespace VMLab.Helper
                     throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
             }
 
-            _log.Information("Loading settings of scope {scope} from {file}", scope, path);
+            _log?.Information("Loading settings of scope {scope} from {file}", scope, path);
             
 
             if (!_directory.Exists(path))
@@ -108,7 +109,7 @@ namespace VMLab.Helper
 
             var result = new Dictionary<string, string>();
 
-            _log.Information("File doesn't exist. Using default setting file!");
+            _log?.Information("File doesn't exist. Using default setting file!");
 
             if (scope != ConfigScope.System) return result;
             
@@ -142,7 +143,7 @@ namespace VMLab.Helper
                     throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
             }
 
-            _log.Information("Saving settings of scope {scope} from {file}", scope, path);
+            _log?.Information("Saving settings of scope {scope} from {file}", scope, path);
 
 
             if (!_directory.Exists(path))

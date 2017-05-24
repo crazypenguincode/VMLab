@@ -19,6 +19,8 @@ namespace VMLab.GraphModels
         public Action<IVMControl> OnProvision { get; set; }
         public Action<IVMControl> OnDestroy { get; set; }
         public System.Action AfterDestroy { get; set; }
+        public IDictionary<string, string> Properties { get; }
+        public bool NestedVirtualization { get; set; }
 
         public VM()
         {
@@ -28,6 +30,7 @@ namespace VMLab.GraphModels
             OnProvision = control => { };
             OnDestroy = control => { };
             AfterDestroy = () => { };
+            Properties = new Dictionary<string, string>();
         }
     }
 }

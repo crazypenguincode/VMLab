@@ -35,6 +35,12 @@ namespace VMLab.CommandHandler.VMControl
 
             _scriptEngine.Execute();
 
+            if (_graphManager.Locks.Contains("destroy"))
+            {
+                _console.Error("Can't destroy lab because a lock is set on destroy!");
+
+            }
+
             var switches = _switchParser.Parse(args.Skip(1).ToArray());
 
             var vms = _graphManager.VMs;

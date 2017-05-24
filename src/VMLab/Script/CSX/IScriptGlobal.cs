@@ -5,6 +5,7 @@ namespace VMLab.Script
 {
     public interface IScriptGlobal
     {
+        ISession Session { get; }
         void Echo(string text);
         void Pause(string text);
         ITemplate Template(string name, string version);

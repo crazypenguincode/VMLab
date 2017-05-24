@@ -41,8 +41,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IVIX _vix;
         private readonly IManifestManager _manifestManager;
         private readonly ILogger _log;
+        private readonly IOnStartProvisioner _onStartProvisioner;
 
-        public TemplateManager(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IFile file, IDirectory directory, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix, IManifestManager manifestManager, ILogger log)
+        public TemplateManager(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IFile file, IDirectory directory, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix, IManifestManager manifestManager, ILogger log, IOnStartProvisioner onStartProvisioner)
         {
             _vmxFactory = vmxFactory;
             _driveBuilder = driveBuilder;
@@ -60,6 +61,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _vix = vix;
             _manifestManager = manifestManager;
             _log = log;
+            _onStartProvisioner = onStartProvisioner;
         }
 
         public bool CanBuild(Template template)
@@ -79,6 +81,19 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         public void Build(Template template, string templateFolder)
         {
             _log.Information("Building template at {folder} template: {@template}", templateFolder, template);
+
+            //Building manfiest
+            var manifest = new TemplateManifest
+            {
+                Name = template.Name,
+                Hypervisor = "Vmwareworkstation",
+                OS = template.GuestOS,
+                Arch = template.Arch,
+                Version = template.Version
+            };
+
+            _file.WriteAllText($"{templateFolder}\\manifest.json", JsonConvert.SerializeObject(manifest));
+
             var vmxpath = $"{templateFolder}\\{template.Name}.vmx";
 
             GenerateVMFiles(template, templateFolder, vmxpath);
@@ -128,18 +143,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             if (_file.Exists($"{templateFolder}\\nvram"))
                 _file.Delete($"{templateFolder}\\nvram");
 
-            //Building manfiest
-            var manifest = new TemplateManifest
-            {
-                Name = template.Name,
-                Hypervisor = "Vmwareworkstation",
-                OS = template.GuestOS,
-                Arch = template.Arch,
-                Version = template.Version
-            };
-
-            _file.WriteAllText($"{templateFolder}\\manifest.json", JsonConvert.SerializeObject(manifest));
-
             _console.Information("Compressing template");
             _compressHelper.CreateFromDirectory(templateFolder, $"{_environment.CurrentDirectory}\\{template.Name}.vmlabtemplate", CompressionLevel.Optimal, false, Encoding.UTF8, f => !f.EndsWith(".lck"));
 
@@ -178,6 +181,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             var templatePath = manifest.Path;
             var id = Guid.NewGuid();
             var vmFolder = $"{_environment.CurrentDirectory}\\_vmlab\\VMs\\{id}\\{vm.Name}";
+            var vmxPath = $"{vmFolder}\\{vm.Name}.vmx";
 
             _directory.CreateDirectory(vmFolder);
 
@@ -190,13 +194,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _file.Copy($"{manifest.Path}\\manifest.json", $"{vmFolder}\\manifest.json");
 
-            ProvisionVM(vm, $"{vmFolder}\\{vm.Name}.vmx");
-
             var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", vm.Credentials);
+            var vmx = _vmxFactory();
+
+            vmx.ReadFromFile(vmxPath);
+            _onStartProvisioner.PreStart(vmx, vm);
+            vmx.WriteToFile(vmxPath);
             vmcontrol.Start();
+            _onStartProvisioner.PostStart(vmcontrol, vm);
             vm.OnProvision(vmcontrol);
 
-            _log.Information("Template built!");
+            _log.Information("VM built!");
         }
 
         public void ImportTemplate(string path)
@@ -360,21 +368,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
                 index++;
             }
-        }
-
-        private void ProvisionVM(GraphModels.VM vm, string vmxpath)
-        {
-            var vmx = _vmxFactory();
-            vmx.ReadFromFile(vmxpath);
-
-            vmx.WriteValue("displayName", vm.Name);
-            vmx.WriteValue("memsize", vm.Memeory.ToString());
-            vmx.WriteValue("numvcpus", (vm.CPUCores * vm.CPUs).ToString());
-            vmx.WriteValue("cpuid.coresPerSocket", vm.CPUCores.ToString());
-
-            ProvisionNetwork(vm.Networks, GuestOS.Windows10, vmx);
-
-            vmx.WriteToFile(vmxpath);
         }
     }
 }

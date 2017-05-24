@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SystemInterface;
 using SystemInterface.IO;
 using Newtonsoft.Json;
 using Serilog;
@@ -18,14 +19,16 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IDirectory _directory;
         private readonly IFile _file;
         private readonly ILogger _log;
+        private readonly IEnvironment _environment;
 
-        public ManifestManager(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file, ILogger log)
+        public ManifestManager(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file, ILogger log, IEnvironment environment)
         {
             _compressHelper = compressHelper;
             _config = config;
             _directory = directory;
             _file = file;
             _log = log;
+            _environment = environment;
         }
 
         public TemplateManifest GetTemplateManifestFromArchive(string path)
@@ -48,6 +51,24 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 .Where(m => m.Hypervisor == "Vmwareworkstation")
                 .ToList()
                 .LogWithObject(o => _log.Information("Manifests: {@manifests}", o));
+        }
+
+        public TemplateManifest FromFile(string path)
+        {
+            if(_file.Exists(path))
+                return JsonConvert.DeserializeObject<TemplateManifest>(_file.ReadAllText(path))
+                    .LogWithObject(o => _log.Information("Manifests: {@manifests}", o));
+
+            return null;
+        }
+
+        public TemplateManifest GetManifestFromVM(GraphModels.VM vm)
+        {
+            var vmfolder = (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
+                where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
+                select $"{dir}\\{vm.Name}").FirstOrDefault();
+
+            return vmfolder == null ? null : FromFile($"{vmfolder}\\manifest.json");
         }
     }
 }

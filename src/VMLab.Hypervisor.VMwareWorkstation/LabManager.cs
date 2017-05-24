@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using SystemInterface;
 using SystemInterface.IO;
@@ -9,6 +10,7 @@ using VMLab.Contract;
 using VMLab.Contract.Helpers;
 using VMLab.Hypervisor.VMwareWorkstation.VIX;
 using VMLab.Hypervisor.VMwareWorkstation.VMX;
+using VMLab.Script.FluentInterface;
 using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.VMwareWorkstation
@@ -22,8 +24,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly Func<IVMXCollection> _vmxFactory;
         private readonly ICompressHelper _compressHelper;
         private readonly IConsole _console;
+        private readonly IVMLoader _loader;
 
-        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper, IConsole console)
+        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper, IConsole console, IVMLoader loader)
         {
             _directory = directory;
             _environment = environment;
@@ -32,6 +35,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _vmxFactory = vmxFactory;
             _compressHelper = compressHelper;
             _console = console;
+            _loader = loader;
         }
 
         public void ExportLab(string path)
@@ -71,6 +75,21 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         {
             _console.Information("Importing lab from {path}", path);
             _compressHelper.ExtractToFolder(path, _environment.CurrentDirectory);
+        }
+
+        public void Clean()
+        {
+            if (_directory.GetFiles($"{_environment.CurrentDirectory}\\_vmlab", "*.vmx",
+                    SearchOption.AllDirectories)
+                .Select(v => _loader.GetVMFromPath(v, null))
+                .All(v => v.PowerState == VMPower.Off))
+            {
+                _directory.Delete($"{_environment.CurrentDirectory}\\_vmlab", true);
+            }
+            else
+            {
+                _console.Error("Can't clean lab because there are running Virtual Machines!");
+            }
         }
     }
 }

@@ -11,6 +11,18 @@ namespace VMLab.IOC
 
         public Bootstrap()
         {
+            var iocDebug = "IOC Container has been resolved yet.";
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabcrash.txt"), args.ExceptionObject.ToString());
+                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabiocdump.txt"), iocDebug);
+
+                Console.WriteLine(args.ExceptionObject.ToString());
+                Console.WriteLine("VMLab has encounted an unexpected error and needs to exit!");
+                Environment.Exit(5000);
+            };
+
             var builder = new ContainerBuilder();
             builder.RegisterModule<PluginModule>();
             builder.RegisterModule<ConventionModule>();
@@ -31,17 +43,8 @@ namespace VMLab.IOC
                 sb.AppendLine(r.ToString());
             }
 
-            var iocDebug = sb.ToString();
-
-            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
-            {
-                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabcrash.txt"), args.ExceptionObject.ToString());
-                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabiocdump.txt"), iocDebug);
-
-                Console.WriteLine("VMLab has encounted an unexpected error and needs to exit!");
-                Environment.ExitCode = 5000;
-            };
-
+            iocDebug = sb.ToString();
+            
         }
 
         public T Start<T>() => _container.Resolve<T>();

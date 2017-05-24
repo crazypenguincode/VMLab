@@ -182,6 +182,7 @@
     <Compile Include="CommandHandler\Hypervisor\HypervisorSetHandler.cs" />
     <Compile Include="CommandHandler\ISwitchParser.cs" />
     <Compile Include="CommandHandler\IUsage.cs" />
+    <Compile Include="CommandHandler\Lab\CleanHandler.cs" />
     <Compile Include="CommandHandler\Lab\LabExportHandler.cs" />
     <Compile Include="CommandHandler\Lab\LabHandler.cs" />
     <Compile Include="CommandHandler\Lab\LabImportHandler.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\VMControl\DestroyHandler.cs" />
     <Compile Include="CommandHandler\VMControl\RestartHandler.cs" />
+    <Compile Include="CommandHandler\VMControl\StatusHandler.cs" />
     <Compile Include="CommandHandler\VMControl\StopHandler.cs" />
     <Compile Include="CommandHandler\Template\ListTemplateHandler.cs" />
     <Compile Include="CommandHandler\Template\RemoveTemplateHandler.cs" />

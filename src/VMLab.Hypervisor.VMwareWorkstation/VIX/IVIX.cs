@@ -50,6 +50,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VIX
         void Restart(IVM2 vm, bool force);
         void RevertToSnapshot(IVM2 vm, ISnapshot snapshot, bool supressPoweron);
         void WaitForTools(IVM2 vm);
+        void WaitForTools(IVM2 vm, int timeout);
         string GetSnapshotName(ISnapshot snapshot);
         string ReadVariable(IVM2 vm, string name, VixVariable environment);
         void WriteVariable(IVM2 vm, string name, string value, VixVariable environment);
