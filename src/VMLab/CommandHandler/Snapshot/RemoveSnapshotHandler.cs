@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -13,15 +12,15 @@ namespace VMLab.CommandHandler.Snapshot
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
-        private readonly IVMBuilder _builder;
+        private readonly IVMManager _vmManager;
 
-        public RemoveSnapshotHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMBuilder builder) : base(usage)
+        public RemoveSnapshotHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _switchParser = switchParser;
-            _builder = builder;
+            _vmManager = vmManager;
         }
 
         public override string Group => "snapshot";
@@ -51,7 +50,7 @@ namespace VMLab.CommandHandler.Snapshot
                 return;
             }
 
-            foreach (var vm in vms.Select(v => _builder.GetVM(_graphManager.VMs.First(g => g.Name == v))))
+            foreach (var vm in vms.Select(v => _vmManager.GetVM(_graphManager.VMs.First(g => g.Name == v))))
             {
                 if (vm.GetSnapshots().Contains(args[1]))
                     vm.RemoveSnapshot(args[1]);

@@ -202,6 +202,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         {
             var vm = _vix.ConnectToVM(_vmx);
 
+            if (PowerState == VMPower.Off)
+                return;
+
             if (!force)
                 WaitReady();
 
@@ -212,6 +215,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void Stop(bool force = false)
         {
             var vm = _vix.ConnectToVM(_vmx);
+
+            if (PowerState == VMPower.Off)
+                return;
 
             if(!force)
                 WaitReady();

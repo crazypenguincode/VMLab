@@ -13,16 +13,18 @@ namespace VMLab.CommandHandler.Lab
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
-        private readonly IVMBuilder _builder;
         private readonly IFile _file;
+        private readonly IVMManager _vmManager;
+        private readonly ILabManager _labManager;
 
-        public LabExportHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IVMBuilder builder, IFile file) : base(usage)
+        public LabExportHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IFile file, IVMManager vmManager, ILabManager labManager) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _console = console;
-            _builder = builder;
             _file = file;
+            _vmManager = vmManager;
+            _labManager = labManager;
         }
 
         public override string Group => "lab";
@@ -44,14 +46,14 @@ namespace VMLab.CommandHandler.Lab
             _scriptEngine.Execute();
 
             if (_graphManager.VMs
-                    .Select(v => _builder.GetVM(v))
+                    .Select(v => _vmManager.GetVM(v))
                     .Where(v => v != null).Any(v => v.PowerState != VMPower.Off))
             {
                 _console.Error("You need to stop all of the virtual machines before you can export the lab!");
                 return;
             }
 
-            _builder.ExportLab(args[1]);
+            _labManager.ExportLab(args[1]);
 
 
         }

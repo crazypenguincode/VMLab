@@ -4,11 +4,11 @@ namespace VMLab.CommandHandler.Import
 {
     public class ImportTemplateHandler : BaseParamHandler
     {
-        private readonly IVMBuilder _builder;
+        private readonly ITemplateManager _templateManager;
 
-        public ImportTemplateHandler(IVMBuilder builder, IUsage usage) : base(usage)
+        public ImportTemplateHandler(IUsage usage, ITemplateManager templateManager) : base(usage)
         {
-            _builder = builder;
+            _templateManager = templateManager;
         }
 
         public override string Group => "template";
@@ -16,7 +16,7 @@ namespace VMLab.CommandHandler.Import
 
         public override void OnHandle(string[] args)
         {
-            _builder.ImportTemplate(args[1]);
+            _templateManager.ImportTemplate(args[1]);
         }
 
         public override string UsageDescription => "Imports a template into the VMLab template store!";

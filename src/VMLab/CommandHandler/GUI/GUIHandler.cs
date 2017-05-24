@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
-using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler.GUI
 {
     public class GUIHandler : BaseParamHandler
     {
-        private readonly IConsole _console;
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
         private readonly ISwitchParser _switchParser;
+        private readonly IVMManager _vmManager;
 
-        public GUIHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, ISwitchParser switchParser) : base(usage)
+        public GUIHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
         {
-            _console = console;
+       
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
             _switchParser = switchParser;
+            _vmManager = vmManager;
         }
 
         public override string Group => "root";
@@ -42,7 +36,7 @@ namespace VMLab.CommandHandler.GUI
                 vms = _graphManager.VMs.Where(v => switches["vm"].Contains(v.Name));
             }
 
-            foreach (var control in vms.Select(v => _builder.GetVM(v)).Where(v => v != null))
+            foreach (var control in vms.Select(v => _vmManager.GetVM(v)).Where(v => v != null))
             {
                 control.ShowUI();
             }

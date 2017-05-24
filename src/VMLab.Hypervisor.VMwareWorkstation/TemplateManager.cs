@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
@@ -19,12 +18,11 @@ using VMLab.Hypervisor.VMwareWorkstation.DiskHelpers;
 using VMLab.Hypervisor.VMwareWorkstation.VIX;
 using VMLab.Hypervisor.VMwareWorkstation.VM;
 using VMLab.Hypervisor.VMwareWorkstation.VMX;
-using VMLab.Script.FluentInterface;
 using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.VMwareWorkstation
 {
-    public class VMBuilder : IVMBuilder
+    public class TemplateManager : ITemplateManager
     {
         private readonly Func<IVMXCollection> _vmxFactory;
         private readonly IHardDriveBuilder _driveBuilder;
@@ -40,16 +38,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IThread _thread;
         private readonly IConfig _config;
         private readonly IVIX _vix;
+        private readonly IManifestManager _manifestManager;
 
-        public VMBuilder(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IDirectory directory,  IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFile file, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix)
+        public TemplateManager(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IFile file, IDirectory directory, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix, IManifestManager manifestManager)
         {
             _vmxFactory = vmxFactory;
             _driveBuilder = driveBuilder;
+            _file = file;
             _directory = directory;
             _ipvnHelper = ipvnHelper;
             _osTranslator = osTranslator;
             _environment = environment;
-            _file = file;
             _fileDownloader = fileDownloader;
             _console = console;
             _loader = loader;
@@ -57,13 +56,14 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _thread = thread;
             _config = config;
             _vix = vix;
+            _manifestManager = manifestManager;
         }
 
         public bool CanBuild(Template template)
         {
             if (template.CPUCores < 1)
                 return false;
-            
+
 
             if (template.CPUs < 1)
                 return false;
@@ -82,7 +82,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             var vm = _loader.GetVMFromPath(vmxpath, template.Credentials) as VMControl;
 
-            if(vm == null)
+            if (vm == null)
                 throw new NullReferenceException("Can't load VM controller object!");
 
             vm.SetCredentials(template.Credentials);
@@ -119,10 +119,10 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             if (_directory.Exists($"{templateFolder}\\caches"))
                 _directory.Delete($"{templateFolder}\\caches", true);
 
-            foreach(var log in _directory.GetFiles(templateFolder, "*.log"))
+            foreach (var log in _directory.GetFiles(templateFolder, "*.log"))
                 _file.Delete(log);
 
-            if(_file.Exists($"{templateFolder}\\nvram"))
+            if (_file.Exists($"{templateFolder}\\nvram"))
                 _file.Delete($"{templateFolder}\\nvram");
 
             //Building manfiest
@@ -136,7 +136,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             };
 
             _file.WriteAllText($"{templateFolder}\\manifest.json", JsonConvert.SerializeObject(manifest));
-            
+
             _console.Information("Compressing template");
             _compressHelper.CreateFromDirectory(templateFolder, $"{_environment.CurrentDirectory}\\{template.Name}.vmlabtemplate", CompressionLevel.Optimal, false, Encoding.UTF8, f => !f.EndsWith(".lck"));
 
@@ -144,22 +144,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _console.Information("Clearing up generated files.");
             _directory.Delete(templateFolder, true);
-
-        }
-
-        private void ProvisionVM(GraphModels.VM vm, string vmxpath)
-        {
-            var vmx = _vmxFactory();
-            vmx.ReadFromFile(vmxpath);
-
-            vmx.WriteValue("displayName", vm.Name);
-            vmx.WriteValue("memsize", vm.Memeory.ToString());
-            vmx.WriteValue("numvcpus", (vm.CPUCores * vm.CPUs).ToString());
-            vmx.WriteValue("cpuid.coresPerSocket", vm.CPUCores.ToString());
-
-            ProvisionNetwork(vm.Networks, GuestOS.Windows10, vmx);
-
-            vmx.WriteToFile(vmxpath);
         }
 
         public void BuildVMFromTemplate(GraphModels.VM vm)
@@ -168,7 +152,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             if (vm.Version == "latest")
             {
-                manifest = GetInstalledTemplateManifests()
+                manifest = _manifestManager.GetInstalledTemplateManifests()
                     .Where(m => m.Name.ToLower() == vm.Template.ToLower())
                     .Where(m => Regex.IsMatch(m.Version, "^[0-9]{1,5}\\.[0-9]{1,5}\\.[0-9]{1,5}$")) //Remove prerelease versions.
                     .OrderByDescending(m => new SemVer(m.Version)) //Sort by versions.
@@ -176,7 +160,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             }
             else
             {
-                manifest = GetInstalledTemplateManifests()
+                manifest = _manifestManager.GetInstalledTemplateManifests()
                     .FirstOrDefault(m => m.Name == vm.Template && m.Version == vm.Version);
             }
 
@@ -208,36 +192,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vm.OnProvision(vmcontrol);
         }
 
-        public IVMControl GetVM(GraphModels.VM vm)
-        {
-            if (!_directory.Exists($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\"))
-                return null;
-
-            return (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
-                    where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
-                    select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials)).FirstOrDefault();
-        }
-
-        public TemplateManifest GetTemplateManifestFromArchive(string path)
-        {
-            return JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json"));           
-        }
-
-        public IEnumerable<TemplateManifest> GetInstalledTemplateManifests()
-        {
-            var templatedir = _config.GetSetting("TemplateDir");
-       
-            return _directory.GetFiles(templatedir, "manifest.json", SearchOption.AllDirectories).Select(file =>
-                {
-                    var manifest = JsonConvert.DeserializeObject<TemplateManifest>(_file.ReadAllText(file));
-                    manifest.Path = Path.GetDirectoryName(file);
-
-                    return manifest;
-                })
-                .Where(m => m.Hypervisor == "Vmwareworkstation")
-                .ToList();
-        }
-
         public void ImportTemplate(string path)
         {
             var data = _compressHelper.GetTextFromZip(path, "manifest.json");
@@ -257,62 +211,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         public void RemoveTemplate(string name)
         {
-            var manifest = GetInstalledTemplateManifests().FirstOrDefault(m => m.Name == name);
+            var manifest = _manifestManager.GetInstalledTemplateManifests().FirstOrDefault(m => m.Name == name);
 
-            if (_directory.Exists(manifest.Path))
-                _directory.Delete(manifest.Path, true);
-            
+            if (_directory.Exists(manifest?.Path))
+                _directory.Delete(manifest?.Path, true);
         }
-
-        public void DestroyVM(GraphModels.VM vm, IVMControl control)
-        {
-            var vmfolder = (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
-                where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
-                select dir).First();
-
-            if (control.PowerState != VMPower.Off)
-            {
-                control.Stop(true);
-            }
-
-            _directory.Delete(vmfolder, true);
-
-
-        }
-
-        public void ExportLab(string path)
-        {
-            foreach (var vmx in _directory.GetFiles(_environment.CurrentDirectory, "*.vmx",
-                SearchOption.AllDirectories))
-            {
-                var folder = Path.GetDirectoryName(vmx);
-                var vmxFile = Path.GetFileName(vmx) ?? "";
-                _directory.CreateDirectory($"{folder}_full");
-
-                var vm = _vix.ConnectToVM(vmx);
-                _vix.Clone($"{folder}_full\\{vmxFile}", vm, null, false);
-                _vix.CloseObject(vm);
-
-                _thread.Sleep(1000);
-
-                _directory.Delete(folder, true);
-                _directory.Move($"{folder}_full", folder);
-
-                //Stop vm name from having clone of in the name.
-                var vmxData = _vmxFactory();
-                vmxData.ReadFromFile(vmx);
-                vmxData.WriteValue("displayName", vmxFile.Replace(".vmx", ""));
-                vmxData.WriteToFile(vmx);
-            }
-
-            _compressHelper.CreateFromDirectory(_environment.CurrentDirectory, path, CompressionLevel.Optimal, false, Encoding.UTF8, filter => true);
-        }
-
-        public void ImportLab(string path)
-        {
-            _compressHelper.ExtractToFolder(path, _environment.CurrentDirectory);
-        }
-
         private void CleanUpVMX(Template template, string templateFolder, string vmxpath)
         {
             var vmx = _vmxFactory();
@@ -448,6 +351,21 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
                 index++;
             }
+        }
+
+        private void ProvisionVM(GraphModels.VM vm, string vmxpath)
+        {
+            var vmx = _vmxFactory();
+            vmx.ReadFromFile(vmxpath);
+
+            vmx.WriteValue("displayName", vm.Name);
+            vmx.WriteValue("memsize", vm.Memeory.ToString());
+            vmx.WriteValue("numvcpus", (vm.CPUCores * vm.CPUs).ToString());
+            vmx.WriteValue("cpuid.coresPerSocket", vm.CPUCores.ToString());
+
+            ProvisionNetwork(vm.Networks, GuestOS.Windows10, vmx);
+
+            vmx.WriteToFile(vmxpath);
         }
     }
 }

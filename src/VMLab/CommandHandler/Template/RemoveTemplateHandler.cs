@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SystemInterface.IO;
-using VMLab.Contract;
-using VMLab.Helper;
+﻿using VMLab.Contract;
 
 namespace VMLab.CommandHandler.Template
 {
     public class RemoveTemplateHandler : BaseParamHandler
     {
-        private readonly IVMBuilder _builder;
+        private readonly ITemplateManager _templateManager;
 
-        public RemoveTemplateHandler(IVMBuilder builder, IUsage usage) : base(usage)
+        public RemoveTemplateHandler(IUsage usage, ITemplateManager templateManager) : base(usage)
         {
-            _builder = builder;
+            _templateManager = templateManager;
         }
 
         public override string Group => "template";
@@ -21,7 +16,7 @@ namespace VMLab.CommandHandler.Template
 
         public override void OnHandle(string[] args)
         {
-            _builder.RemoveTemplate(args[1]);
+            _templateManager.RemoveTemplate(args[1]);
         }
 
         public override string UsageDescription => "Removes a template from vmlab.";

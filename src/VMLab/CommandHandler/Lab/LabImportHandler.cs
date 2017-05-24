@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using SystemInterface;
 using SystemInterface.IO;
 using VMLab.Contract;
@@ -16,15 +12,15 @@ namespace VMLab.CommandHandler.Lab
         private readonly IDirectory _directory;
         private readonly IEnvironment _environment;
         private readonly ISwitchParser _switchParser;
-        private readonly IVMBuilder _builder;
+        private readonly ILabManager _labManager;
 
-        public LabImportHandler(IUsage usage, IConsole console, IDirectory directory, IEnvironment environment, ISwitchParser switchParser, IVMBuilder builder) : base(usage)
+        public LabImportHandler(IUsage usage, IConsole console, IDirectory directory, IEnvironment environment, ISwitchParser switchParser, ILabManager labManager) : base(usage)
         {
             _console = console;
             _directory = directory;
             _environment = environment;
             _switchParser = switchParser;
-            _builder = builder;
+            _labManager = labManager;
         }
 
         public override string Group => "lab";
@@ -51,7 +47,7 @@ namespace VMLab.CommandHandler.Lab
                 }
             }
 
-            _builder.ImportLab(args[1]);
+            _labManager.ImportLab(args[1]);
 
         }
 

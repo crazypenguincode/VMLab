@@ -80,11 +80,14 @@
     <Compile Include="GraphModels\Template.cs" />
     <Compile Include="GraphModels\VM.cs" />
     <Compile Include="IExecResult.cs" />
+    <Compile Include="ILabManager.cs" />
+    <Compile Include="IManifestManager.cs" />
+    <Compile Include="ITemplateManager.cs" />
+    <Compile Include="IVMManager.cs" />
     <Compile Include="SemVer\SemVer.cs" />
     <Compile Include="Session\ISession.cs" />
     <Compile Include="Session\ISessionFactory.cs" />
     <Compile Include="ITemplate.cs" />
-    <Compile Include="IVMBuilder.cs" />
     <Compile Include="IVMControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session\Session.cs" />

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using VMLab.GraphModels;
 using VMLab.Script.FluentInterface;
 
@@ -10,15 +6,15 @@ namespace VMLab.Contract.Session
 {
     public class SessionFactory : ISessionFactory
     {
-        private readonly IVMBuilder _vmBuilder;
+        private readonly IVMManager _vmManager;
 
-        public SessionFactory(IVMBuilder vmBuilder)
+        public SessionFactory(IVMManager vmManager)
         {
-            _vmBuilder = vmBuilder;
+            _vmManager = vmManager;
         }
 
         public ISession Build(IGraphManager graph) => 
-             new Session(graph.VMs.Select(v => _vmBuilder.GetVM(v)).Where(v => v != null), graph.LabName,
+             new Session(graph.VMs.Select(v => _vmManager.GetVM(v)).Where(v => v != null), graph.LabName,
                 graph.LabAuthor, graph.LabDescription);
 
     }

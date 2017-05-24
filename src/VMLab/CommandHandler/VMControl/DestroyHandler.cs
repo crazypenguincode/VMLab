@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -14,17 +10,17 @@ namespace VMLab.CommandHandler.VMControl
     {
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
         private readonly ISwitchParser _switchParser;
         private readonly IConsole _console;
+        private readonly IVMManager _vmManager;
 
-        public DestroyHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IUsage usage, ISwitchParser switchParser, IConsole console) : base(usage)
+        public DestroyHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IUsage usage, ISwitchParser switchParser, IConsole console, IVMManager vmManager) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
             _switchParser = switchParser;
             _console = console;
+            _vmManager = vmManager;
         }
 
         public override string Group => "root";
@@ -51,11 +47,11 @@ namespace VMLab.CommandHandler.VMControl
 
             foreach (var vm in vms)
             {
-                var control = _builder.GetVM(vm);
+                var control = _vmManager.GetVM(vm);
 
                 if (control != null)
                 {
-                    _builder.DestroyVM(vm, control);
+                    _vmManager.DestroyVM(vm, control);
                 }
             }
         }

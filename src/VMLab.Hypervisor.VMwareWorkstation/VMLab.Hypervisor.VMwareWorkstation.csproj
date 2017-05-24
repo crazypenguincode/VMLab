@@ -142,13 +142,16 @@
     <Compile Include="Capabilities.cs" />
     <Compile Include="DiskHelpers\HardDriveBuilder.cs" />
     <Compile Include="DiskHelpers\IHardDriveBuilder.cs" />
+    <Compile Include="LabManager.cs" />
+    <Compile Include="ManifestManager.cs" />
+    <Compile Include="TemplateManager.cs" />
     <Compile Include="VIX\IVIX.cs" />
     <Compile Include="VIX\VIX.cs" />
     <Compile Include="VIX\VixException.cs" />
     <Compile Include="VIX\VixProcess.cs" />
+    <Compile Include="VMManager.cs" />
     <Compile Include="VMX\ExecResult.cs" />
     <Compile Include="VM\IVMLoader.cs" />
-    <Compile Include="VMBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VMX\GuestOSTranslator.cs" />
     <Compile Include="VMX\IGuestOSTranslator.cs" />

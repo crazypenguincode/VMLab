@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SystemInterface;
 using VMLab.Contract;
 using VMLab.GraphModels;
@@ -16,19 +14,19 @@ namespace VMLab.CommandHandler
 
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
         private readonly IConsole _console;
         private readonly IHypervisorCapabilityChecker _capabilityChecker;
         private readonly IEnvironment _environment;
+        private readonly ITemplateManager _templateManager;
 
-        public BuildHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment, IUsage usage) : base(usage)
+        public BuildHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment, IUsage usage, ITemplateManager templateManager) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
             _console = console;
             _capabilityChecker = capabilityChecker;
             _environment = environment;
+            _templateManager = templateManager;
         }
 
         public override void OnHandle(string[] args)
@@ -45,14 +43,14 @@ namespace VMLab.CommandHandler
                     return;
                 }
 
-                if (_builder.CanBuild(template)) continue;
+                if (_templateManager.CanBuild(template)) continue;
 
                 _console.Error("Unable to build template! Check log for details...");
                 return;
             }
 
             foreach (var t in _graphManager.Templates)
-                _builder.Build(t, $"{_environment.CurrentDirectory}\\_vmlab\\template\\{Guid.NewGuid()}\\{t.Name}");
+                _templateManager.Build(t, $"{_environment.CurrentDirectory}\\_vmlab\\template\\{Guid.NewGuid()}\\{t.Name}");
         }
 
         public override string UsageDescription => "Builds a template from vmlab.csx definition in current directory.";

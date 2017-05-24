@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using SystemInterface.IO;
-using VMLab.Contract;
+﻿using VMLab.Contract;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Template
@@ -9,12 +6,12 @@ namespace VMLab.CommandHandler.Template
     public class ListTemplateHandler : BaseParamHandler
     {
         private readonly IConsole _console;
-        private readonly IVMBuilder _builder;
+        private readonly IManifestManager _manifestManager;
 
-        public ListTemplateHandler(IConsole console, IUsage usage, IVMBuilder builder)  : base(usage)
+        public ListTemplateHandler(IConsole console, IUsage usage, IManifestManager manifestManager)  : base(usage)
         {
             _console = console;
-            _builder = builder;
+            _manifestManager = manifestManager;
         }
 
         public override string Group => "template";
@@ -23,7 +20,7 @@ namespace VMLab.CommandHandler.Template
         public override void OnHandle(string[] args)
         {
             _console.Information("Templates:");
-            foreach (var template in _builder.GetInstalledTemplateManifests())
+            foreach (var template in _manifestManager.GetInstalledTemplateManifests())
             {
                 _console.Information("{name} - {version}", template.Name, template.Version);
             }

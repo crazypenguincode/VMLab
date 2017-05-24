@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using VMLab.Contract;
 using VMLab.GraphModels;
-using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler
@@ -10,17 +9,15 @@ namespace VMLab.CommandHandler
     {
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
-        private readonly IConsole _console;
         private readonly ISwitchParser _switchParser;
+        private readonly IVMManager _vmManager;
 
-        public StopHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage, ISwitchParser switchParser) : base(usage)
+        public StopHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IUsage usage, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
-            _console = console;
             _switchParser = switchParser;
+            _vmManager = vmManager;
         }
 
         public override string Group => "root";
@@ -39,7 +36,7 @@ namespace VMLab.CommandHandler
 
             foreach (var vm in vms)
             {
-                var control = _builder.GetVM(vm);
+                var control = _vmManager.GetVM(vm);
                 control?.Stop(switches.ContainsKey("force") || switches.ContainsKey("f"));
             }
         }

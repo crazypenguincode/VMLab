@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using SystemInterface.IO;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
@@ -28,10 +28,10 @@ namespace VMLab.Script
 
             var scriptText = _file.ReadAllText("vmlab.csx");
 
-            var script = CSharpScript.Create(scriptText, globalsType: typeof(ScriptGlobal))
+            var script = CSharpScript.Create(scriptText, globalsType: typeof(IScriptGlobal))
                 .WithOptions(ScriptOptions.Default
-                    .AddReferences(Assembly.GetExecutingAssembly())
-                    .AddImports("VMLab.Script"));
+                    .WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(a => a.FullName.Contains("VMLab")))
+                    .WithImports("VMLab.Script"));
 
             try
             {

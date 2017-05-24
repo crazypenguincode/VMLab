@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -15,14 +12,14 @@ namespace VMLab.CommandHandler.Exec
         private readonly IConsole _console;
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
+        private readonly IVMManager _vmManager;
 
-        public PowershellHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder) : base(usage)
+        public PowershellHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMManager vmManager) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
+            _vmManager = vmManager;
         }
 
         public override string Group => "root";
@@ -46,7 +43,7 @@ namespace VMLab.CommandHandler.Exec
                 return;
             }
 
-            var control = _builder.GetVM(vm);
+            var control = _vmManager.GetVM(vm);
 
             if (control == null)
             {

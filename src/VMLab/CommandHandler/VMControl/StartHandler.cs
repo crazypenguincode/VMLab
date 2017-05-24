@@ -10,17 +10,21 @@ namespace VMLab.CommandHandler
     {
         private readonly IScriptEngine _scriptEngine;
         private readonly IGraphManager _graphManager;
-        private readonly IVMBuilder _builder;
         private readonly IConsole _console;
         private readonly ISwitchParser _switchParser;
+        private readonly IVMManager _vmManager;
+        private readonly ITemplateManager _templateManager;
+        private readonly IManifestManager _manifestManager;
 
-        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IVMBuilder builder, IConsole console, IUsage usage, ISwitchParser switchParser) : base(usage)
+        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IUsage usage, ISwitchParser switchParser, IVMManager vmManager, ITemplateManager templateManager, IManifestManager manifestManager) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
-            _builder = builder;
             _console = console;
             _switchParser = switchParser;
+            _vmManager = vmManager;
+            _templateManager = templateManager;
+            _manifestManager = manifestManager;
         }
 
         public override string Group => "root";
@@ -39,11 +43,11 @@ namespace VMLab.CommandHandler
 
             foreach (var vm in vms)
             {
-                var control = _builder.GetVM(vm);
+                var control = _vmManager.GetVM(vm);
 
                 if (control == null)
                 {
-                    var templates = _builder.GetInstalledTemplateManifests().Where(t => t.Name == vm.Template);
+                    var templates = _manifestManager.GetInstalledTemplateManifests().Where(t => t.Name == vm.Template);
 
                     if (vm.Version != "latest")
                         templates = templates.Where(t => t.Version == vm.Version);
@@ -54,7 +58,7 @@ namespace VMLab.CommandHandler
                         return;
                     }
 
-                    _builder.BuildVMFromTemplate(vm);
+                    _templateManager.BuildVMFromTemplate(vm);
                 }
                 else
                 {
