@@ -67,6 +67,7 @@
     <Compile Include="Helpers\IConfig.cs" />
     <Compile Include="Helpers\IConsole.cs" />
     <Compile Include="Helpers\IFileDownloader.cs" />
+    <Compile Include="Helpers\LogExtensions.cs" />
     <Compile Include="ICapabilities.cs" />
     <Compile Include="GraphModels\Action.cs" />
     <Compile Include="GraphModels\Credential.cs" />

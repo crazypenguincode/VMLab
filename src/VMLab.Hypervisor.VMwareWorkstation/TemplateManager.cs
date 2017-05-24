@@ -8,6 +8,7 @@ using SystemInterface;
 using SystemInterface.IO;
 using SystemInterface.Threading;
 using Newtonsoft.Json;
+using Serilog;
 using VMLab.Contract;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.Helpers;
@@ -39,8 +40,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IConfig _config;
         private readonly IVIX _vix;
         private readonly IManifestManager _manifestManager;
+        private readonly ILogger _log;
 
-        public TemplateManager(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IFile file, IDirectory directory, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix, IManifestManager manifestManager)
+        public TemplateManager(Func<IVMXCollection> vmxFactory, IHardDriveBuilder driveBuilder, IFile file, IDirectory directory, IPVNHelper ipvnHelper, IGuestOSTranslator osTranslator, IEnvironment environment, IFileDownloader fileDownloader, IConsole console, IVMLoader loader, ICompressHelper compressHelper, IThread thread, IConfig config, IVIX vix, IManifestManager manifestManager, ILogger log)
         {
             _vmxFactory = vmxFactory;
             _driveBuilder = driveBuilder;
@@ -57,13 +59,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _config = config;
             _vix = vix;
             _manifestManager = manifestManager;
+            _log = log;
         }
 
         public bool CanBuild(Template template)
         {
             if (template.CPUCores < 1)
                 return false;
-
 
             if (template.CPUs < 1)
                 return false;
@@ -76,6 +78,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         public void Build(Template template, string templateFolder)
         {
+            _log.Information("Building template at {folder} template: {@template}", templateFolder, template);
             var vmxpath = $"{templateFolder}\\{template.Name}.vmx";
 
             GenerateVMFiles(template, templateFolder, vmxpath);
@@ -113,7 +116,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _console.Information("Cleaning up VMX for template...");
 
-            CleanUpVMX(template, templateFolder, vmxpath);
+            CleanUpVMX(vmxpath);
 
             _console.Information("Removing cache and log files...");
             if (_directory.Exists($"{templateFolder}\\caches"))
@@ -144,10 +147,12 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _console.Information("Clearing up generated files.");
             _directory.Delete(templateFolder, true);
+            _log.Information("Template built");
         }
 
         public void BuildVMFromTemplate(GraphModels.VM vm)
         {
+            _log.Information("Building VM from template {@vm}", vm);
             var manifest = default(TemplateManifest);
 
             if (vm.Version == "latest")
@@ -190,10 +195,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", vm.Credentials);
             vmcontrol.Start();
             vm.OnProvision(vmcontrol);
+
+            _log.Information("Template built!");
         }
 
         public void ImportTemplate(string path)
         {
+            _log.Information("Importing template {name}", path);
             var data = _compressHelper.GetTextFromZip(path, "manifest.json");
             var manifest = JsonConvert.DeserializeObject<TemplateManifest>(data);
             var templateDir = $"{_config.GetSetting("TemplateDir")}\\Vmwareworkstation\\{manifest.Name}_{manifest.Version}";
@@ -211,12 +219,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
         public void RemoveTemplate(string name)
         {
+            _log.Information("Removing template {name}", name);
             var manifest = _manifestManager.GetInstalledTemplateManifests().FirstOrDefault(m => m.Name == name);
 
             if (_directory.Exists(manifest?.Path))
                 _directory.Delete(manifest?.Path, true);
         }
-        private void CleanUpVMX(Template template, string templateFolder, string vmxpath)
+        private void CleanUpVMX(string vmxpath)
         {
             var vmx = _vmxFactory();
 

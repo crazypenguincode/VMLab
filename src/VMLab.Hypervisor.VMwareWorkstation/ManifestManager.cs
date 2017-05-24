@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using SystemInterface.IO;
 using Newtonsoft.Json;
+using Serilog;
 using VMLab.Contract;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.Helpers;
@@ -16,18 +17,21 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IConfig _config;
         private readonly IDirectory _directory;
         private readonly IFile _file;
+        private readonly ILogger _log;
 
-        public ManifestManager(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file)
+        public ManifestManager(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file, ILogger log)
         {
             _compressHelper = compressHelper;
             _config = config;
             _directory = directory;
             _file = file;
+            _log = log;
         }
 
         public TemplateManifest GetTemplateManifestFromArchive(string path)
         {
-            return JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json"));
+            return JsonConvert.DeserializeObject<TemplateManifest>(_compressHelper.GetTextFromZip(path, "manifest.json")
+                .LogWithObject(o => _log.Information("Getting manifest from archive {path}. {@manifest}", path, o)));
         }
 
         public IEnumerable<TemplateManifest> GetInstalledTemplateManifests()
@@ -42,7 +46,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                     return manifest;
                 })
                 .Where(m => m.Hypervisor == "Vmwareworkstation")
-                .ToList();
+                .ToList()
+                .LogWithObject(o => _log.Information("Manifests: {@manifests}", o));
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SystemInterface;
 using SystemInterface.IO;
 using SystemInterface.Threading;
@@ -12,6 +9,7 @@ using VMLab.Contract;
 using VMLab.Contract.Helpers;
 using VMLab.Hypervisor.VMwareWorkstation.VIX;
 using VMLab.Hypervisor.VMwareWorkstation.VMX;
+using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.VMwareWorkstation
 {
@@ -23,8 +21,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly IThread _thread;
         private readonly Func<IVMXCollection> _vmxFactory;
         private readonly ICompressHelper _compressHelper;
+        private readonly IConsole _console;
 
-        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper)
+        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper, IConsole console)
         {
             _directory = directory;
             _environment = environment;
@@ -32,13 +31,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _thread = thread;
             _vmxFactory = vmxFactory;
             _compressHelper = compressHelper;
+            _console = console;
         }
 
         public void ExportLab(string path)
         {
+            _console.Information("Exporting lab to {path}", path);
+
             foreach (var vmx in _directory.GetFiles(_environment.CurrentDirectory, "*.vmx",
                 SearchOption.AllDirectories))
             {
+                _console.Information("Full cloning vm {vmx}", vmx);
                 var folder = Path.GetDirectoryName(vmx);
                 var vmxFile = Path.GetFileName(vmx) ?? "";
                 _directory.CreateDirectory($"{folder}_full");
@@ -59,11 +62,14 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 vmxData.WriteToFile(vmx);
             }
 
+            _console.Information("Compressing directory...");
             _compressHelper.CreateFromDirectory(_environment.CurrentDirectory, path, CompressionLevel.Optimal, false, Encoding.UTF8, filter => true);
+            _console.Information("Compression completed.");
         }
 
         public void ImportLab(string path)
         {
+            _console.Information("Importing lab from {path}", path);
             _compressHelper.ExtractToFolder(path, _environment.CurrentDirectory);
         }
     }
