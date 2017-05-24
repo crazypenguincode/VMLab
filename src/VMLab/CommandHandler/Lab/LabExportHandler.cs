@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using SystemInterface.IO;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -10,14 +11,15 @@ namespace VMLab.CommandHandler.Lab
 {
     public class LabExportHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
         private readonly IFile _file;
         private readonly IVMManager _vmManager;
         private readonly ILabManager _labManager;
+        private readonly ILogger _log;
 
-        public LabExportHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IFile file, IVMManager vmManager, ILabManager labManager) : base(usage)
+        public LabExportHandler(IUsage usage, IScriptRunner scriptEngine, IGraphManager graphManager, IConsole console, IFile file, IVMManager vmManager, ILabManager labManager, ILogger log) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
@@ -25,12 +27,15 @@ namespace VMLab.CommandHandler.Lab
             _file = file;
             _vmManager = vmManager;
             _labManager = labManager;
+            _log = log;
         }
 
         public override string Group => "lab";
         public override string[] Handles => new[] {"export", "e"};
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling lab export Command Handler with Args: {@args}", args);
+
             if (args.Length < 2)
             {
                 _console.Error("Expected path of export archive. vmlab.exe lab export <pathtoarchive>");

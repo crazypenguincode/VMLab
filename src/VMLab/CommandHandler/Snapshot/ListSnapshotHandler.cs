@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -9,18 +10,20 @@ namespace VMLab.CommandHandler.Snapshot
     public class ListSnapshotHandler : BaseParamHandler
     {
         private readonly IConsole _console;
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public ListSnapshotHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
+        public ListSnapshotHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager, ILogger log) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "snapshot";
@@ -28,6 +31,8 @@ namespace VMLab.CommandHandler.Snapshot
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling snapshot list Command Handler with Args: {@args}", args);
+
             var switches = _switchParser.Parse(args.Skip(1).ToArray());
 
             _scriptEngine.Execute();

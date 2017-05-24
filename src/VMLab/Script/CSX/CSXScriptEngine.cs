@@ -1,30 +1,35 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
+using SystemInterface;
 using SystemInterface.IO;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using VMLab.Helper;
+using Serilog;
+using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Script
 {
-    public class ScriptEngine : IScriptEngine
+    public class CSXScriptEngine : IScriptEngine
     {
+        private readonly IEnvironment _environment;
         private readonly IFile _file;
         private readonly IScriptGlobal _global;
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public ScriptEngine(IFile file, IScriptGlobal global, IConsole console)
+        public CSXScriptEngine(IFile file, IEnvironment environment, IScriptGlobal global, IConsole console, ILogger log)
         {
             _file = file;
+            _environment = environment;
             _global = global;
             _console = console;
+            _log = log;
         }
 
+        public bool CanHandle => _file.Exists($"{_environment.CurrentDirectory}\\vmlab.csx");
         public void Execute()
         {
-            if(!_file.Exists("vmlab.csx"))
-                throw new FileNotFoundException("vmlab.csx file doesn't exist in current directory!");
+            _log.Information("Start exection of vmlab.csx");
 
             var scriptText = _file.ReadAllText("vmlab.csx");
 
@@ -41,7 +46,9 @@ namespace VMLab.Script
             catch (Exception e)
             {
                 _console.Error(e, "Error in script: {e}", e);
+                throw new ApplicationException("Script failed to run!", e);
             }
+
         }
     }
 }

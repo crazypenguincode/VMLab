@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
@@ -10,16 +10,20 @@ namespace VMLab.CommandHandler
         private readonly IParamHandler[] _handlers;
         private readonly IConsole _console;
         private readonly IUsage _usage;
+        private readonly ILogger _log;
 
-        public CommandHandler(IEnumerable<IParamHandler> handlers, IConsole console, IUsage usage)
+        public CommandHandler(IEnumerable<IParamHandler> handlers, IConsole console, IUsage usage, ILogger log)
         {
             _console = console;
             _usage = usage;
+            _log = log;
             _handlers = handlers.ToArray();
         }
 
         public void Parse(string[] args)
         {
+            _log.Information("Calling Command Handler with Args: {@args}", args);
+
             var useableHandler = _handlers.FirstOrDefault(h => h.Group == "root" && h.CanHandle(args, _handlers));
 
             if (useableHandler != null)

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -9,24 +10,28 @@ namespace VMLab.CommandHandler.Snapshot
     public class RemoveSnapshotHandler : BaseParamHandler
     {
         private readonly IConsole _console;
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public RemoveSnapshotHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
+        public RemoveSnapshotHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager, ILogger log) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "snapshot";
         public override string[] Handles => new[] { "remove", "r", "delete" };
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling snapshot remove Command Handler with Args: {@args}", args);
+
             if (args.Length < 2)
             {
                 _console.Error("Expected name parameter for snapshot. vmlab snapshot remove <snapshotname>");

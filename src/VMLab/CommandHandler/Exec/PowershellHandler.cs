@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -10,22 +11,26 @@ namespace VMLab.CommandHandler.Exec
     public class PowershellHandler : BaseParamHandler
     {
         private readonly IConsole _console;
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public PowershellHandler(IUsage usage, IConsole console, IScriptEngine scriptEngine, IGraphManager graphManager, IVMManager vmManager) : base(usage)
+        public PowershellHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "root";
         public override string[] Handles => new[] {"powershell", "p", "posh", "ps" };
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling Powershell Command Handler with Args: {@args}", args);
+
             if (args.Length < 3)
             {
                 _console.Error("Expected the following arguments vmlab.exe powershell <vmname> <script>");

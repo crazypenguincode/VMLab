@@ -1,25 +1,22 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using SystemInterface.IO;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler.List
 {
     public class PluginListHandler : BaseParamHandler
     {
-        private readonly IDirectory _directory;
         private readonly IConsole _console;
         private readonly IConfig _config;
         private readonly IHypervisorFinder _finder;
+        private readonly ILogger _log;
 
-        public PluginListHandler(IDirectory directory, IConsole console, IConfig config, IUsage usage, IHypervisorFinder finder) : base(usage)
+        public PluginListHandler(IConsole console, IConfig config, IUsage usage, IHypervisorFinder finder, ILogger log) : base(usage)
         {
-            _directory = directory;
             _console = console;
             _config = config;
             _finder = finder;
+            _log = log;
         }
 
         public override string Group => "hypervisor";
@@ -27,6 +24,8 @@ namespace VMLab.CommandHandler.List
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling hypervisor list Command Handler with Args: {@args}", args);
+
             _console.Information("Available Hypervisor Plugins:");
 
             foreach (var hypervisor in _finder.Hypervisors)

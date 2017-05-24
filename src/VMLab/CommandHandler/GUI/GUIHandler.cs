@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Script;
@@ -7,24 +8,28 @@ namespace VMLab.CommandHandler.GUI
 {
     public class GUIHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public GUIHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager) : base(usage)
+        public GUIHandler(IUsage usage, IScriptRunner scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IVMManager vmManager, ILogger log) : base(usage)
         {
        
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "root";
         public override string[] Handles => new[] {"gui", "ui", "g"};
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling gui Command Handler with Args: {@args}", args);
+
             _scriptEngine.Execute();
 
             var switches = _switchParser.Parse(args.Skip(1).ToArray());

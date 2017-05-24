@@ -175,7 +175,6 @@
     <Compile Include="CommandHandler\Config\GetConfigHandler.cs" />
     <Compile Include="CommandHandler\Config\SetConfigHandler.cs" />
     <Compile Include="CommandHandler\Config\ViewConfigHandler.cs" />
-    <Compile Include="CommandHandler\Debug\SwitchDebugHandler.cs" />
     <Compile Include="CommandHandler\Exec\ExecHandler.cs" />
     <Compile Include="CommandHandler\Exec\PowershellHandler.cs" />
     <Compile Include="CommandHandler\GUI\GUIHandler.cs" />
@@ -195,8 +194,6 @@
     <Compile Include="CommandHandler\Usage.cs" />
     <Compile Include="CommandHandler\Template\BuildHandler.cs" />
     <Compile Include="CommandHandler\CommandHandler.cs" />
-    <Compile Include="CommandHandler\Debug\DebugGraphHandler.cs" />
-    <Compile Include="CommandHandler\Debug\DebugHandler.cs" />
     <Compile Include="CommandHandler\ICommandHandler.cs" />
     <Compile Include="CommandHandler\VMControl\DestroyHandler.cs" />
     <Compile Include="CommandHandler\VMControl\RestartHandler.cs" />
@@ -229,13 +226,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Script\FluentInterface\IVM.cs" />
-    <Compile Include="Script\FluentInterface\TemplateFluentHandler.cs" />
-    <Compile Include="Script\FluentInterface\VMFluentHandler.cs" />
+    <Compile Include="Script\CSX\CSXScriptEngine.cs" />
+    <Compile Include="Script\CSX\FluentInterface\ITemplate.cs" />
+    <Compile Include="Script\CSX\FluentInterface\IVM.cs" />
+    <Compile Include="Script\CSX\FluentInterface\TemplateFluentHandler.cs" />
+    <Compile Include="Script\CSX\FluentInterface\VMFluentHandler.cs" />
     <Compile Include="Script\IScriptEngine.cs" />
-    <Compile Include="Script\IScriptGlobal.cs" />
-    <Compile Include="Script\ScriptEngine.cs" />
-    <Compile Include="Script\ScriptGlobal.cs" />
+    <Compile Include="Script\IScriptRunner.cs" />
+    <Compile Include="Script\CSX\IScriptGlobal.cs" />
+    <Compile Include="Script\ScriptRunner.cs" />
+    <Compile Include="Script\CSX\ScriptGlobal.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

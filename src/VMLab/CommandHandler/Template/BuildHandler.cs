@@ -1,5 +1,6 @@
 ﻿using System;
 using SystemInterface;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Script;
@@ -12,14 +13,16 @@ namespace VMLab.CommandHandler
         public override string Group => "template";
         public override string[] Handles => new []{"build", "b"};
 
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
         private readonly IHypervisorCapabilityChecker _capabilityChecker;
         private readonly IEnvironment _environment;
         private readonly ITemplateManager _templateManager;
+        private readonly ILogger _log;
 
-        public BuildHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment, IUsage usage, ITemplateManager templateManager) : base(usage)
+
+        public BuildHandler(IScriptRunner scriptEngine, IGraphManager graphManager, IConsole console, IHypervisorCapabilityChecker capabilityChecker, IEnvironment environment, IUsage usage, ITemplateManager templateManager, ILogger log) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
@@ -27,10 +30,13 @@ namespace VMLab.CommandHandler
             _capabilityChecker = capabilityChecker;
             _environment = environment;
             _templateManager = templateManager;
+            _log = log;
         }
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling template build Command Handler with Args: {@args}", args);
+
             _scriptEngine.Execute();
 
             foreach (var template in _graphManager.Templates)

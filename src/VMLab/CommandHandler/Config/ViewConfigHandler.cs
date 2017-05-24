@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Config
@@ -11,11 +7,13 @@ namespace VMLab.CommandHandler.Config
     {
         private readonly IConfig _config;
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public ViewConfigHandler(IUsage usage, IConfig config, IConsole console) : base(usage)
+        public ViewConfigHandler(IUsage usage, IConfig config, IConsole console, ILogger log) : base(usage)
         {
             _config = config;
             _console = console;
+            _log = log;
         }
 
         public override string Group => "config";
@@ -23,6 +21,8 @@ namespace VMLab.CommandHandler.Config
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling Config list Command Handler with Args: {@args}", args);
+
             if (args.Length != 2)
             {
                 _console.Error("Expected vmlab config view <scope>");

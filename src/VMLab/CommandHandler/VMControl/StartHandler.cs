@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -8,15 +9,16 @@ namespace VMLab.CommandHandler
 {
     public class StartHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
         private readonly ISwitchParser _switchParser;
         private readonly IVMManager _vmManager;
         private readonly ITemplateManager _templateManager;
         private readonly IManifestManager _manifestManager;
+        private readonly ILogger _log;
 
-        public StartHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IConsole console, IUsage usage, ISwitchParser switchParser, IVMManager vmManager, ITemplateManager templateManager, IManifestManager manifestManager) : base(usage)
+        public StartHandler(IScriptRunner scriptEngine, IGraphManager graphManager, IConsole console, IUsage usage, ISwitchParser switchParser, IVMManager vmManager, ITemplateManager templateManager, IManifestManager manifestManager, ILogger log) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
@@ -25,6 +27,7 @@ namespace VMLab.CommandHandler
             _vmManager = vmManager;
             _templateManager = templateManager;
             _manifestManager = manifestManager;
+            _log = log;
         }
 
         public override string Group => "root";
@@ -32,6 +35,8 @@ namespace VMLab.CommandHandler
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling start Command Handler with Args: {@args}", args);
+
             _scriptEngine.Execute();
 
             var switches = _switchParser.Parse(args.Skip(1).ToArray());

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
@@ -9,14 +10,18 @@ namespace VMLab.CommandHandler
         public override string Group => "root";
         public override string[] Handles => new[] {"version", "v"};
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public VersionHandler(IConsole console, IUsage usage) : base(usage)
+
+        public VersionHandler(IConsole console, IUsage usage, ILogger log) : base(usage)
         {
             _console = console;
+            _log = log;
         }
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling version Command Handler with Args: {@args}", args);
 
             // ReSharper disable once AssignNullToNotNullAttribute
             var versioninfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);

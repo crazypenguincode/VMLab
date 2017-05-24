@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -8,19 +9,21 @@ namespace VMLab.CommandHandler.VMControl
 {
     public class DestroyHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IConsole _console;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public DestroyHandler(IScriptEngine scriptEngine, IGraphManager graphManager, IUsage usage, ISwitchParser switchParser, IConsole console, IVMManager vmManager) : base(usage)
+        public DestroyHandler(IScriptRunner scriptEngine, IGraphManager graphManager, IUsage usage, ISwitchParser switchParser, IConsole console, IVMManager vmManager, ILogger log) : base(usage)
         {
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _console = console;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "root";
@@ -28,6 +31,8 @@ namespace VMLab.CommandHandler.VMControl
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling destroy Command Handler with Args: {@args}", args);
+
             _scriptEngine.Execute();
 
             var switches = _switchParser.Parse(args.Skip(1).ToArray());

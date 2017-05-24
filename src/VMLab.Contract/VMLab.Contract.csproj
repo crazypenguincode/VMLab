@@ -87,7 +87,6 @@
     <Compile Include="SemVer\SemVer.cs" />
     <Compile Include="Session\ISession.cs" />
     <Compile Include="Session\ISessionFactory.cs" />
-    <Compile Include="ITemplate.cs" />
     <Compile Include="IVMControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session\Session.cs" />

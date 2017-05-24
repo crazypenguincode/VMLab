@@ -31,7 +31,16 @@ namespace VMLab.IOC
                 sb.AppendLine(r.ToString());
             }
 
-            File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\autofactdump.log"), sb.ToString());
+            var iocDebug = sb.ToString();
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabcrash.txt"), args.ExceptionObject.ToString());
+                File.WriteAllText(Environment.ExpandEnvironmentVariables("%temp%\\vmlabiocdump.txt"), iocDebug);
+
+                Console.WriteLine("VMLab has encounted an unexpected error and needs to exit!");
+                Environment.ExitCode = 5000;
+            };
 
         }
 

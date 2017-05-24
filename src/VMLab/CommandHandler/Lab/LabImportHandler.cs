@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using SystemInterface;
 using SystemInterface.IO;
+using Serilog;
 using VMLab.Contract;
 using IConsole = VMLab.Helper.IConsole;
 
@@ -13,14 +14,16 @@ namespace VMLab.CommandHandler.Lab
         private readonly IEnvironment _environment;
         private readonly ISwitchParser _switchParser;
         private readonly ILabManager _labManager;
+        private readonly ILogger _log;
 
-        public LabImportHandler(IUsage usage, IConsole console, IDirectory directory, IEnvironment environment, ISwitchParser switchParser, ILabManager labManager) : base(usage)
+        public LabImportHandler(IUsage usage, IConsole console, IDirectory directory, IEnvironment environment, ISwitchParser switchParser, ILabManager labManager, ILogger log) : base(usage)
         {
             _console = console;
             _directory = directory;
             _environment = environment;
             _switchParser = switchParser;
             _labManager = labManager;
+            _log = log;
         }
 
         public override string Group => "lab";
@@ -29,6 +32,8 @@ namespace VMLab.CommandHandler.Lab
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling lab import Command Handler with Args: {@args}", args);
+
             if (args.Length < 2)
             {
                 _console.Error("Expected archive parameter. vmlab.exe lab import <path to archive>");

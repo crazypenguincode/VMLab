@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Hypervisor
@@ -9,18 +10,23 @@ namespace VMLab.CommandHandler.Hypervisor
         private readonly IConsole _console;
         private readonly IConfig _config;
         private readonly IHypervisorFinder _finder;
+        private readonly ILogger _log;
 
-        public HypervisorSetHandler(IUsage usage, IConsole console, IConfig config, IHypervisorFinder finder) : base(usage)
+
+        public HypervisorSetHandler(IUsage usage, IConsole console, IConfig config, IHypervisorFinder finder, ILogger log) : base(usage)
         {
             _console = console;
             _config = config;
             _finder = finder;
+            _log = log;
         }
 
         public override string Group => "hypervisor";
         public override string[] Handles => new[] {"set", "s"};
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling hypervisor set Command Handler with Args: {@args}", args);
+            
             if (args.Length < 2)
             {
                 _console.Error("Expected hypervisor parameter. vmlab.exe hypervisor set <hypervisor name>.");

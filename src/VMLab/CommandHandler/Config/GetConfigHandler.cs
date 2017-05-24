@@ -1,4 +1,5 @@
-﻿using VMLab.Helper;
+﻿using Serilog;
+using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Config
 {
@@ -6,17 +7,21 @@ namespace VMLab.CommandHandler.Config
     {
         private readonly IConfig _config;
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public GetConfigHandler(IUsage usage, IConfig config, IConsole console) : base(usage)
+        public GetConfigHandler(IUsage usage, IConfig config, IConsole console, ILogger log) : base(usage)
         {
             _config = config;
             _console = console;
+            _log = log;
         }
 
         public override string Group => "config";
         public override string[] Handles => new[] { "get", "g" };
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling Config Get Command Handler with Args: {@args}", args);
+
             if (args.Length != 3)
             {
                 _console.Error("Expected vmlab config get <scope> <valuename>");

@@ -1,4 +1,5 @@
 ﻿using SystemInterface.IO;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
@@ -11,16 +12,20 @@ namespace VMLab.CommandHandler
         private readonly IResource _resource;
         private readonly IFile _file;
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public InitHandler(IResource resource, IFile file, IConsole console, IUsage usage) : base(usage)
+        public InitHandler(IResource resource, IFile file, IConsole console, IUsage usage, ILogger log) : base(usage)
         {
             _resource = resource;
             _file = file;
             _console = console;
+            _log = log;
         }
 
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling init Command Handler with Args: {@args}", args);
+
             if (_file.Exists("vmlab.csx"))
             {
                 _console.Warning("Can't init vmlab.csx because it already exists!");

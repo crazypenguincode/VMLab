@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Serilog;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Script;
@@ -7,23 +8,27 @@ namespace VMLab.CommandHandler.VMControl
 {
     public class RestartHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptEngine;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IVMManager _vmManager;
+        private readonly ILogger _log;
 
-        public RestartHandler(IUsage usage, ISwitchParser switchParser, IGraphManager graphManager, IScriptEngine scriptEngine, IVMManager vmManager) : base(usage)
+        public RestartHandler(IUsage usage, ISwitchParser switchParser, IGraphManager graphManager, IScriptRunner scriptEngine, IVMManager vmManager, ILogger log) : base(usage)
         {
             _switchParser = switchParser;
             _graphManager = graphManager;
             _scriptEngine = scriptEngine;
             _vmManager = vmManager;
+            _log = log;
         }
 
         public override string Group => "root";
         public override string[] Handles => new[] {"restart", "reboot"};
         public override void OnHandle(string[] args)
         {
+            _log.Information("Calling restart Command Handler with Args: {@args}", args);
+
             _scriptEngine.Execute();
 
             var switches = _switchParser.Parse(args.Skip(1).ToArray());
