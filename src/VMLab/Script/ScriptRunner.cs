@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using Serilog;
+using VMLab.GraphModels;
 using VMLab.Helper;
 
 namespace VMLab.Script
@@ -8,10 +10,15 @@ namespace VMLab.Script
     {
         private readonly IScriptEngine[] _engines;
         private readonly IConsole _console;
-        public ScriptRunner(IScriptEngine[] engines, IConsole console)
+        private readonly ILogger _log;
+        private readonly IGraphManager _graphManager;
+
+        public ScriptRunner(IScriptEngine[] engines, IConsole console, ILogger log, IGraphManager graphManager)
         {
             _engines = engines;
             _console = console;
+            _log = log;
+            _graphManager = graphManager;
         }
 
         public void Execute()
@@ -26,7 +33,7 @@ namespace VMLab.Script
 
             engine.Execute();
 
-            
+            _log.Information("Generated graph: {@graph}", _graphManager);
         }
     }
 }

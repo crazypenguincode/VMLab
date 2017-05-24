@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SystemInterface;
 using SystemInterface.IO;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace VMLab.Helper
 {
@@ -11,12 +12,14 @@ namespace VMLab.Helper
         private readonly IEnvironment _environment;
         private readonly IDirectory _directory;
         private readonly IFile _file;
+        private readonly ILogger _log;
 
-        public Config(IEnvironment environment, IDirectory directory, IFile file)
+        public Config(IEnvironment environment, IDirectory directory, IFile file, ILogger log)
         {
             _environment = environment;
             _directory = directory;
             _file = file;
+            _log = log;
         }
 
         public string GetSetting(string setting, ConfigScope scope = ConfigScope.Merged)
@@ -37,13 +40,21 @@ namespace VMLab.Helper
             if (user.ContainsKey(setting))
                 return user[setting];
 
-            return system.ContainsKey(setting) ? system[setting] : null;
+            var result = system.ContainsKey(setting) ? system[setting] : null;
+
+            _log.Information("Getting config item {name} with scope {scope}: {value}", setting, scope, result);
+
+            return result;
         }
 
         public void WriteSetting(string setting, string value, ConfigScope scope)
         {
-            if(scope == ConfigScope.Merged)
+            if (scope == ConfigScope.Merged)
+            {
+                _log.Error("Tried to set {name} with {value} at Merged scope! You can only read merged scope not set it.", setting, value);
                 throw new ArgumentException("scope");
+            }
+              
 
             var settings = GetSettings(scope);
 
@@ -53,6 +64,9 @@ namespace VMLab.Helper
                 settings.Add(setting, value);
 
             WriteSettings(settings, scope);
+
+            _log.Information("Setting config item {name} with scope {scope}: {value}", setting, scope, value);
+
 
         }
 
@@ -81,6 +95,8 @@ namespace VMLab.Helper
                 default:
                     throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
             }
+
+            _log.Information("Loading settings of scope {scope} from {file}", scope, path);
             
 
             if (!_directory.Exists(path))
@@ -92,8 +108,10 @@ namespace VMLab.Helper
 
             var result = new Dictionary<string, string>();
 
-            if (scope != ConfigScope.System) return result;
+            _log.Information("File doesn't exist. Using default setting file!");
 
+            if (scope != ConfigScope.System) return result;
+            
             result.Add("Hypervisor", "VMwareWorkstation");
             result.Add("GlobalSettingsDir", _environment.ExpandEnvironmentVariables("%ProgramData%\\VMLab"));
             result.Add("UserSettingsDir", _environment.ExpandEnvironmentVariables("%LOCALAPPDATA%\\VMLab"));
@@ -123,6 +141,9 @@ namespace VMLab.Helper
                 default:
                     throw new ArgumentOutOfRangeException(nameof(scope), scope, null);
             }
+
+            _log.Information("Saving settings of scope {scope} from {file}", scope, path);
+
 
             if (!_directory.Exists(path))
                 _directory.CreateDirectory(path);

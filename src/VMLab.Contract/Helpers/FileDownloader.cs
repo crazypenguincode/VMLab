@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading;
+using Serilog;
 using VMLab.Helper;
 
 namespace VMLab.Contract.Helpers
@@ -11,14 +12,18 @@ namespace VMLab.Contract.Helpers
         private int _lastpercent = -1;
 
         private readonly IConsole _console;
+        private readonly ILogger _log;
 
-        public FileDownloader(IConsole console)
+        public FileDownloader(IConsole console, ILogger log)
         {
             _console = console;
+            _log = log;
         }
 
         public void DownloadFile(string uri, string path)
         {
+            _log.Information("Downloading file {file} from {url}", path, uri);
+
             using (var web = new WebClient())
             {
                 web.DownloadProgressChanged += WebOnDownloadProgressChanged;
