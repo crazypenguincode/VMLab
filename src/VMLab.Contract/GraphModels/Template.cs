@@ -35,7 +35,6 @@ namespace VMLab.GraphModels
     public class Template
     {
         public Hypervisor Hypervisor { get; set; }
-        public List<Credential> Credentials { get; set; }
         public ISO ISO { get; set; }
         public GuestOS GuestOS { get; set; }
         public Arch Arch { get; set; }
@@ -51,7 +50,6 @@ namespace VMLab.GraphModels
         public bool HeadLess { get; set; }
         public Template()
         {
-            Credentials = new List<Credential>();
             HardDisks = new List<HardDisk>();
             Networks = new List<Network>();
             OnProvision = control => { };

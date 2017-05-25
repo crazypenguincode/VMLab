@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using SystemInterface;
 using SystemInterface.IO;
 using Newtonsoft.Json;
 using Serilog;
+using VMLab.Contract.Helpers;
 
 namespace VMLab.Helper
 {
@@ -74,6 +76,23 @@ namespace VMLab.Helper
         public string Dump(ConfigScope scope)
         {
             return JsonConvert.SerializeObject(GetSettings(scope), Formatting.Indented);
+        }
+
+        public void Clean(string pattern, ConfigScope scope)
+        {
+            if (scope == ConfigScope.Merged)
+            {
+                _log?.Error("Tried to clear {pattern} at Merged scope! You can only read merged scope not set it.", pattern);
+                throw new ArgumentException("scope");
+            }
+
+            var settings = GetSettings(scope);
+            settings.RemovalAll(s => Regex.IsMatch(s.Key, pattern));
+
+            WriteSettings(settings, scope);
+
+            _log?.Information("Clearing settings with pattern {pattern} from {scope}", pattern, scope);
+
         }
 
         private Dictionary<string, string> GetSettings(ConfigScope scope)

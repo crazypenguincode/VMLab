@@ -38,7 +38,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             return (from dir in _directory.GetDirectories($"{_environment.CurrentDirectory}\\_vmlab\\VMs\\")
                 where _file.Exists($"{dir}\\{vm.Name}\\{vm.Name}.vmx")
-                select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", vm.Credentials, vm)).FirstOrDefault();
+                select _loader.GetVMFromPath($"{dir}\\{vm.Name}\\{vm.Name}.vmx", null, vm)).FirstOrDefault();
         }
 
         public void DestroyVM(GraphModels.VM vm, IVMControl control)

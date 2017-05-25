@@ -175,6 +175,11 @@
     <Compile Include="CommandHandler\Config\GetConfigHandler.cs" />
     <Compile Include="CommandHandler\Config\SetConfigHandler.cs" />
     <Compile Include="CommandHandler\Config\ViewConfigHandler.cs" />
+    <Compile Include="CommandHandler\Credentials\AddCredentialHandler.cs" />
+    <Compile Include="CommandHandler\Credentials\ClearCredentialHandler.cs" />
+    <Compile Include="CommandHandler\Credentials\CredentialHandler.cs" />
+    <Compile Include="CommandHandler\Credentials\ListCredentialHandler.cs" />
+    <Compile Include="CommandHandler\Credentials\RemoveCredentialHandler.cs" />
     <Compile Include="CommandHandler\Exec\ExecHandler.cs" />
     <Compile Include="CommandHandler\Exec\PowershellHandler.cs" />
     <Compile Include="CommandHandler\GUI\GUIHandler.cs" />

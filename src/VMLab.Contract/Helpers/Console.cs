@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Serilog;
 
 namespace VMLab.Helper
@@ -56,6 +57,39 @@ namespace VMLab.Helper
             _log.Information("User entered: {input}", input);
 
             return input;
+        }
+
+        public string ReadPassword()
+        {
+            var sb = new StringBuilder();
+            while (true)
+            {
+                var cki = System.Console.ReadKey(true);
+
+                if (cki.Key == ConsoleKey.Enter)
+                {
+                    System.Console.WriteLine();
+                    break;
+                }
+
+                if (cki.Key == ConsoleKey.Backspace)
+                {
+                    if (sb.Length > 0)
+                    {
+                        var pos = System.Console.CursorLeft;
+                        System.Console.SetCursorPosition(pos - 1, System.Console.CursorTop);
+                        System.Console.Write(" ");
+                        System.Console.SetCursorPosition(pos - 1, System.Console.CursorTop);
+                        sb.Length--;
+                    }
+                    continue;
+                }
+
+                System.Console.Write("*");
+                sb.Append(cki.KeyChar);
+            }
+
+            return sb.ToString();
         }
     }
 }

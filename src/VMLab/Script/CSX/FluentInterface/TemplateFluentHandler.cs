@@ -1,5 +1,5 @@
 ﻿using System;
-using Serilog;
+using VMLab.Contract.CredentialManager;
 using VMLab.GraphModels;
 using VMLab.Helper;
 
@@ -9,10 +9,12 @@ namespace VMLab.Script.FluentInterface
     {
         private readonly Template _template = new Template();
         private readonly IConfig _config;
+        private readonly ICredentialManager _credentialManager;
 
-        public TemplateFluentHandler(IGraphManager graphManager, IConfig config)
+        public TemplateFluentHandler(IGraphManager graphManager, IConfig config, ICredentialManager credentialManager)
         {
             _config = config;
+            _credentialManager = credentialManager;
             graphManager.AddTemplate(_template);
         }
 
@@ -30,11 +32,12 @@ namespace VMLab.Script.FluentInterface
 
         public ITemplate Credential(string group, string username, string password)
         {
-            _template.Credentials.Add(new Credential {Group = group, Username = username, Password = password});
+            _credentialManager.AddGraphCredential(
+                new Credential {Group = group, Username = username, Password = password}, _template);
             return this;
         }
 
-        public ITemplate ISO(string path, string url)
+        public ITemplate ISO(string path, string url=null)
         {
             _template.ISO = new ISO{ LocalPath =  path, URL =  url};
             return this;

@@ -8,7 +8,6 @@ namespace VMLab.GraphModels
     {
         public string Template { get; set; }
         public string Version { get; set; }
-        public List<Credential> Credentials { get; set; }
         public List<Network> Networks { get; set; }
         public int CPUs { get; set; }
         public int CPUCores { get; set; }
@@ -24,7 +23,6 @@ namespace VMLab.GraphModels
 
         public VM()
         {
-            Credentials = new List<Credential>();
             Networks = new List<Network>();
             SharedFolders = new List<SharedFolder>();
             OnProvision = control => { };

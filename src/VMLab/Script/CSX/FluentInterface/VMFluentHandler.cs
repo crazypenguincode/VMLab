@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using VMLab.Contract.CredentialManager;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using Action = System.Action;
@@ -10,10 +10,12 @@ namespace VMLab.Script.FluentInterface
     {
         private readonly IConfig _config;
         private readonly VM _vm;
+        private readonly ICredentialManager _credentialManager;
 
-        public VMFluentHandler(IConfig config, IGraphManager graphManager)
+        public VMFluentHandler(IConfig config, IGraphManager graphManager, ICredentialManager credentialManager)
         {
             _config = config;
+            _credentialManager = credentialManager;
 
             _vm = new VM();
             graphManager.AddVM(_vm);
@@ -34,7 +36,7 @@ namespace VMLab.Script.FluentInterface
 
         public IVM Credential(string group, string username, string password)
         {
-            _vm.Credentials.Add(new Credential{Group = group, Username = username, Password =  password});
+            _credentialManager.AddGraphCredentail(new Credential { Group = group, Username = username, Password = password }, _vm);
             return this;
         }
 

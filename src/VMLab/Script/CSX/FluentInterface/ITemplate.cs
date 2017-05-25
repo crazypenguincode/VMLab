@@ -9,7 +9,7 @@ namespace VMLab.Script.FluentInterface
         string Version { get; set; }
 
         ITemplate Credential(string group, string username, string password);
-        ITemplate ISO(string path, string url);
+        ITemplate ISO(string path, string url = null);
         ITemplate GuestOS(string os, string arch);
         ITemplate HardDisk(int size);
         ITemplate Network(string type, string name="");

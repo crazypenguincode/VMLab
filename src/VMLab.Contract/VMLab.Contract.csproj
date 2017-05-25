@@ -41,6 +41,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Security" />
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -58,16 +59,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CredentialManager\CredentialManagerSingleton.cs" />
+    <Compile Include="CredentialManager\ICredentialManager.cs" />
     <Compile Include="GraphModels\TemplateManifest.cs" />
     <Compile Include="Helpers\CompressHelper.cs" />
     <Compile Include="Helpers\Config.cs" />
     <Compile Include="Helpers\Console.cs" />
+    <Compile Include="Helpers\DictionaryExtensions.cs" />
     <Compile Include="Helpers\FileDownloader.cs" />
     <Compile Include="Helpers\ICompressHelper.cs" />
     <Compile Include="Helpers\IConfig.cs" />
     <Compile Include="Helpers\IConsole.cs" />
     <Compile Include="Helpers\IFileDownloader.cs" />
+    <Compile Include="Helpers\IPasswordCryptoHelper.cs" />
     <Compile Include="Helpers\LogExtensions.cs" />
+    <Compile Include="Helpers\PasswordCryptoHelper.cs" />
     <Compile Include="ICapabilities.cs" />
     <Compile Include="GraphModels\Action.cs" />
     <Compile Include="GraphModels\Credential.cs" />

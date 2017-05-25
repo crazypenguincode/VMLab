@@ -10,6 +10,7 @@ using SystemInterface.Threading;
 using Newtonsoft.Json;
 using Serilog;
 using VMLab.Contract;
+using VMLab.Contract.CredentialManager;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.Helpers;
 using VMLab.Contract.SemVer;
@@ -98,12 +99,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             GenerateVMFiles(template, templateFolder, vmxpath);
 
-            var vm = _loader.GetVMFromPath(vmxpath, template.Credentials) as VMControl;
+            var vm = _loader.GetVMFromPath(vmxpath, template: template) as VMControl;
 
             if (vm == null)
                 throw new NullReferenceException("Can't load VM controller object!");
 
-            vm.SetCredentials(template.Credentials);
             vm.SetCredentials("Admin");
 
             vm.Start();
@@ -194,7 +194,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _file.Copy($"{manifest.Path}\\manifest.json", $"{vmFolder}\\manifest.json");
 
-            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", vm.Credentials);
+            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", null);
             var vmx = _vmxFactory();
 
             vmx.ReadFromFile(vmxPath);
@@ -299,6 +299,12 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             {
                 if (!_file.Exists(template.ISO.LocalPath))
                 {
+                    if (String.IsNullOrEmpty(template.ISO.URL))
+                    {
+                        _console.Information("You have not specified a URL to download the ISO from and it doesn't exist in the file system!");
+                        throw new ApplicationException("Failed to find iso file!");
+                    }
+
                     _console.Information("ISO not found locally! Downloading: {url}", template.ISO.URL);
                     _fileDownloader.DownloadFile(template.ISO.URL, template.ISO.LocalPath);
                 }
