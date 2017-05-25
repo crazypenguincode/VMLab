@@ -194,7 +194,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _file.Copy($"{manifest.Path}\\manifest.json", $"{vmFolder}\\manifest.json");
 
-            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", null);
+
+
+            var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", model: vm);
             var vmx = _vmxFactory();
 
             vmx.ReadFromFile(vmxPath);
