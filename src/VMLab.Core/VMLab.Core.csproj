@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3D1380EA-5BDF-4AB5-AC45-27557B23ADF0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>VMLab</RootNamespace>
-    <AssemblyName>VMLab</AssemblyName>
+    <ProjectGuid>{8E26CD13-7078-49EE-94F8-B652404A46E6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VMLab.Core</RootNamespace>
+    <AssemblyName>VMLab.Core</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,11 +31,41 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=4.6.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.6.0\lib\net45\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Extras.AttributeMetadata, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Extras.AttributeMetadata.4.0.1\lib\net45\Autofac.Extras.AttributeMetadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mef, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Mef.4.0.0\lib\net45\Autofac.Integration.Mef.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.1.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.1.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Scripting, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Scripting.2.1.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.2.1.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.4.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.3.2.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Literate, Version=2.1.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Literate.2.1.0\lib\net45\Serilog.Sinks.Literate.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.RollingFile, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.RollingFile.3.3.0\lib\net45\Serilog.Sinks.RollingFile.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -139,77 +167,46 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandler\Actions\ActionHandler.cs" />
-    <Compile Include="CommandHandler\BaseParamHandler.cs" />
-    <Compile Include="CommandHandler\Config\ConfigHandler.cs" />
-    <Compile Include="CommandHandler\Config\GetConfigHandler.cs" />
-    <Compile Include="CommandHandler\Config\SetConfigHandler.cs" />
-    <Compile Include="CommandHandler\Config\ViewConfigHandler.cs" />
-    <Compile Include="CommandHandler\Credentials\AddCredentialHandler.cs" />
-    <Compile Include="CommandHandler\Credentials\ClearCredentialHandler.cs" />
-    <Compile Include="CommandHandler\Credentials\CredentialHandler.cs" />
-    <Compile Include="CommandHandler\Credentials\ListCredentialHandler.cs" />
-    <Compile Include="CommandHandler\Credentials\RemoveCredentialHandler.cs" />
-    <Compile Include="CommandHandler\Exec\ExecHandler.cs" />
-    <Compile Include="CommandHandler\Exec\PowershellHandler.cs" />
-    <Compile Include="CommandHandler\GUI\GUIHandler.cs" />
-    <Compile Include="CommandHandler\HubParamHandler.cs" />
-    <Compile Include="CommandHandler\Hypervisor\HypervisorSetHandler.cs" />
-    <Compile Include="CommandHandler\ISwitchParser.cs" />
-    <Compile Include="CommandHandler\IUsage.cs" />
-    <Compile Include="CommandHandler\Lab\CleanHandler.cs" />
-    <Compile Include="CommandHandler\Lab\LabExportHandler.cs" />
-    <Compile Include="CommandHandler\Lab\LabHandler.cs" />
-    <Compile Include="CommandHandler\Lab\LabImportHandler.cs" />
-    <Compile Include="CommandHandler\Snapshot\AddSnapshotHandler.cs" />
-    <Compile Include="CommandHandler\Snapshot\ListSnapshotHandler.cs" />
-    <Compile Include="CommandHandler\Snapshot\RemoveSnapshotHandler.cs" />
-    <Compile Include="CommandHandler\Snapshot\RevertSnapshotHandler.cs" />
-    <Compile Include="CommandHandler\Snapshot\SnapshotHandler.cs" />
-    <Compile Include="CommandHandler\SwitchParser.cs" />
-    <Compile Include="CommandHandler\Usage.cs" />
-    <Compile Include="CommandHandler\Template\BuildHandler.cs" />
-    <Compile Include="CommandHandler\CommandHandler.cs" />
-    <Compile Include="CommandHandler\ICommandHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\DestroyHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\RestartHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\StatusHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\StopHandler.cs" />
-    <Compile Include="CommandHandler\Template\ListTemplateHandler.cs" />
-    <Compile Include="CommandHandler\Template\RemoveTemplateHandler.cs" />
-    <Compile Include="CommandHandler\Template\TemplateHandler.cs" />
-    <Compile Include="CommandHandler\Template\ImportTemplateHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\InitHandler.cs" />
-    <Compile Include="CommandHandler\IParamHandler.cs" />
-    <Compile Include="CommandHandler\Hypervisor\HypervisorHandler.cs" />
-    <Compile Include="CommandHandler\Hypervisor\HypervisorListHandler.cs" />
-    <Compile Include="CommandHandler\VMControl\StartHandler.cs" />
-    <Compile Include="CommandHandler\VersionHandler.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Helper\HypervisorCapabilityChecker.cs" />
+    <Compile Include="Helper\HypervisorFinder.cs" />
+    <Compile Include="Helper\IHypervisorCapabilityChecker.cs" />
+    <Compile Include="Helper\IHypervisorFinder.cs" />
+    <Compile Include="Helper\IResource.cs" />
+    <Compile Include="Helper\Resource.cs" />
+    <Compile Include="IOC\Bootstrap.cs" />
+    <Compile Include="IOC\ConventionModule.cs" />
+    <Compile Include="IOC\LoggingModule.cs" />
+    <Compile Include="IOC\PluginModule.cs" />
+    <Compile Include="IOC\SystemWrapperModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
+    <Compile Include="Script\CSX\CSXScriptEngine.cs" />
+    <Compile Include="Script\CSX\FluentInterface\ITemplate.cs" />
+    <Compile Include="Script\CSX\FluentInterface\IVM.cs" />
+    <Compile Include="Script\CSX\FluentInterface\TemplateFluentHandler.cs" />
+    <Compile Include="Script\CSX\FluentInterface\VMFluentHandler.cs" />
+    <Compile Include="Script\CSX\IScriptGlobal.cs" />
+    <Compile Include="Script\CSX\ScriptGlobal.cs" />
+    <Compile Include="Script\IScriptEngine.cs" />
+    <Compile Include="Script\IScriptRunner.cs" />
+    <Compile Include="Script\ScriptRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VMLab.Contract\VMLab.Contract.csproj">
       <Project>{2e25ab75-5542-4dfa-a7e0-58a7593a4ada}</Project>
       <Name>VMLab.Contract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VMLab.Core\VMLab.Core.csproj">
-      <Project>{8e26cd13-7078-49ee-94f8-b652404a46e6}</Project>
-      <Name>VMLab.Core</Name>
+    <ProjectReference Include="..\VMLab.Hypervisor.VMwareWorkstation\VMLab.Hypervisor.VMwareWorkstation.csproj">
+      <Project>{5fb930f2-1a4e-4f69-b78e-635ed6a49750}</Project>
+      <Name>VMLab.Hypervisor.VMwareWorkstation</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

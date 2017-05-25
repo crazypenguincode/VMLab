@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMLab.Contract", "VMLab.Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMLab.Hypervisor.VMwareWorkstation", "VMLab.Hypervisor.VMwareWorkstation\VMLab.Hypervisor.VMwareWorkstation.csproj", "{5FB930F2-1A4E-4F69-B78E-635ED6A49750}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VMLab.Core", "VMLab.Core\VMLab.Core.csproj", "{8E26CD13-7078-49EE-94F8-B652404A46E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5FB930F2-1A4E-4F69-B78E-635ED6A49750}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FB930F2-1A4E-4F69-B78E-635ED6A49750}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FB930F2-1A4E-4F69-B78E-635ED6A49750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E26CD13-7078-49EE-94F8-B652404A46E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E26CD13-7078-49EE-94F8-B652404A46E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E26CD13-7078-49EE-94F8-B652404A46E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E26CD13-7078-49EE-94F8-B652404A46E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,0 @@
-﻿VM("myVM")
-	.Template("__TEMPLATE__")
-	.Credential("Admin", "Administrator", "P@ssw0rd01")
-	.Network("NAT")
-	.CPU(1,2)
-	.Memory(2048)
-	.ShareFolder(".", "c:\\lab");
-
