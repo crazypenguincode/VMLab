@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VMLab.Contract.OSEnvironment;
 
 namespace VMLab.Contract.Shim
 {
@@ -11,6 +12,7 @@ namespace VMLab.Contract.Shim
         Action<string> RemoveFile { get; set; }
         Func<string, bool> FileExist { get; set; }
         int Execute(string path, string args);
+        IOSEnvironment OSEnvironment { get; set; }
 
     }
 }

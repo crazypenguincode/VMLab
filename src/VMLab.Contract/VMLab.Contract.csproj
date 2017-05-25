@@ -91,6 +91,11 @@
     <Compile Include="IManifestManager.cs" />
     <Compile Include="ITemplateManager.cs" />
     <Compile Include="IVMManager.cs" />
+    <Compile Include="OSEnvironment\IOSEnvironment.cs" />
+    <Compile Include="OSEnvironment\IOSEnvironmentManager.cs" />
+    <Compile Include="OSEnvironment\LinuxEnvironment.cs" />
+    <Compile Include="OSEnvironment\OSEnvironmentManager.cs" />
+    <Compile Include="OSEnvironment\WindowsEnvironment.cs" />
     <Compile Include="SemVer\SemVer.cs" />
     <Compile Include="Session\Host.cs" />
     <Compile Include="Session\IHost.cs" />

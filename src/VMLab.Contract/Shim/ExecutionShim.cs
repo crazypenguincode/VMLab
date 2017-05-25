@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using SystemInterface.IO;
+using VMLab.Contract.OSEnvironment;
 using VMLab.Helper;
 
 namespace VMLab.Contract.Shim
@@ -32,23 +33,27 @@ namespace VMLab.Contract.Shim
         {
             var id = Guid.NewGuid().ToString();
 
-            var localrunfile = $"{_config.GetSetting("TempDir")}\\{id}.cmd";
-            var guestrunfile = $"c:\\windows\\temp\\{id}.cmd";
-            var stdout = $"c:\\windows\\temp\\{id}.stdout";
-            var stderr = $"c:\\windows\\temp\\{id}.stderr";
-            var stdret = $"c:\\windows\\temp\\{id}.stdret";
+            var localrunfile = $"{_config.GetSetting("TempDir")}\\{id}.{OSEnvironment.ShellScriptExtension}";
+            var guestrunfile = $"{OSEnvironment.TempDirectory}{id}.{OSEnvironment.ShellScriptExtension}";
+            var stdout = $"{OSEnvironment.TempDirectory}{id}.stdout";
+            var stderr = $"{OSEnvironment.TempDirectory}{id}.stderr";
+            var stdret = $"{OSEnvironment.TempDirectory}{id}.stdret";
 
             var runfile = new StringBuilder();
-            runfile.AppendLine("@echo off");
-            runfile.AppendLine($"\"{path}\" {args} > \"{stdout}\" 2> \"{stderr}\"");
-            runfile.AppendLine($"echo %ERRORLEVEL% > \"{stdret}\"");
+            foreach (var line in OSEnvironment.RunScript)
+                runfile.AppendLine(line.Replace("$$path$$", path)
+                    .Replace("$$args$$", args)
+                    .Replace("$$stdout$$", stdout)
+                    .Replace("$$stderr$$", stderr)
+                    .Replace("$$RETFILE$$", stdret));
 
-            _file.WriteAllText(localrunfile, runfile.ToString());
+
+            _file.WriteAllText(localrunfile, runfile.ToString().Replace(Environment.NewLine, OSEnvironment.NewLine));
 
             PutFileAction(localrunfile, guestrunfile);
             _file.Delete(localrunfile);
 
-            ExecutionAction("c:\\windows\\system32\\cmd.exe", $"/c \"{guestrunfile}\"");
+            ExecutionAction(OSEnvironment.Shell, $"{OSEnvironment.ShellPreArg}\"{guestrunfile}\"");
 
             var errindex = 0;
             var outindex = 0;
@@ -86,5 +91,7 @@ namespace VMLab.Contract.Shim
 
             return int.Parse(result);
         }
+
+        public IOSEnvironment OSEnvironment { get; set; }
     }
 }

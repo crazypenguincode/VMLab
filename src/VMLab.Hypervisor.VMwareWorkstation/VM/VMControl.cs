@@ -6,6 +6,7 @@ using System.Threading;
 using SystemInterface;
 using SystemInterface.IO;
 using VMLab.Contract.GraphModels;
+using VMLab.Contract.OSEnvironment;
 using VMLab.Contract.Shim;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -30,8 +31,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private readonly IEnvironment _environment;
         private TemplateManifest _manifest;
         private GraphModels.VM _vm;
+        private readonly IOSEnvironmentManager _osEnvironmentManager;
 
-        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment)
+        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager)
         {
             _vix = vix;
             _shimFactory = shimFactory;
@@ -39,6 +41,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _file = file;
             _console = console;
             _environment = environment;
+            _osEnvironmentManager = osEnvironmentManager;
         }
 
         internal void SetCredentials(IEnumerable<Credential> credentials)
@@ -61,6 +64,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void Exec(string path, string args, Action<IVMControl, IExecResult> execResult = null, bool wait = true)
         {
             var retry = true;
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(OS, Arch);
             while (retry)
             {
                 retry = false;
@@ -80,7 +84,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                 else
                 {
                     var shim = _shimFactory();
-
+                    shim.OSEnvironment = osEnv;
                     shim.ExecutionAction = (p, a) => _vix.ExecuteCommand(vm, p, a, false, false);
                     shim.FileExist = p => _vix.FileExists(vm, p);
                     shim.GetFileAction = file =>
@@ -129,13 +133,14 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void Powershell(string path, Action<IVMControl, IExecResult> execResult, bool wait = true)
         {
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(OS, Arch);
             var id = Guid.NewGuid().ToString();
-            var guestfile = $"c:\\windows\\temp\\{id}.ps1";
+            var guestfile = $"{osEnv.TempDirectory}{id}.ps1";
             var localFile = $"{_environment.CurrentDirectory}\\{path}";
             
             CopyFileToVM(localFile, guestfile);
 
-            Exec("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", $"-executionpolicy bypass -noprofile -noninteractive -file \"{guestfile}\"", execResult, wait);
+            Exec($"{osEnv.PowershellExe}", $"{osEnv.PowershellArgs} \"{guestfile}\"", execResult, wait);
         }
 
         public void Wait(int seconds)
@@ -348,22 +353,24 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void AddSharedFolder(string name, string hostPath, string guestPath)
         {
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(OS, Arch);
             hostPath = Path.GetFullPath(hostPath);
             WaitReady();
             var vm = _vix.ConnectToVM(_vmx);
             _vix.EnableSharedFolders(vm);
             _vix.AddSharedFolder(vm, hostPath, name, true);
 
-            Exec("c:\\windows\\system32\\cmd.exe", $"/c mklink /D \"{guestPath}\" \"\\\\vmware-host\\Shared Folders\\{name}\"", true);
+            Exec(osEnv.Shell, $"{osEnv.ShellPreArg}{osEnv.LinkCommand.Replace("$$GuestPath$$", guestPath).Replace("$$Name$$", name)}", true);
         }
 
         public void RemoveSharedFolder(string name, string hostPath, string guestPath)
         {
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(OS, Arch);
             WaitReady();
             var vm = _vix.ConnectToVM(_vmx);
             _vix.RemoveSharedFolder(vm, name);
 
-            Exec("c:\\windows\\system32\\cmd.exe", $"/c rd \"{guestPath}\"", true);
+            Exec(osEnv.Shell, $"{osEnv.ShellPreArg}{osEnv.RemoveDirectory.Replace("$$Folder$$", guestPath)}", true);
         }
 
         public GuestOS OS => _manifest.OS;

@@ -1,5 +1,6 @@
 ﻿using System;
 using VMLab.Contract;
+using VMLab.Contract.OSEnvironment;
 using VMLab.GraphModels;
 using VMLab.Script.FluentInterface;
 
@@ -9,11 +10,13 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VMX
     {
         private readonly IPVNHelper _pvnHelper;
         private readonly IManifestManager _manifestManager;
+        private readonly IOSEnvironmentManager _osEnvironmentManager;
 
-        public OnStartProvisioner(IPVNHelper pvnHelper, IManifestManager manifestManager)
+        public OnStartProvisioner(IPVNHelper pvnHelper, IManifestManager manifestManager, IOSEnvironmentManager osEnvironmentManager)
         {
             _pvnHelper = pvnHelper;
             _manifestManager = manifestManager;
+            _osEnvironmentManager = osEnvironmentManager;
         }
 
 
@@ -86,10 +89,11 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VMX
 
         public void PostStart(IVMControl vm, GraphModels.VM model)
         {
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(vm.OS, vm.Arch);
             var index = 0;
             foreach (var share in model.SharedFolders)
             {
-                vm.Exec("c:\\windows\\system32\\cmd.exe", $"/c rd /s /q \"{share.GuestPath}\"", false);
+                vm.Exec(osEnv.Shell, $"{osEnv.ShellPreArg}{osEnv.RemoveDirectory.Replace("$$Folder$$", share.GuestPath)}", false);
                 vm.AddSharedFolder($"share{index}", share.HostPath, share.GuestPath);
                 index++;
             }

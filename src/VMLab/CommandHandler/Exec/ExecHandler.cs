@@ -2,6 +2,7 @@
 using System.Linq;
 using Serilog;
 using VMLab.Contract;
+using VMLab.Contract.OSEnvironment;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
@@ -15,14 +16,16 @@ namespace VMLab.CommandHandler.Exec
         private readonly IGraphManager _graphManager;
         private readonly IVMManager _vmManager;
         private readonly ILogger _log;
+        private readonly IOSEnvironmentManager _osEnvironmentManager;
 
-        public ExecHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log) : base(usage)
+        public ExecHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log, IOSEnvironmentManager osEnvironmentManager) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _vmManager = vmManager;
             _log = log;
+            _osEnvironmentManager = osEnvironmentManager;
         }
 
         public override string Group => "root";
@@ -37,8 +40,9 @@ namespace VMLab.CommandHandler.Exec
                 return;
             }
 
-            var command = string.Join(" ", args.Skip(2));
-            _log.Information("Combined command: {command}", command);
+            var command = args[2];
+            var commandargs = string.Join(" ", args.Skip(3));
+            _log.Information("Combined command: {command} {args}", command, commandargs);
 
             _scriptEngine.Execute();
 
@@ -59,7 +63,10 @@ namespace VMLab.CommandHandler.Exec
                 return;
             }
 
-            control.Exec("c:\\windows\\system32\\cmd.exe", $"/c {command}");
+            var osEnv = _osEnvironmentManager.GetOSEnvironment(control.OS, control.Arch);
+
+
+            control.Exec(command, commandargs);
         }
 
         public override string UsageDescription => "Executes a command inside target vm.";

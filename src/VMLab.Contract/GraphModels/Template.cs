@@ -23,7 +23,8 @@ namespace VMLab.GraphModels
         Windows10,
         Windows81,
         Windows8,
-        Windows7
+        Windows7,
+        Ubuntu
     }
 
     public enum Arch
