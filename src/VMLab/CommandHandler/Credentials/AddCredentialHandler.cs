@@ -6,18 +6,21 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Credentials
 {
+    /// <summary>
+    /// Commandline handler which adds new secure credentials for a VM.
+    /// </summary>
     public class AddCredentialHandler : BaseParamHandler
     {
         private readonly ICredentialManager _credentialManager;
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IConsole _console;
 
-        public AddCredentialHandler(IUsage usage, ICredentialManager credentialManager, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IConsole console) : base(usage)
+        public AddCredentialHandler(IUsage usage, ICredentialManager credentialManager, IScriptRunner scriptRunner, IGraphManager graphManager, ISwitchParser switchParser, IConsole console) : base(usage)
         {
             _credentialManager = credentialManager;
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _console = console;
@@ -65,11 +68,11 @@ namespace VMLab.CommandHandler.Credentials
                 Password = password
             };
 
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
-            foreach (var vm in _graphManager.VMs.Where(v => switches["vm"].Contains(v.Name)))
+            foreach (var vm in _graphManager.VMs.Where(v => switches["vm"].Select(n => n.ToLower()).Contains(v.Name.ToLower())))
             {
-                _credentialManager.AddSecureCredential(cred, vm);
+               _credentialManager.AddSecureCredential(cred, vm);
             }
         }
 

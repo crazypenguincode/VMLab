@@ -5,6 +5,10 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Credentials
 {
+    /// <summary>
+    /// Returns a summary of all credentials for each VM in the lab.
+    /// Useful for viewing which secure credentials you have stored.
+    /// </summary>
     public class ListCredentialHandler : BaseParamHandler
     {
         private readonly IConsole _console;

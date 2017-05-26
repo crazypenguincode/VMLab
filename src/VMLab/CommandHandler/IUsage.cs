@@ -3,7 +3,7 @@
     public interface IUsage
     {
         void WriteUsage(IParamHandler[] handlers);
-        void WriteHubUsage(IParamHandler handler, IParamHandler[] handlers);
+        void WriteHubUsage(IParamHandler hub, IParamHandler[] handlers);
         void WriteCommandUsage(IParamHandler handler);
     }
 }

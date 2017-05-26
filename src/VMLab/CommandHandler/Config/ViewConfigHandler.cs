@@ -3,6 +3,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Config
 {
+    /// <summary>
+    /// Commandline handler that dumps configuration to the console.
+    /// </summary>
     public class ViewConfigHandler : BaseParamHandler
     {
         private readonly IConfig _config;

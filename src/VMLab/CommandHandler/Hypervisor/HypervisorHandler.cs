@@ -14,6 +14,6 @@ namespace VMLab.CommandHandler.List
         {
         }
 
-        protected override string SubGroup => "hypervisor";
+        public override string SubGroup => "hypervisor";
     }
 }

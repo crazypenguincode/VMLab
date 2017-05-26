@@ -4,6 +4,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Credentials
 {
+    /// <summary>
+    /// Command handler for clearing all secure credentials. Useful for when exporting lab.
+    /// </summary>
     public class ClearCredentialHandler : BaseParamHandler
     {
         private readonly ISwitchParser _switchParser;

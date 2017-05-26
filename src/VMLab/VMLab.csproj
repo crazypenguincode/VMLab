@@ -167,6 +167,7 @@
     <Compile Include="CommandHandler\Snapshot\RevertSnapshotHandler.cs" />
     <Compile Include="CommandHandler\Snapshot\SnapshotHandler.cs" />
     <Compile Include="CommandHandler\SwitchParser.cs" />
+    <Compile Include="CommandHandler\SwitchRequirementDefinition.cs" />
     <Compile Include="CommandHandler\Usage.cs" />
     <Compile Include="CommandHandler\Template\BuildHandler.cs" />
     <Compile Include="CommandHandler\CommandHandler.cs" />

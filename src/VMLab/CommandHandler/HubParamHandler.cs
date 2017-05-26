@@ -4,7 +4,7 @@ namespace VMLab.CommandHandler
 {
     public abstract class HubParamHandler : BaseParamHandler
     {
-        protected abstract string SubGroup { get; }
+        public abstract string SubGroup { get; }
 
         public override void OnHandle(string[] args)
         {

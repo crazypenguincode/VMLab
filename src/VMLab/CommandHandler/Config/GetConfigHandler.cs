@@ -3,6 +3,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Config
 {
+    /// <summary>
+    /// Returns configuration config requested by user.
+    /// </summary>
     public class GetConfigHandler : BaseParamHandler
     {
         private readonly IConfig _config;

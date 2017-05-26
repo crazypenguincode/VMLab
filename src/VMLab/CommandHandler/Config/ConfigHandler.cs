@@ -9,6 +9,6 @@
         public override string Group => "root";
         public override string UsageDescription => "Handles vmlab configuration.";
         public override string[] Handles => new[] {"config", "c", "cfg", "configuration"};
-        protected override string SubGroup => "config";
+        public override string SubGroup => "config";
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using VMLab.Contract;
+﻿using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
@@ -36,7 +35,7 @@ namespace VMLab.CommandHandler.VMControl
             _console.Information("Hypervisor: {hypervisor}", _capabilities.Hypervisor);
             _console.Information("Name: {name}", _graphManager.LabName);
             _console.Information("Description: {description}", _graphManager.LabDescription);
-            _console.Information("Author: {author}", _graphManager.LabAuthor);
+            _console.Information("Author: {author-}", _graphManager.LabAuthor);
             _console.Information("");
             _console.Information("Locks:");
             foreach(var l in _graphManager.Locks)

@@ -10,6 +10,6 @@
         {
         }
 
-        protected override string SubGroup => "template";
+        public override string SubGroup => "template";
     }
 }

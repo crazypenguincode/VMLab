@@ -3,6 +3,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Config
 {
+    /// <summary>
+    /// Command line handler which sets values in configuration files.
+    /// </summary>
     public class SetConfigHandler : BaseParamHandler
     {
         private readonly IConfig _config;

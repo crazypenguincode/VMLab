@@ -9,6 +9,6 @@
         public override string Group => "root";
         public override string UsageDescription => "Allows for importing and exporting of whole lab folder.";
         public override string[] Handles => new[] {"lab", "l"};
-        protected override string SubGroup => "lab";
+        public override string SubGroup => "lab";
     }
 }

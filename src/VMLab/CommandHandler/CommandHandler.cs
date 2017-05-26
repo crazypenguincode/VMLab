@@ -5,6 +5,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// This class is the entry point for handling all commandline arguments.
+    /// </summary>
     public class CommandHandler : ICommandHandler
     {
         private readonly IParamHandler[] _handlers;
@@ -20,6 +23,10 @@ namespace VMLab.CommandHandler
             _handlers = handlers.ToArray();
         }
 
+        /// <summary>
+        /// Parses commandline arguments and dispatches them to the relevant handler.
+        /// </summary>
+        /// <param name="args">Command arguments passed to the Main method.</param>
         public void Parse(string[] args)
         {
             _log.Information("Calling Command Handler with Args: {@args}", args);
@@ -30,9 +37,6 @@ namespace VMLab.CommandHandler
                 useableHandler.Handle(args);
             else
             {
-
-
-
                 if (args.Length > 0)
                     if(args[0].ToLower() == "-help" || args[0].ToLower() == "-h" || args[0].ToLower() == "help")
                         _usage.WriteUsage(_handlers);
@@ -40,8 +44,6 @@ namespace VMLab.CommandHandler
                         _console.Error("Unknown command or action {command}! Please run vmlab.exe -help for usage.", args[0]);
                 else
                     _console.Error("Expected extra parameters. Please run vmlab.exe -help for usage.");
-                
-                    
             }
         }
     }

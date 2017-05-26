@@ -5,13 +5,15 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// Handles the version command line command.
+    /// </summary>
     public class VersionHandler : BaseParamHandler
     {
         public override string Group => "root";
         public override string[] Handles => new[] {"version", "v"};
         private readonly IConsole _console;
         private readonly ILogger _log;
-
 
         public VersionHandler(IConsole console, IUsage usage, ILogger log) : base(usage)
         {

@@ -6,18 +6,21 @@ using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.CommandHandler.Credentials
 {
+    /// <summary>
+    /// Commandline handler removes target stored credentails.
+    /// </summary>
     public class RemoveCredentialHandler : BaseParamHandler
     {
         private readonly ICredentialManager _credentialManager;
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly ISwitchParser _switchParser;
         private readonly IConsole _console;
 
-        public RemoveCredentialHandler(IUsage usage, ICredentialManager credentialManager, IScriptEngine scriptEngine, IGraphManager graphManager, ISwitchParser switchParser, IConsole console) : base(usage)
+        public RemoveCredentialHandler(IUsage usage, ICredentialManager credentialManager, IScriptRunner scriptRunner, IGraphManager graphManager, ISwitchParser switchParser, IConsole console) : base(usage)
         {
             _credentialManager = credentialManager;
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _switchParser = switchParser;
             _console = console;
@@ -41,7 +44,7 @@ namespace VMLab.CommandHandler.Credentials
                 return;
             }
 
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
             foreach (var vm in _graphManager.VMs.Where(v => switches["vm"].Contains(v.Name)))
             {

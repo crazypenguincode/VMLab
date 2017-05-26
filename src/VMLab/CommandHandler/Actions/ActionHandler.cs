@@ -7,17 +7,20 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Actions
 {
+    /// <summary>
+    /// Allows user to run actions defined in the vmlab.csx file.
+    /// </summary>
     public class ActionHandler : BaseParamHandler
     {
-        private readonly IScriptRunner _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
         private readonly ISessionFactory _sessionFactory;
         private readonly ILogger _log;
 
-        public ActionHandler(IUsage usage, IScriptRunner scriptEngine, IGraphManager graphManager, IConsole console, ISessionFactory sessionFactory, ILogger log) : base(usage)
+        public ActionHandler(IUsage usage, IScriptRunner scriptRunner, IGraphManager graphManager, IConsole console, ISessionFactory sessionFactory, ILogger log) : base(usage)
         {
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _console = console;
             _sessionFactory = sessionFactory;
@@ -35,7 +38,7 @@ namespace VMLab.CommandHandler.Actions
                 return;
             }
 
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
             var actions = _graphManager.Actions.Where(a => a.Name == args[1]);
 
