@@ -7,6 +7,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.VMControl
 {
+    /// <summary>
+    /// Commandline handler destroys lab vms and removes them from disk.
+    /// </summary>
     public class DestroyHandler : BaseParamHandler
     {
         private readonly IScriptRunner _scriptEngine;
@@ -38,7 +41,7 @@ namespace VMLab.CommandHandler.VMControl
             if (_graphManager.Locks.Contains("destroy"))
             {
                 _console.Error("Can't destroy lab because a lock is set on destroy!");
-
+                return;
             }
 
             var switches = _switchParser.Parse(args.Skip(1).ToArray());

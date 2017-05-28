@@ -8,6 +8,9 @@ using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// Command Handler which triggers template build process.
+    /// </summary>
     public class BuildHandler : BaseParamHandler
     {
         public override string Group => "template";

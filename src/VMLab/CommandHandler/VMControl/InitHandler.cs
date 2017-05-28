@@ -1,53 +1,39 @@
-﻿using SystemInterface.IO;
-using Serilog;
+﻿using Serilog;
+using VMLab.Contract;
 using VMLab.Helper;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// Command handler that creates an initial vmlab.csx file.
+    /// </summary>
     public class InitHandler : BaseParamHandler
     {
         public override string Group => "root";
         public override string[] Handles => new[] {"init", "i"};
 
-        private readonly IResource _resource;
-        private readonly IFile _file;
         private readonly IConsole _console;
         private readonly ILogger _log;
+        private readonly ILabManager _labManager;
 
-        public InitHandler(IResource resource, IFile file, IConsole console, IUsage usage, ILogger log) : base(usage)
+        public InitHandler(IConsole console, IUsage usage, ILogger log, ILabManager labManager) : base(usage)
         {
-            _resource = resource;
-            _file = file;
             _console = console;
             _log = log;
+            _labManager = labManager;
         }
 
         public override void OnHandle(string[] args)
         {
             _log.Information("Calling init Command Handler with Args: {@args}", args);
-
-            if (_file.Exists("vmlab.csx"))
+            
+            if (args.Length < 2)
             {
-                _console.Warning("Can't init vmlab.csx because it already exists!");
+                _console.Error("You must pass a template name to initialise!");
                 return;
             }
 
-            if (args.Length < 2)
-            {
-                _console.Error("You must pass a template to initialise!");
-            }
-
-            var template = @"VM(""myVM"")
-	.Template(""__TEMPLATE__"")
-	.Credential(""Admin"", ""Administrator"", ""P@ssw0rd01"")
-	.Network(""NAT"")
-	.CPU(1,2)
-	.Memory(2048)
-	.ShareFolder(""."", ""c:\\lab"");
-";
-            template = template.Replace("__TEMPLATE__", args[1]);
-
-            _file.WriteAllText("vmlab.csx", template);
+            _labManager.Init(args[1]);
         }
 
         public override string UsageDescription => "Create a vmlab.csx file with target template.";

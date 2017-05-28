@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using SystemInterface;
 using SystemInterface.IO;
+using VMLab.Contract;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.OSEnvironment;
 using VMLab.Contract.Shim;
@@ -32,8 +33,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private TemplateManifest _manifest;
         private GraphModels.VM _vm;
         private readonly IOSEnvironmentManager _osEnvironmentManager;
+        private readonly IVMManager _vmManager;
 
-        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager)
+        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager)
         {
             _vix = vix;
             _shimFactory = shimFactory;
@@ -42,6 +44,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _console = console;
             _environment = environment;
             _osEnvironmentManager = osEnvironmentManager;
+            _vmManager = vmManager;
         }
 
         internal void SetCredentials(IEnumerable<Credential> credentials)
@@ -242,11 +245,17 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _vix.CloseObject(vm);
         }
 
-        public void Start()
+        public void Start(bool runStartUpHandlers = true)
         {
+            if(runStartUpHandlers)
+            _vmManager.PreStart(_vm);
+
             var vm = _vix.ConnectToVM(_vmx);
             _vix.PowerOn(vm);
             _vix.CloseObject(vm);
+
+            if (runStartUpHandlers)
+                _vmManager.PostStart(this, _vm);
         }
 
         public void CopyFileToVM(string hostPath, string guestPath)

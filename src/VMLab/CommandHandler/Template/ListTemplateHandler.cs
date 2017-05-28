@@ -4,6 +4,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Template
 {
+    /// <summary>
+    /// Command Handler lists details for installed templates.
+    /// </summary>
     public class ListTemplateHandler : BaseParamHandler
     {
         private readonly IConsole _console;

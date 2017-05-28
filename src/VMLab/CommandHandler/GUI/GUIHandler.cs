@@ -6,6 +6,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.GUI
 {
+    /// <summary>
+    /// Command handler that shows the hypervisor gui for target vm.
+    /// </summary>
     public class GUIHandler : BaseParamHandler
     {
         private readonly IScriptRunner _scriptEngine;

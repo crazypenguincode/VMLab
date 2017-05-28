@@ -6,6 +6,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.VMControl
 {
+    /// <summary>
+    /// Command Handler that restarts virtual machines in the lab.
+    /// </summary>
     public class RestartHandler : BaseParamHandler
     {
         private readonly IScriptRunner _scriptEngine;

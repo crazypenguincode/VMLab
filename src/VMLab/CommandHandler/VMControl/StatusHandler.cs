@@ -5,18 +5,21 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.VMControl
 {
+    /// <summary>
+    /// Command Handler that prints the status of all VMs in the lab.
+    /// </summary>
     public class StatusHandler : BaseParamHandler
     {
-        private readonly IScriptEngine _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly IVMManager _vmManager;
         private readonly IConsole _console;
         private readonly IManifestManager _manifestManager;
         private readonly ICapabilities _capabilities;
 
-        public StatusHandler(IUsage usage, IScriptEngine scriptEngine, IGraphManager graphManager, IVMManager vmManager, IConsole console, IManifestManager manifestManager, ICapabilities capabilities) : base(usage)
+        public StatusHandler(IUsage usage, IScriptRunner scriptRunner, IGraphManager graphManager, IVMManager vmManager, IConsole console, IManifestManager manifestManager, ICapabilities capabilities) : base(usage)
         {
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _vmManager = vmManager;
             _console = console;
@@ -29,7 +32,7 @@ namespace VMLab.CommandHandler.VMControl
         public override string[] Handles => new[] {"status", "stat"};
         public override void OnHandle(string[] args)
         {
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
             _console.Information("Lab Status:");
             _console.Information("Hypervisor: {hypervisor}", _capabilities.Hypervisor);

@@ -7,6 +7,9 @@ using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.CommandHandler.Lab
 {
+    /// <summary>
+    /// Command Handler that imports a zip file that was created by lab export.
+    /// </summary>
     public class LabImportHandler : BaseParamHandler
     {
         private readonly IConsole _console;

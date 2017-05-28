@@ -2,13 +2,15 @@
 using System.Linq;
 using Serilog;
 using VMLab.Contract;
-using VMLab.Contract.OSEnvironment;
 using VMLab.GraphModels;
 using VMLab.Helper;
 using VMLab.Script;
 
 namespace VMLab.CommandHandler.Exec
 {
+    /// <summary>
+    /// Command handler executes a command in target vm
+    /// </summary>
     public class ExecHandler : BaseParamHandler
     {
         private readonly IConsole _console;
@@ -16,16 +18,14 @@ namespace VMLab.CommandHandler.Exec
         private readonly IGraphManager _graphManager;
         private readonly IVMManager _vmManager;
         private readonly ILogger _log;
-        private readonly IOSEnvironmentManager _osEnvironmentManager;
 
-        public ExecHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log, IOSEnvironmentManager osEnvironmentManager) : base(usage)
+        public ExecHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log) : base(usage)
         {
             _console = console;
             _scriptEngine = scriptEngine;
             _graphManager = graphManager;
             _vmManager = vmManager;
             _log = log;
-            _osEnvironmentManager = osEnvironmentManager;
         }
 
         public override string Group => "root";
@@ -62,9 +62,6 @@ namespace VMLab.CommandHandler.Exec
                 _console.Error("Can't execute command on vm because it hasn't been provisioned yet. Please run vmlab.exe start first.");
                 return;
             }
-
-            var osEnv = _osEnvironmentManager.GetOSEnvironment(control.OS, control.Arch);
-
 
             control.Exec(command, commandargs);
         }

@@ -6,6 +6,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// Command Handler that stops virtual machines in the lab.
+    /// </summary>
     public class StopHandler : BaseParamHandler
     {
         private readonly IScriptRunner _scriptEngine;

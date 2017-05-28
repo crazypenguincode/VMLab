@@ -25,8 +25,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly ICompressHelper _compressHelper;
         private readonly IConsole _console;
         private readonly IVMLoader _loader;
+        private readonly IFile _file;
 
-        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper, IConsole console, IVMLoader loader)
+        public LabManager(IDirectory directory, IEnvironment environment, IVIX vix, IThread thread, Func<IVMXCollection> vmxFactory, ICompressHelper compressHelper, IConsole console, IVMLoader loader, IFile file)
         {
             _directory = directory;
             _environment = environment;
@@ -36,6 +37,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _compressHelper = compressHelper;
             _console = console;
             _loader = loader;
+            _file = file;
         }
 
         public void ExportLab(string path)
@@ -90,6 +92,28 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             {
                 _console.Error("Can't clean lab because there are running Virtual Machines!");
             }
+        }
+
+        public void Init(string templateName)
+        {
+            if (_file.Exists("vmlab.csx"))
+            {
+                _console.Warning("Can't init vmlab.csx because it already exists!");
+                return;
+            }
+
+            var template = @"VM(""myVM"")
+	.Template(""__TEMPLATE__"")
+	.Credential(""Admin"", ""Administrator"", ""P@ssw0rd01"")
+	.Network(""NAT"")
+	.CPU(1,2)
+	.Memory(2048)
+	.ShareFolder(""."", ""c:\\lab"");
+";
+            template = template.Replace("__TEMPLATE__", templateName);
+
+            _file.WriteAllText("vmlab.csx", template);
+
         }
     }
 }

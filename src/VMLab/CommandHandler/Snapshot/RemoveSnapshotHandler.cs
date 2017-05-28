@@ -7,6 +7,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Snapshot
 {
+    /// <summary>
+    /// Command line handler that removes snapshots from lab/vms.
+    /// </summary>
     public class RemoveSnapshotHandler : BaseParamHandler
     {
         private readonly IConsole _console;

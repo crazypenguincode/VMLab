@@ -202,7 +202,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vmx.ReadFromFile(vmxPath);
             _onStartProvisioner.PreStart(vmx, vm);
             vmx.WriteToFile(vmxPath);
-            vmcontrol.Start();
+            vmcontrol.Start(false);
             _onStartProvisioner.PostStart(vmcontrol, vm);
             vm.OnProvision(vmcontrol);
 

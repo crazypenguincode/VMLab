@@ -1,13 +1,10 @@
-﻿using System.Linq;
-using SystemInterface.IO;
-using VMLab.Contract;
-using VMLab.GraphModels;
-using VMLab.Helper;
-using VMLab.Script;
-using VMLab.Script.FluentInterface;
+﻿using VMLab.Contract;
 
 namespace VMLab.CommandHandler.Lab
 {
+    /// <summary>
+    /// Command Handler that cleans up a lab folder (removes _vmlab folder).
+    /// </summary>
     public class CleanHandler : BaseParamHandler
     {
 

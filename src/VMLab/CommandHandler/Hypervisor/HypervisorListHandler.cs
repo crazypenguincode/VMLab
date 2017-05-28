@@ -4,14 +4,17 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.List
 {
-    public class PluginListHandler : BaseParamHandler
+    /// <summary>
+    /// Command handler lists all available hypervisors.
+    /// </summary>
+    public class HypervisorListHandler : BaseParamHandler
     {
         private readonly IConsole _console;
         private readonly IConfig _config;
         private readonly IHypervisorFinder _finder;
         private readonly ILogger _log;
 
-        public PluginListHandler(IConsole console, IConfig config, IUsage usage, IHypervisorFinder finder, ILogger log) : base(usage)
+        public HypervisorListHandler(IConsole console, IConfig config, IUsage usage, IHypervisorFinder finder, ILogger log) : base(usage)
         {
             _console = console;
             _config = config;
@@ -30,7 +33,7 @@ namespace VMLab.CommandHandler.List
 
             foreach (var hypervisor in _finder.Hypervisors)
             {
-                _console.Information(string.Equals(_config.GetSetting("Hypervisor"), hypervisor,
+                _console.Information(string.Equals(_config.GetSetting("Hypervisor", ConfigScope.System), hypervisor,
                     StringComparison.CurrentCultureIgnoreCase)
                     ? $" * {hypervisor}"
                     : $" - {hypervisor}");

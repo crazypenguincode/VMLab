@@ -8,18 +8,21 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Exec
 {
+    /// <summary>
+    /// Command Handler which allows user to execute powershell in target vm.
+    /// </summary>
     public class PowershellHandler : BaseParamHandler
     {
         private readonly IConsole _console;
-        private readonly IScriptRunner _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly IVMManager _vmManager;
         private readonly ILogger _log;
 
-        public PowershellHandler(IUsage usage, IConsole console, IScriptRunner scriptEngine, IGraphManager graphManager, IVMManager vmManager, ILogger log) : base(usage)
+        public PowershellHandler(IUsage usage, IConsole console, IScriptRunner scriptRunner, IGraphManager graphManager, IVMManager vmManager, ILogger log) : base(usage)
         {
             _console = console;
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _vmManager = vmManager;
             _log = log;
@@ -37,7 +40,7 @@ namespace VMLab.CommandHandler.Exec
                 return;
             }
 
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
             var vm = _graphManager.VMs.FirstOrDefault(
                 v => string.Equals(v.Name, args[1], StringComparison.CurrentCultureIgnoreCase));

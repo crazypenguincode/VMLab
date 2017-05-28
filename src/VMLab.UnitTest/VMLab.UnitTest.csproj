@@ -51,6 +51,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="SystemInterface, Version=0.20.0.123, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemWrapper.Interfaces.0.20.0.123\lib\net45\SystemInterface.dll</HintPath>
+    </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
     </Reference>
@@ -74,8 +77,30 @@
     <Compile Include="CommandHandler\Credentials\ClearCredentialHandlerTests.cs" />
     <Compile Include="CommandHandler\Credentials\ListCredentialHandlerTests.cs" />
     <Compile Include="CommandHandler\Credentials\RemoveCredentialHandlerTests.cs" />
+    <Compile Include="CommandHandler\Exec\ExecHandlerTests.cs" />
+    <Compile Include="CommandHandler\Exec\PowershellHandlerTests.cs" />
+    <Compile Include="CommandHandler\GUI\GUIHandlerTests.cs" />
+    <Compile Include="CommandHandler\Hypervisor\HypervisorListHandlerTests.cs" />
+    <Compile Include="CommandHandler\Hypervisor\HypervisorSetHandlerTests.cs" />
+    <Compile Include="CommandHandler\Lab\CleanHandlerTests.cs" />
+    <Compile Include="CommandHandler\Lab\LabExportHandlerTests.cs" />
+    <Compile Include="CommandHandler\Lab\LabImporterHandlerTests.cs" />
+    <Compile Include="CommandHandler\Snapshot\AddSnapshotHandlerTests.cs" />
+    <Compile Include="CommandHandler\Snapshot\ListSnapshotHandlerTests.cs" />
+    <Compile Include="CommandHandler\Snapshot\RemoveSnapshotHandlerTests.cs" />
+    <Compile Include="CommandHandler\Snapshot\RevertSnapshotHandlerTests.cs" />
     <Compile Include="CommandHandler\SwitchParserTests.cs" />
+    <Compile Include="CommandHandler\Template\BuildHandlerTests.cs" />
+    <Compile Include="CommandHandler\Template\ImportTemplateHandlerTests.cs" />
+    <Compile Include="CommandHandler\Template\ListTemplateHandlerTests.cs" />
+    <Compile Include="CommandHandler\Template\RemoveTemplateHandlerTests.cs" />
     <Compile Include="CommandHandler\UsageTests.cs" />
+    <Compile Include="CommandHandler\VMControl\DestroyHandlerTests.cs" />
+    <Compile Include="CommandHandler\VMControl\InitHandlerTests.cs" />
+    <Compile Include="CommandHandler\VMControl\RestartHandlerTests.cs" />
+    <Compile Include="CommandHandler\VMControl\StartHandlerTests.cs" />
+    <Compile Include="CommandHandler\VMControl\StatusHandlerTests.cs" />
+    <Compile Include="CommandHandler\VMControl\StopHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -149,7 +149,7 @@
     <Compile Include="VIX\VIX.cs" />
     <Compile Include="VIX\VixException.cs" />
     <Compile Include="VIX\VixProcess.cs" />
-    <Compile Include="VMManager.cs" />
+    <Compile Include="VMManagerSingleton.cs" />
     <Compile Include="VMX\ExecResult.cs" />
     <Compile Include="VMX\IOnStartProvisioner.cs" />
     <Compile Include="VMX\OnStartProvisioner.cs" />

@@ -9,9 +9,12 @@ using VMLab.Script.FluentInterface;
 
 namespace VMLab.CommandHandler.Lab
 {
+    /// <summary>
+    /// Command handler that exports the lab to an archive.
+    /// </summary>
     public class LabExportHandler : BaseParamHandler
     {
-        private readonly IScriptRunner _scriptEngine;
+        private readonly IScriptRunner _scriptRunner;
         private readonly IGraphManager _graphManager;
         private readonly IConsole _console;
         private readonly IFile _file;
@@ -19,9 +22,9 @@ namespace VMLab.CommandHandler.Lab
         private readonly ILabManager _labManager;
         private readonly ILogger _log;
 
-        public LabExportHandler(IUsage usage, IScriptRunner scriptEngine, IGraphManager graphManager, IConsole console, IFile file, IVMManager vmManager, ILabManager labManager, ILogger log) : base(usage)
+        public LabExportHandler(IUsage usage, IScriptRunner scriptRunner, IGraphManager graphManager, IConsole console, IFile file, IVMManager vmManager, ILabManager labManager, ILogger log) : base(usage)
         {
-            _scriptEngine = scriptEngine;
+            _scriptRunner = scriptRunner;
             _graphManager = graphManager;
             _console = console;
             _file = file;
@@ -48,7 +51,7 @@ namespace VMLab.CommandHandler.Lab
                 return;
             }
 
-            _scriptEngine.Execute();
+            _scriptRunner.Execute();
 
             if (_graphManager.VMs
                     .Select(v => _vmManager.GetVM(v))

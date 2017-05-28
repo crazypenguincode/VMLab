@@ -7,6 +7,9 @@ using VMLab.Script;
 
 namespace VMLab.CommandHandler.Snapshot
 {
+    /// <summary>
+    /// Command Handler that takes new snapshots.
+    /// </summary>
     public class AddSnapshotHandler : BaseParamHandler
     {
         private readonly IConsole _console;

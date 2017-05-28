@@ -10,7 +10,7 @@ using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.VMwareWorkstation
 {
-    public class VMManager : IVMManager
+    public class VMManagerSingleton : IVMManager
     {
         private readonly IDirectory _directory;
         private readonly IEnvironment _environment;
@@ -20,7 +20,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
         private readonly Func<IVMXCollection> _vmxFactory;
         private readonly IConsole _console;
 
-        public VMManager(IDirectory directory, IEnvironment environment, IFile file, IVMLoader loader, IOnStartProvisioner onStartProvisioner, Func<IVMXCollection> vmxFactory, IConsole console)
+        public VMManagerSingleton(IDirectory directory, IEnvironment environment, IFile file, IVMLoader loader, IOnStartProvisioner onStartProvisioner, Func<IVMXCollection> vmxFactory, IConsole console)
         {
             _directory = directory;
             _environment = environment;

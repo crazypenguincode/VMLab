@@ -23,7 +23,7 @@ namespace VMLab.Script.FluentInterface
         void WaitFile(string path, bool exists = true);
         void Restart(bool force = false);
         void Stop(bool force = false);
-        void Start();
+        void Start(bool runStartupHandlers = true);
         void CopyFileToVM(string hostPath, string guestPath);
         void CopyFileFromVM(string guestPath, string hostPath);
         void DeleteFileFromVM(string path);

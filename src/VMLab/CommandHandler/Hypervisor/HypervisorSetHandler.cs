@@ -5,6 +5,9 @@ using VMLab.Helper;
 
 namespace VMLab.CommandHandler.Hypervisor
 {
+    /// <summary>
+    /// Command Handler that sets the current hypervisor.
+    /// </summary>
     public class HypervisorSetHandler : BaseParamHandler
     {
         private readonly IConsole _console;

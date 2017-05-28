@@ -8,6 +8,9 @@ using VMLab.Script.FluentInterface;
 
 namespace VMLab.CommandHandler
 {
+    /// <summary>
+    /// Command Handler that starts or provisons virtual machines.
+    /// </summary>
     public class StartHandler : BaseParamHandler
     {
         private readonly IScriptRunner _scriptEngine;
@@ -71,9 +74,7 @@ namespace VMLab.CommandHandler
                     if(control.PowerState != VMPower.Off)
                         continue;
 
-                    _vmManager.PreStart(vm);
                     control.Start();
-                    _vmManager.PostStart(control, vm);
                 }
             }
         }
