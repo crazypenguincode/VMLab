@@ -61,35 +61,50 @@ namespace VMLab.Contract.Shim
 
             while (!FileExist(stdret) || firstRun)
             {
-                firstRun = false;
-                Thread.Sleep(1000);
+                try
+                {
+                    firstRun = false;
+                    Thread.Sleep(1000);
 
-                var outtext = GetFileAction(stdout).Skip(outindex).ToArray();
-                var errtext = GetFileAction(stderr).Skip(errindex).ToArray();
+                    var outtext = GetFileAction(stdout).Skip(outindex).ToArray();
+                    var errtext = GetFileAction(stderr).Skip(errindex).ToArray();
 
-                outindex += outtext.Length;
-                errindex += errtext.Length;
+                    outindex += outtext.Length;
+                    errindex += errtext.Length;
 
-                foreach(var line in outtext)
-                    _console.Information(line);
+                    foreach (var line in outtext)
+                        _console.Information(line);
 
-                foreach(var line in errtext)
-                    _console.Error(line);
+                    foreach (var line in errtext)
+                        _console.Error(line);
+                }
+                catch
+                {
+                    _console.Information("Script Terminated: Connection lost...");
+                    Thread.Sleep(120);
+                    break;
+                }
             }
+            try
+            {
+                var result = GetFileAction(stdret).FirstOrDefault();
 
-            var result = GetFileAction(stdret).FirstOrDefault();
+                if (result == null)
+                    return -1;
 
-            if (result == null)
+                if (FileExist(stdout))
+                    RemoveFile(stdout);
+                if (FileExist(stderr))
+                    RemoveFile(stderr);
+                if (FileExist(stdret))
+                    RemoveFile(stdret);
+
+                return int.Parse(result);
+            }
+            catch
+            {
                 return -1;
-
-            if (FileExist(stdout))
-                RemoveFile(stdout);
-            if (FileExist(stderr))
-                RemoveFile(stderr);
-            if (FileExist(stdret))
-                RemoveFile(stdret);
-
-            return int.Parse(result);
+            }
         }
 
         public IOSEnvironment OSEnvironment { get; set; }

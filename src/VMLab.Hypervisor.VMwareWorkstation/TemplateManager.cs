@@ -10,7 +10,6 @@ using SystemInterface.Threading;
 using Newtonsoft.Json;
 using Serilog;
 using VMLab.Contract;
-using VMLab.Contract.CredentialManager;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.Helpers;
 using VMLab.Contract.SemVer;
@@ -93,6 +92,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation
                 Version = template.Version
             };
 
+            if (!_directory.Exists(templateFolder))
+                _directory.CreateDirectory(templateFolder);
+
             _file.WriteAllText($"{templateFolder}\\manifest.json", JsonConvert.SerializeObject(manifest));
 
             var vmxpath = $"{templateFolder}\\{template.Name}.vmx";
@@ -106,7 +108,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             vm.SetCredentials("Admin");
 
-            vm.Start();
+            vm.Start(false);
 
             if (!template.HeadLess)
                 vm.ShowUI();
@@ -203,6 +205,8 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _onStartProvisioner.PreStart(vmx, vm);
             vmx.WriteToFile(vmxPath);
             vmcontrol.Start(false);
+
+            vmcontrol.WaitFile("c:\\provision.wait", false);
             _onStartProvisioner.PostStart(vmcontrol, vm);
             vm.OnProvision(vmcontrol);
 
@@ -294,6 +298,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vmx.WriteValue("pciBridge7.virtualDev", "pcieRootPort");
             vmx.WriteValue("pciBridge7.functions", "8");
             vmx.WriteValue("bios.bootOrder", "cdrom, hdd, floppy");
+            vmx.WriteValue("gui.applyHostDisplayScalingToGuest", "FALSE");
 
             var index = 0;
 

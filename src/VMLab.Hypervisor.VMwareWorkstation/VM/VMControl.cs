@@ -34,8 +34,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private GraphModels.VM _vm;
         private readonly IOSEnvironmentManager _osEnvironmentManager;
         private readonly IVMManager _vmManager;
+        private readonly IPath _path;
 
-        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager)
+        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager, IPath path)
         {
             _vix = vix;
             _shimFactory = shimFactory;
@@ -45,6 +46,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _environment = environment;
             _osEnvironmentManager = osEnvironmentManager;
             _vmManager = vmManager;
+            _path = path;
         }
 
         internal void SetCredentials(IEnumerable<Credential> credentials)
@@ -92,14 +94,19 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                     shim.FileExist = p => _vix.FileExists(vm, p);
                     shim.GetFileAction = file =>
                     {
-
                         var localfile = $"{_config.GetSetting("TempDir")}\\{Path.GetFileName(file)}";
 
                         _vix.CopyFileToHost(vm, file, localfile);
 
                         return _file.ReadAllLines(localfile);
                     };
-                    shim.PutFileAction = (local, guest) => _vix.CopyFileToGuest(vm, local, guest);
+                    shim.PutFileAction = (local, guest) =>
+                    {
+                        var tempFile = $"{_config.GetSetting("TempDir")}\\{Guid.NewGuid()}";
+                        _file.Copy(local, tempFile);
+                        _vix.CopyFileToGuest(vm, tempFile, guest);
+                        _file.Delete(tempFile);
+                    };
                     shim.RemoveFile = p => _vix.DeleteFileInGuest(vm, p);
 
                     _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
@@ -260,9 +267,28 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void CopyFileToVM(string hostPath, string guestPath)
         {
+            
+
+            if (!_file.Exists(hostPath))
+            {
+                _console.Error($"Can't find file {hostPath}");
+                throw new FileNotFoundException($"Can't find file {hostPath}");
+            }
+
+            hostPath = _path.GetFullPath(hostPath);
+            _console.Information("Copying {hostpath} to {guestpath}", hostPath, guestPath);
             var vm = _vix.ConnectToVM(_vmx);
             _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-            _vix.CopyFileToGuest(vm, hostPath, guestPath);
+
+            if (_vix.DirectoryExist(vm, _path.GetDirectoryName(guestPath)))
+            {
+
+                _vix.CopyFileToGuest(vm, hostPath, guestPath);
+            }
+            else
+            {
+                _console.Error("Can't copy file as directory doesn't exist in guest!");
+            }
             _vix.LogoutOfGuest(vm);
             _vix.CloseObject(vm);
         }

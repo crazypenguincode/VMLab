@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 using Serilog;
@@ -23,6 +24,14 @@ namespace VMLab.Contract.Helpers
         public void DownloadFile(string uri, string path)
         {
             _log.Information("Downloading file {file} from {url}", path, uri);
+
+            var directory = Path.GetDirectoryName(path);
+
+            if(directory == null)
+                throw new ArgumentNullException(nameof(path));
+
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
 
             using (var web = new WebClient())
             {
