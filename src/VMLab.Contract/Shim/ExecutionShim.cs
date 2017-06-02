@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using SystemInterface.IO;
+using VMLab.Contract.Helpers;
 using VMLab.Contract.OSEnvironment;
 using VMLab.Helper;
 
@@ -20,13 +21,15 @@ namespace VMLab.Contract.Shim
         private readonly IFile _file;
         private readonly IConfig _config;
         private readonly IConsole _console;
+        private readonly IRetryHelper _retryHelper;
 
 
-        public ExecutionShim(IFile file, IConsole console, IConfig config)
+        public ExecutionShim(IFile file, IConsole console, IConfig config, IRetryHelper retryHelper)
         {
             _file = file;
             _console = console;
             _config = config;
+            _retryHelper = retryHelper;
         }
 
         public int Execute(string path, string args)
@@ -58,6 +61,7 @@ namespace VMLab.Contract.Shim
             var errindex = 0;
             var outindex = 0;
             var firstRun = true;
+            var tries = 10;
 
             while (!FileExist(stdret) || firstRun)
             {
@@ -77,12 +81,21 @@ namespace VMLab.Contract.Shim
 
                     foreach (var line in errtext)
                         _console.Error(line);
+
+                    tries = 10;
                 }
-                catch
+                catch(Exception e)
                 {
-                    _console.Information("Script Terminated: Connection lost...");
-                    Thread.Sleep(120);
-                    break;
+                    if (tries < 1)
+                    {
+                        _console.Information("Script Terminated: Connection lost...");
+                        _console.Error(e, "Error: {e}", e);
+                        break;
+                    }
+
+                    _console.Warning("Having trouble reading text... retrying.");
+                    Thread.Sleep(5000);
+                    tries--;
                 }
             }
             try
@@ -106,6 +119,7 @@ namespace VMLab.Contract.Shim
                 return -1;
             }
         }
+
 
         public IOSEnvironment OSEnvironment { get; set; }
     }

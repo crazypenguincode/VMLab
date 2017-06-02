@@ -42,5 +42,6 @@ namespace VMLab.Script.FluentInterface
         int Memory { get; }
         int Cpu { get; }
         int CpuCore { get; }
+        bool FileExistsInGuest(string path);
     }
 }

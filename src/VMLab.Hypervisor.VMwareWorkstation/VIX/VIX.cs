@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SystemInterface.Threading;
 using Serilog;
 using VixCOM;
 using VMLab.Contract.Helpers;
@@ -13,13 +14,31 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VIX
         private readonly VixLib _lib;
         private readonly IHost3 _host;
         private readonly ILogger _log;
+        private readonly IThread _thread;
 
-        public VIX(ILogger log)
+        public VIX(ILogger log, IThread thread)
         {
-            _log = log;
-            _lib = new VixLibClass();
-            _host = WaitJobResult<IHost3>(_lib.Connect(Constants.VIX_API_VERSION, Constants.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION, null, 0, null,
-                null, 0, null, null));
+            _thread = thread;
+            var retry = 3;
+
+            while (retry > 0)
+            {
+                retry--;
+                _log = log;
+
+                try
+                {
+                    _lib = new VixLibClass();
+                    _host = WaitJobResult<IHost3>(_lib.Connect(Constants.VIX_API_VERSION,
+                        Constants.VIX_SERVICEPROVIDER_VMWARE_WORKSTATION, null, 0, null,
+                        null, 0, null, null));
+                    return;
+                }
+                catch
+                {
+                    _thread.Sleep(3000);
+                }
+            }
         }
 
         public IVM2 ConnectToVM(string path)

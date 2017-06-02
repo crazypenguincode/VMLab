@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using SystemInterface;
 using SystemInterface.IO;
+using SystemInterface.Threading;
 using VMLab.Contract;
 using VMLab.Contract.GraphModels;
 using VMLab.Contract.OSEnvironment;
@@ -35,8 +36,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private readonly IOSEnvironmentManager _osEnvironmentManager;
         private readonly IVMManager _vmManager;
         private readonly IPath _path;
+        private readonly IThread _thread;
 
-        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager, IPath path)
+        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager, IPath path, IThread thread)
         {
             _vix = vix;
             _shimFactory = shimFactory;
@@ -47,6 +49,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _osEnvironmentManager = osEnvironmentManager;
             _vmManager = vmManager;
             _path = path;
+            _thread = thread;
         }
 
         internal void SetCredentials(IEnumerable<Credential> credentials)
@@ -90,26 +93,25 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                 {
                     var shim = _shimFactory();
                     shim.OSEnvironment = osEnv;
-                    shim.ExecutionAction = (p, a) => _vix.ExecuteCommand(vm, p, a, false, false);
-                    shim.FileExist = p => _vix.FileExists(vm, p);
+                    shim.ExecutionAction = (p, a)  => Exec(p, a, false);
+                    shim.FileExist = FileExistsInGuest;
                     shim.GetFileAction = file =>
                     {
                         var localfile = $"{_config.GetSetting("TempDir")}\\{Path.GetFileName(file)}";
 
-                        _vix.CopyFileToHost(vm, file, localfile);
+                        CopyFileFromVM(file, localfile);
 
                         return _file.ReadAllLines(localfile);
                     };
                     shim.PutFileAction = (local, guest) =>
                     {
                         var tempFile = $"{_config.GetSetting("TempDir")}\\{Guid.NewGuid()}";
+                        
                         _file.Copy(local, tempFile);
-                        _vix.CopyFileToGuest(vm, tempFile, guest);
+                        CopyFileToVM(tempFile, guest);
                         _file.Delete(tempFile);
                     };
                     shim.RemoveFile = p => _vix.DeleteFileInGuest(vm, p);
-
-                    _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
 
                     var returnCode = shim.Execute(path, args);
                     var retObj = new ExecResult {ReturnCode = returnCode};
@@ -128,11 +130,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
                         _console.Information(retObj.SuccessMessage);
                     }
-
-                    _vix.LogoutOfGuest(vm);
                 }
-
-                _vix.CloseObject(vm);
             }
         }
 
@@ -147,10 +145,10 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             var id = Guid.NewGuid().ToString();
             var guestfile = $"{osEnv.TempDirectory}{id}.ps1";
             var localFile = $"{_environment.CurrentDirectory}\\{path}";
-            
-            CopyFileToVM(localFile, guestfile);
 
+            CopyFileToVM(localFile, guestfile);
             Exec($"{osEnv.PowershellExe}", $"{osEnv.PowershellArgs} \"{guestfile}\"", execResult, wait);
+
         }
 
         public void Wait(int seconds)
@@ -278,6 +276,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             hostPath = _path.GetFullPath(hostPath);
             _console.Information("Copying {hostpath} to {guestpath}", hostPath, guestPath);
             var vm = _vix.ConnectToVM(_vmx);
+            _vix.WaitForTools(vm, 120);
             _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
 
             if (_vix.DirectoryExist(vm, _path.GetDirectoryName(guestPath)))
@@ -296,6 +295,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void CopyFileFromVM(string guestPath, string hostPath)
         {
             var vm = _vix.ConnectToVM(_vmx);
+            _vix.WaitForTools(vm, 120);
             _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
             _vix.CopyFileToHost(vm, guestPath, hostPath);
             _vix.LogoutOfGuest(vm);
@@ -305,6 +305,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public void DeleteFileFromVM(string path)
         {
             var vm = _vix.ConnectToVM(_vmx);
+            _vix.WaitForTools(vm, 120);
             _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
             _vix.DeleteFileInGuest(vm, path);
             _vix.LogoutOfGuest(vm);
@@ -414,6 +415,39 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         public int Memory => _vm?.Memeory ?? -1;
         public int Cpu => _vm?.CPUs ?? -1;
         public int CpuCore => _vm?.CPUCores ?? -1;
+
+        public bool FileExistsInGuest(string path)
+        {
+            var vm = _vix.ConnectToVM(_vmx);
+            var result = false;
+
+            while (true)
+            {
+                try
+                {
+                    _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
+                    if (_vix.FileExists(vm, path))
+                    {
+                        result = true;
+                    }
+                    _vix.LogoutOfGuest(vm);
+                    break;
+                }
+                catch
+                {
+                    if (PowerState == VMPower.Off)
+                        throw;
+                }
+
+
+                Thread.Sleep(1000);
+            }
+
+            _vix.LogoutOfGuest(vm);
+            _vix.CloseObject(vm);
+
+            return result;
+        }
 
         public void ShowUI()
         {

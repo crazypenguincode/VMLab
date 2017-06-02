@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VMLab.Script.FluentInterface;
 
 namespace VMLab.Script
@@ -15,5 +16,6 @@ namespace VMLab.Script
         void Property(string name, string value);
         string GetProperty(string name);
         void Action(string name, Action<string[], ISession> action);
+        Dictionary<string, string> LoadJson(string path);
     }
 }

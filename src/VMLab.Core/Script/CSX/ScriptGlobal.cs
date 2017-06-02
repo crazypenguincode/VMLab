@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using SystemInterface.IO;
+using Newtonsoft.Json;
 using VMLab.Contract;
 using VMLab.GraphModels;
 using VMLab.Helper;
@@ -15,8 +18,9 @@ namespace VMLab.Script
         private readonly IGraphManager _graphManager;
         private readonly IConfig _config;
         private readonly ISessionFactory _sessionFactory;
+        private readonly IFile _file;
 
-        public ScriptGlobal(IConsole console, Func<ITemplate> templateFactory, Func<IVM> vmFactory, IGraphManager graphManager, IConfig config, ISessionFactory sessionFactory)
+        public ScriptGlobal(IConsole console, Func<ITemplate> templateFactory, Func<IVM> vmFactory, IGraphManager graphManager, IConfig config, ISessionFactory sessionFactory, IFile file)
         {
             _console = console;
             _templateFactory = templateFactory;
@@ -24,6 +28,7 @@ namespace VMLab.Script
             _graphManager = graphManager;
             _config = config;
             _sessionFactory = sessionFactory;
+            _file = file;
         }
 
         public ISession Session => _sessionFactory.Build(_graphManager);
@@ -79,6 +84,11 @@ namespace VMLab.Script
         public void Action(string name, Action<string[], ISession> action)
         {
             _graphManager.AddAction(new GraphModels.Action { Name = name, OnAction = action});
+        }
+
+        public Dictionary<string, string> LoadJson(string path)
+        {
+            return JsonConvert.DeserializeObject<Dictionary<string, string>>(_file.ReadAllText(path));
         }
     }
 }

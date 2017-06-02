@@ -72,8 +72,10 @@
     <Compile Include="Helpers\IConsole.cs" />
     <Compile Include="Helpers\IFileDownloader.cs" />
     <Compile Include="Helpers\IPasswordCryptoHelper.cs" />
+    <Compile Include="Helpers\IRetryHelper.cs" />
     <Compile Include="Helpers\LogExtensions.cs" />
     <Compile Include="Helpers\PasswordCryptoHelper.cs" />
+    <Compile Include="Helpers\RetryHelper.cs" />
     <Compile Include="ICapabilities.cs" />
     <Compile Include="GraphModels\Action.cs" />
     <Compile Include="GraphModels\Credential.cs" />

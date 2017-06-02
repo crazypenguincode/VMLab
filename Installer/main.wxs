@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*" UpgradeCode="d7017cc8-82a5-4df7-b212-5a37717c7145" Version="$(var.version)" Language="1033" Name="VMLab" Manufacturer="Wil Taylor">
+        <Package InstallerVersion="300" Compressed="yes"/>
+        <Media Id="1" Cabinet="vmlab.cab" EmbedCab="yes" />
+
+        <MajorUpgrade  DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFiles64Folder">
+                <Directory Id="APPLICATIONROOTDIRECTORY" Name="VMLab"/>
+            </Directory>
+        </Directory>
+
+        <Component Id="Path" Guid="8a0637e4-ee22-4cd8-90bb-988de537bb96" Directory="APPLICATIONROOTDIRECTORY" KeyPath="yes" >
+            <Environment Id="PATH" Name="PATH" Value="[APPLICATIONROOTDIRECTORY]" Permanent="no" Part="last" Action="set" System="no"/>
+        </Component>
+
+        <Feature Id="MainApplication" Title="Main Application" Level="1">
+            <ComponentGroupRef Id="vmlabFiles" Primary="yes" />
+            <ComponentRef Id="Path" />
+        </Feature>
+    </Product>
+</Wix>
