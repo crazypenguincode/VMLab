@@ -24,5 +24,8 @@ namespace VMLab.Hypervisor.HyperV.HyperV
         void CreateSnapshot(string vmname, string name);
         void RevertSnapshot(string vmname, string name);
         void RemoveSnapshot(string vmname, string name);
+        void DestroyVM(string vmName);
+        void AddISO(string vmname, string path);
+        void ConnectUI(string vmname);
     }
 }

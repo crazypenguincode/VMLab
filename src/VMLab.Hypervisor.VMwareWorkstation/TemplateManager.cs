@@ -111,7 +111,10 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             vm.Start(false);
 
             if (!template.HeadLess)
+            {
+                _thread.Sleep(5000);
                 vm.ShowUI();
+            }
 
             _console.Information("Waiting for c:\\vmlab.ready file to be created in vm!");
             vm.WaitFile("c:\\vmlab.ready");
@@ -195,8 +198,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation
             _vix.CloseObject(templateVM);
 
             _file.Copy($"{manifest.Path}\\manifest.json", $"{vmFolder}\\manifest.json");
-
-
+            
 
             var vmcontrol = _loader.GetVMFromPath($"{vmFolder}\\{vm.Name}.vmx", model: vm);
             var vmx = _vmxFactory();

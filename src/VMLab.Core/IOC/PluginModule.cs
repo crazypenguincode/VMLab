@@ -4,7 +4,6 @@ using System.Reflection;
 using SystemWrapper;
 using SystemWrapper.IO;
 using Autofac;
-using Serilog.Core;
 using VMLab.Helper;
 using Module = Autofac.Module;
 

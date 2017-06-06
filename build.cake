@@ -29,7 +29,8 @@ Task("Build")
 
 Task("Test");
 
-Task("Package");
+Task("Package")
+    .IsDependentOn("VMLab.Package.Link");
 
 Task("Deploy");
 
@@ -72,6 +73,7 @@ Task("VMLab.Build")
     .IsDependentOn("VMLab.Build.Plugins");
 
 Task("VMLab.Build.Plugins")
+    .IsDependentOn("VMLab.Build.Plugins.Null")
     .IsDependentOn("VMLab.Build.Plugins.VMwareWorkstation")
     .IsDependentOn("VMLab.Build.Plugins.HyperV");
 
@@ -100,6 +102,13 @@ Task("VMLab.Build.Compile")
             .SetPlatformTarget(PlatformTarget.MSIL));
         });
 
+Task("VMLab.Build.Plugins.Null")
+    .IsDependentOn("VMLab_Hypervisor_Null.Build")
+    .Does(() => {
+        var files = GetFiles(BuildFolder + "/VMLab.Hypervisor.Null/*.*");
+        CopyFiles(files, BuildFolder + "/VMLab");
+    });
+
 Task("VMLab.Build.Plugins.VMwareWorkstation")
     .IsDependentOn("VMLab_Hypervisor_VMwareWorkstation.Build")
     .Does(() => {
@@ -119,7 +128,7 @@ Task("VMLab.Package.Clean")
     .Does(() => CleanDirectory(BuildFolder + "/VMLab.msi"));
 
 Task("VMLab.Package.Harvest")
-    //.IsDependentOn("VMLab.Build")
+    .IsDependentOn("VMLab.Build")
     .IsDependentOn("VMLab.Package.Clean")
     .Does(() =>
         WiXHeat(BuildFolder + "/VMLab", BuildFolder + "/VMLab.Package/VMLabFiles.wxs", WiXHarvestType.Dir, 
@@ -157,7 +166,7 @@ Task("VMLab.Package.Link")
     .IsDependentOn("VMLab.Package.Build")
     .Does(() => WiXLight(BuildFolder + "/VMLab.Package/*.wixobj", new LightSettings {
         NoLogo = true,
-        OutputFile = BuildFolder + "/VMLab.msi/vmlab.msi"
+        OutputFile = BuildFolder + "/VMLab.msi/vmlab - v" + version.SemVer + ".msi"
     }));
 
 
@@ -231,6 +240,43 @@ Task("VMLab_Hypervisor_HyperV.Build.Compile")
             .UseToolVersion(MSBuildToolVersion.VS2017)
             .WithTarget("VMLab_Hypervisor_HyperV")
             .WithProperty("OutDir", BuildFolder + "/VMLab.Hypervisor.HyperV")
+            .SetMSBuildPlatform(MSBuildPlatform.x64)
+            .SetPlatformTarget(PlatformTarget.MSIL));
+        });
+
+/*****************************************************************************************************
+VMLab.Hypervisor.Null
+*****************************************************************************************************/
+Task("VMLab_Hypervisor_Null.Clean")
+    .IsDependentOn("VMLab_Hypervisor_Null.Clean.Main");
+
+Task("VMLab_Hypervisor_Null.Restore")
+    .IsDependentOn("VMLab_Hypervisor_Null.Restore.AssemblyInfo");
+
+Task("VMLab_Hypervisor_Null.Build")
+    .IsDependentOn("VMLab_Hypervisor_Null.Build.Compile");
+
+Task("VMLab_Hypervisor_Null.Clean.Main")
+    .Does(() => {
+        CleanDirectory(BuildFolder + "/VMLab.Hypervisor.Null");
+    });
+
+Task("VMLab_Hypervisor_Null.Restore.AssemblyInfo")
+    .Does(() => {
+            CreateDirectory(SourceFolder + "/VMLab.Hypervisor.Null/Properties");
+
+            CreateAssemblyInfo(SourceFolder + "/VMLab.Hypervisor.Null/Properties/AssemblyInfo.cs", 
+                new AssemblyInfoSettings { Product = "VMLab.Hypervisor.Null" }); // Don't bother setting versions, gitversion overwrites them.
+    });
+
+Task("VMLab_Hypervisor_Null.Build.Compile")
+    .IsDependentOn("VMLab_Hypervisor_Null.Clean.Main")
+    .Does(() => {
+        MSBuild(SolutionFile, config =>
+            config.SetVerbosity(Verbosity.Minimal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .WithTarget("VMLab_Hypervisor_Null")
+            .WithProperty("OutDir", BuildFolder + "/VMLab.Hypervisor.Null")
             .SetMSBuildPlatform(MSBuildPlatform.x64)
             .SetPlatformTarget(PlatformTarget.MSIL));
         });

@@ -4,7 +4,7 @@ namespace VMLab.Contract.Helpers
 {
     public class RetryHelper : IRetryHelper
     {
-        public void Retry(Action action, int attempts = 3)
+        public void Retry(Action action, Func<Exception, bool> onError, int attempts = 3)
         {
             while (attempts > 0)
             {
@@ -14,9 +14,12 @@ namespace VMLab.Contract.Helpers
                 {
                     action();
                 }
-                catch
+                catch(Exception e)
                 {
                     if (attempts < 1)
+                        throw;
+
+                    if (!onError(e))
                         throw;
                 }
             }

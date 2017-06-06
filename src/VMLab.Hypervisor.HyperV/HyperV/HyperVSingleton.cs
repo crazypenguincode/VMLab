@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
+using SystemInterface;
+using SystemInterface.Diagnostics;
 using SystemInterface.Threading;
-using VMLab.Helper;
+using Serilog;
 using VMLab.Script.FluentInterface;
+using IConsole = VMLab.Helper.IConsole;
 
 namespace VMLab.Hypervisor.HyperV.HyperV
 {
@@ -13,11 +18,15 @@ namespace VMLab.Hypervisor.HyperV.HyperV
         private readonly PowerShell _powerShell;
         private readonly IConsole _console;
         private readonly IThread _thread;
+        private readonly IEnvironment _environment;
+        private readonly ILogger _log;
 
-        public HyperVSingleton(IConsole console, IThread thread)
+        public HyperVSingleton(IConsole console, IThread thread, IEnvironment environment, ILogger log)
         {
             _console = console;
             _thread = thread;
+            _environment = environment;
+            _log = log;
             _powerShell = PowerShell.Create();
             _powerShell.AddScript("Import-Module Hyper-V");
         }
@@ -115,7 +124,7 @@ namespace VMLab.Hypervisor.HyperV.HyperV
             {
                 try
                 {
-                    var count = DoPowerShell<int>($"Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ (Get-Process).Count }}");
+                    var count = DoPowerShell<int>($"Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ (Get-Process).Count }}", true);
 
                     if (count > 0)
                         break;
@@ -151,7 +160,7 @@ namespace VMLab.Hypervisor.HyperV.HyperV
 
         public void Start(string vmname)
         {
-            DoPowershell($"Start-VM -Name \"{vmname}\"");
+            DoPowershell($"Start-VM -VMName \"{vmname}\"");
         }
 
         public VMPower PowerState(string vmname)
@@ -198,20 +207,42 @@ namespace VMLab.Hypervisor.HyperV.HyperV
             DoPowershell($"Remove-VM -VMName \"{vmName}\" -Force");
         }
 
-        private T DoPowerShell<T>(string script)
+        public void AddISO(string vmname, string path)
         {
+            DoPowershell($"Add-VMDVDDrive -VMName \"{vmname}\" -Path \"{path}\"");
+        }
+
+        public void ConnectUI(string vmname)
+        {
+            var id = DoPowerShell<object>($"(Get-VM -VMName \"{vmname}\").id.ToString()").ToString();
+            var args = $"\"{_environment.MachineName}\" \"{vmname}\" -G \"{id}\" -C \"0\"\r\n";
+
+            Process.Start("C:\\Windows\\Sysnative\\VmConnect.exe", args);
+        }
+
+        private T DoPowerShell<T>(string script, bool noLog = false)
+        {
+            if(!noLog)
+                _log.Information("Powershell: {script}", script);
+
+            _powerShell.Commands.Clear();
             _powerShell.AddScript(script);
             return _powerShell.Invoke().Cast<T>().FirstOrDefault();
         }
 
         private IEnumerable<T> DoPowerShellAll<T>(string script)
         {
+            _log.Information("Powershell: {script}", script);
+            _powerShell.Commands.Clear();
             _powerShell.AddScript(script);
             return _powerShell.Invoke().Cast<T>();
         }
 
         private void DoPowershell(string script)
         {
+            _log.Information("Powershell: {script}", script);
+
+            _powerShell.Commands.Clear();
             _powerShell.AddScript(script);
             _powerShell.Invoke();
 

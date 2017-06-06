@@ -132,7 +132,7 @@ namespace VMLab.Helper
 
             if (scope != ConfigScope.System) return result;
             
-            result.Add("Hypervisor", "VMwareWorkstation");
+            result.Add("Hypervisor", "Null");
             result.Add("GlobalSettingsDir", _environment.ExpandEnvironmentVariables("%ProgramData%\\VMLab"));
             result.Add("UserSettingsDir", _environment.ExpandEnvironmentVariables("%LOCALAPPDATA%\\VMLab"));
             result.Add("TemplateDir", _environment.ExpandEnvironmentVariables("%ProgramData%\\VMLab\\Templates"));

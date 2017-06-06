@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SystemInterface;
@@ -14,7 +13,7 @@ using VMLab.Helper;
 
 namespace VMLab.Hypervisor.HyperV
 {
-    public class ManifestManager : IManifestManager
+    public class ManifestManagerSingleton : IManifestManager
     {
         private readonly ICompressHelper _compressHelper;
         private readonly IConfig _config;
@@ -23,7 +22,7 @@ namespace VMLab.Hypervisor.HyperV
         private readonly ILogger _log;
         private readonly IEnvironment _environment;
 
-        public ManifestManager(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file, ILogger log, IEnvironment environment)
+        public ManifestManagerSingleton(ICompressHelper compressHelper, IConfig config, IDirectory directory, IFile file, ILogger log, IEnvironment environment)
         {
             _compressHelper = compressHelper;
             _config = config;

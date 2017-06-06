@@ -6,7 +6,8 @@ namespace VMLab.GraphModels
 {
     public enum Hypervisor
     {
-        VMwareWorkstation
+        VMwareWorkstation,
+        HyperV
     }
 
     public enum GuestOS

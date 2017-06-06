@@ -139,7 +139,7 @@ namespace VMLab.Hypervisor.HyperV
 
         public void ShowUI()
         {
-            //throw new NotImplementedException();
+            _hyperv.ConnectUI(_vmName);
         }
 
         public void SetCredentials(string group)

@@ -8,6 +8,7 @@ using SystemInterface.IO;
 using SystemInterface.Threading;
 using VMLab.Contract;
 using VMLab.Contract.GraphModels;
+using VMLab.Contract.Helpers;
 using VMLab.Contract.OSEnvironment;
 using VMLab.Contract.Shim;
 using VMLab.GraphModels;
@@ -37,8 +38,9 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
         private readonly IVMManager _vmManager;
         private readonly IPath _path;
         private readonly IThread _thread;
+        private readonly IRetryHelper _retryHelper;
 
-        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager, IPath path, IThread thread)
+        public VMControl(IVIX vix, Func<IExecutionShim> shimFactory, IConfig config, IFile file, IConsole console, IEnvironment environment, IOSEnvironmentManager osEnvironmentManager, IVMManager vmManager, IPath path, IThread thread, IRetryHelper retryHelper)
         {
             _vix = vix;
             _shimFactory = shimFactory;
@@ -50,6 +52,7 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
             _vmManager = vmManager;
             _path = path;
             _thread = thread;
+            _retryHelper = retryHelper;
         }
 
         internal void SetCredentials(IEnumerable<Credential> credentials)
@@ -85,10 +88,14 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
                         throw new ApplicationException("Can't use execResult with wait set to null");
                     }
 
-                    _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-                    _vix.ExecuteCommand(vm, path, args, false, false);
-                    _vix.LogoutOfGuest(vm);
-                }
+
+                    _retryHelper.Retry(() =>
+                    {
+                        _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);  
+                        _vix.ExecuteCommand(vm, path, args, false, false);
+                        _vix.LogoutOfGuest(vm);
+                    }, exception => exception.Message.Contains("VMware Tools are not running in the guest"));
+            }
                 else
                 {
                     var shim = _shimFactory();
@@ -265,8 +272,6 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
         public void CopyFileToVM(string hostPath, string guestPath)
         {
-            
-
             if (!_file.Exists(hostPath))
             {
                 _console.Error($"Can't find file {hostPath}");
@@ -275,41 +280,51 @@ namespace VMLab.Hypervisor.VMwareWorkstation.VM
 
             hostPath = _path.GetFullPath(hostPath);
             _console.Information("Copying {hostpath} to {guestpath}", hostPath, guestPath);
-            var vm = _vix.ConnectToVM(_vmx);
-            _vix.WaitForTools(vm, 120);
-            _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
 
-            if (_vix.DirectoryExist(vm, _path.GetDirectoryName(guestPath)))
+            _retryHelper.Retry(() =>
             {
+                var vm = _vix.ConnectToVM(_vmx);
+                _vix.WaitForTools(vm, 120);
+                _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
 
-                _vix.CopyFileToGuest(vm, hostPath, guestPath);
-            }
-            else
-            {
-                _console.Error("Can't copy file as directory doesn't exist in guest!");
-            }
-            _vix.LogoutOfGuest(vm);
-            _vix.CloseObject(vm);
+                if (_vix.DirectoryExist(vm, _path.GetDirectoryName(guestPath)))
+                {
+
+                    _vix.CopyFileToGuest(vm, hostPath, guestPath);
+                }
+                else
+                {
+                    _console.Error("Can't copy file as directory doesn't exist in guest!");
+                }
+                _vix.LogoutOfGuest(vm);
+                _vix.CloseObject(vm);
+            }, exception => exception.Message.Contains("VMware Tools are not running in the guest"));
         }
 
         public void CopyFileFromVM(string guestPath, string hostPath)
         {
-            var vm = _vix.ConnectToVM(_vmx);
-            _vix.WaitForTools(vm, 120);
-            _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-            _vix.CopyFileToHost(vm, guestPath, hostPath);
-            _vix.LogoutOfGuest(vm);
-            _vix.CloseObject(vm);
+            _retryHelper.Retry(() =>
+            {
+                var vm = _vix.ConnectToVM(_vmx);
+                _vix.WaitForTools(vm, 120);
+                _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
+                _vix.CopyFileToHost(vm, guestPath, hostPath);
+                _vix.LogoutOfGuest(vm);
+                _vix.CloseObject(vm);
+            }, exception => exception.Message.Contains("VMware Tools are not running in the guest"));
         }
 
         public void DeleteFileFromVM(string path)
         {
-            var vm = _vix.ConnectToVM(_vmx);
-            _vix.WaitForTools(vm, 120);
-            _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
-            _vix.DeleteFileInGuest(vm, path);
-            _vix.LogoutOfGuest(vm);
-            _vix.CloseObject(vm);
+            _retryHelper.Retry(() =>
+            { 
+                var vm = _vix.ConnectToVM(_vmx);
+                _vix.WaitForTools(vm, 120);
+                _vix.LoginToGuest(vm, _currentCredential.Username, _currentCredential.Password, false);
+                _vix.DeleteFileInGuest(vm, path);
+                _vix.LogoutOfGuest(vm);
+                _vix.CloseObject(vm);
+            }, exception => exception.Message.Contains("VMware Tools are not running in the guest"));
         }
 
         public IEnumerable<string> GetSnapshots()

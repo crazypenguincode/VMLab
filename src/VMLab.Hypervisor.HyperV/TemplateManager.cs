@@ -31,8 +31,9 @@ namespace VMLab.Hypervisor.HyperV
         private readonly IPath _path;
         private readonly IManifestManager _manifestManager;
         private readonly IConfig _config;
+        private readonly IFileDownloader _fileDownloader;
 
-        public TemplateManager(ILogger log, IFile file, IDirectory directory, IHyperV hyperV, IVMLoader vmLoader, IConsole console, ICompressHelper compressHelper, IPath path, IEnvironment environment, IManifestManager manifestManager, IConfig config)
+        public TemplateManager(ILogger log, IFile file, IDirectory directory, IHyperV hyperV, IVMLoader vmLoader, IConsole console, ICompressHelper compressHelper, IPath path, IEnvironment environment, IManifestManager manifestManager, IConfig config, IFileDownloader fileDownloader)
         {
             _log = log;
             _file = file;
@@ -45,6 +46,7 @@ namespace VMLab.Hypervisor.HyperV
             _environment = environment;
             _manifestManager = manifestManager;
             _config = config;
+            _fileDownloader = fileDownloader;
         }
 
         public bool CanBuild(Template template)
@@ -83,6 +85,23 @@ namespace VMLab.Hypervisor.HyperV
             _hyperV.NewVM(template.Name, templateFolder);
             _hyperV.SetCPUCount(template.Name, template.CPUs);
             _hyperV.SetMemory(template.Name, template.Memory, false, 0, 0);
+
+            if (template.ISO != null)
+            {
+                if (!_file.Exists(template.ISO.LocalPath))
+                {
+                    if (string.IsNullOrEmpty(template.ISO.URL))
+                    {
+                        _console.Information("You have not specified a URL to download the ISO from and it doesn't exist in the file system!");
+                        throw new ApplicationException("Failed to find iso file!");
+                    }
+
+                    _console.Information("ISO not found locally! Downloading: {url}", template.ISO.URL);
+                    _fileDownloader.DownloadFile(template.ISO.URL, template.ISO.LocalPath);
+                }
+
+                 _hyperV.AddISO(template.Name, _environment.CurrentDirectory + "\\" + template.ISO.LocalPath);
+            }
 
             var index = 0;
 
