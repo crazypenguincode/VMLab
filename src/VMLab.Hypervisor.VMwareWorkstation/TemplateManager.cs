@@ -125,15 +125,15 @@ namespace VMLab.Hypervisor.VMwareWorkstation
 
             _console.Information("Shutting down vm.");
             vm.Stop();
-
-            vm.NewSnapshot("Template");
-
+            
             //To give vmware enough time to close properly and delete temp files.
             _thread.Sleep(60);
 
             _console.Information("Cleaning up VMX for template...");
 
             CleanUpVMX(vmxpath);
+
+            vm.NewSnapshot("Template");
 
             _console.Information("Removing cache and log files...");
             if (_directory.Exists($"{templateFolder}\\caches"))

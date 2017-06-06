@@ -1,68 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SystemInterface.Threading;
+using VMLab.Contract.GraphModels;
 using VMLab.GraphModels;
+using VMLab.Hypervisor.HyperV.HyperV;
 using VMLab.Script.FluentInterface;
 
 namespace VMLab.Hypervisor.HyperV
 {
     public class VMControl : IVMControl
     {
+        private readonly IHyperV _hyperv;
+
+        private string _vmName;
+        private TemplateManifest _manifest;
+        private VM _vm;
+        private IEnumerable<Credential> _credentials;
+        private IThread _thread;
+        private Credential _currentCredential;
+
+        public VMControl(IHyperV hyperv, IThread thread)
+        {
+            _hyperv = hyperv;
+            _thread = thread;
+        }
+
+        internal void SetVMData(string name, TemplateManifest manifest, VM vm, IEnumerable<Credential> creds)
+        {
+            _vmName = name;
+            _manifest = manifest;
+            _vm = vm;
+            _credentials = creds;
+        }
         public void Exec(string path, string args, bool wait = true)
         {
-            throw new NotImplementedException();
+            _hyperv.ExecuteCommand(_vmName, path, args, wait);
         }
 
         public void Exec(string path, string args, Action<IVMControl, IExecResult> execResult, bool wait = true)
         {
-            throw new NotImplementedException();
+            _hyperv.ExecuteCommand(_vmName, path, args, wait);
         }
 
         public void Powershell(string path, bool wait = true)
         {
-            throw new NotImplementedException();
+            _hyperv.ExecPowerShell(_vmName, path);
         }
 
         public void Powershell(string path, Action<IVMControl, IExecResult> execResult, bool wait = true)
         {
-            throw new NotImplementedException();
+            _hyperv.ExecPowerShell(_vmName, path);
         }
 
         public void Wait(int seconds)
         {
-            throw new NotImplementedException();
+            _thread.Sleep(seconds * 1000);
         }
 
         public void WaitReady()
         {
-            throw new NotImplementedException();
+            _hyperv.WaitReady(_vmName);
         }
 
         public void WaitPowerOff()
         {
-            throw new NotImplementedException();
+            while (PowerState != VMPower.Off)
+            {
+                _thread.Sleep(3000);
+            }
         }
 
         public void WaitFile(string path, bool exists = true)
         {
-            throw new NotImplementedException();
+            while (true)
+            {
+                try
+                {
+                    if (_hyperv.FileExists(_vmName, path) == exists)
+                        break;
+                }
+                catch
+                {
+                    //do nothing.
+                }
+            }
         }
 
         public void Restart(bool force = false)
         {
-            throw new NotImplementedException();
+            _hyperv.Restart(_vmName, force);
         }
 
         public void Stop(bool force = false)
         {
-            throw new NotImplementedException();
+            _hyperv.Stop(_vmName, force);
         }
 
         public void Start(bool runStartupHandlers = true)
         {
-            throw new NotImplementedException();
+            _hyperv.Start(_vmName);
         }
 
         public void CopyFileToVM(string hostPath, string guestPath)
@@ -82,35 +119,39 @@ namespace VMLab.Hypervisor.HyperV
 
         public IEnumerable<string> GetSnapshots()
         {
-            throw new NotImplementedException();
+            return _hyperv.GetSnapshot(_vmName);
         }
 
         public void NewSnapshot(string name)
         {
-            throw new NotImplementedException();
+            _hyperv.CreateSnapshot(_vmName, name);
         }
 
         public void RemoveSnapshot(string name)
         {
-            throw new NotImplementedException();
+            _hyperv.RemoveSnapshot(_vmName, name);
         }
 
         public void RevertToSnapshot(string name)
         {
-            throw new NotImplementedException();
+            _hyperv.RevertSnapshot(_vmName, name);
         }
 
         public void ShowUI()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
-        public void SetCredentials(string @group)
+        public void SetCredentials(string group)
         {
-            throw new NotImplementedException();
+            var cred = _credentials.FirstOrDefault(c => string.Equals(c.Group, group, StringComparison.CurrentCultureIgnoreCase));
+
+            if (cred != null)
+                _currentCredential = cred;
         }
 
-        public VMPower PowerState { get; }
+        public VMPower PowerState => _hyperv.PowerState(_vmName);
+
         public void AddSharedFolder(string name, string hostPath, string guestPath)
         {
             throw new NotImplementedException();
@@ -121,15 +162,17 @@ namespace VMLab.Hypervisor.HyperV
             throw new NotImplementedException();
         }
 
-        public GuestOS OS { get; }
-        public Arch Arch { get; }
-        public string Name { get; }
-        public int Memory { get; }
-        public int Cpu { get; }
-        public int CpuCore { get; }
+        public GuestOS OS => _manifest.OS;
+        public Arch Arch => _manifest.Arch;
+        public string Name => _vm?.Name;
+        public int Memory => _vm?.Memeory ?? -1;
+        public int Cpu => _vm?.CPUs ?? -1;
+        public int CpuCore => _vm?.CPUCores ?? -1;
+
         public bool FileExistsInGuest(string path)
         {
-            throw new NotImplementedException();
+            return _hyperv.FileExists(_vmName, path);
         }
     }
 }
+

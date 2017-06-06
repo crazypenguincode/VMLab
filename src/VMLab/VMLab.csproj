@@ -211,10 +211,6 @@
       <Project>{8e26cd13-7078-49ee-94f8-b652404a46e6}</Project>
       <Name>VMLab.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VMLab.Hypervisor.VMwareWorkstation\VMLab.Hypervisor.VMwareWorkstation.csproj">
-      <Project>{5fb930f2-1a4e-4f69-b78e-635ed6a49750}</Project>
-      <Name>VMLab.Hypervisor.VMwareWorkstation</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
