@@ -35,22 +35,22 @@ namespace VMLab.Hypervisor.HyperV
         }
         public void Exec(string path, string args, bool wait = true)
         {
-            _hyperv.ExecuteCommand(_vmName, path, args, wait);
+            _hyperv.ExecuteCommand(_vmName, path, args, wait, _currentCredential);
         }
 
         public void Exec(string path, string args, Action<IVMControl, IExecResult> execResult, bool wait = true)
         {
-            _hyperv.ExecuteCommand(_vmName, path, args, wait);
+            _hyperv.ExecuteCommand(_vmName, path, args, wait, _currentCredential);
         }
 
         public void Powershell(string path, bool wait = true)
         {
-            _hyperv.ExecPowerShell(_vmName, path);
+            _hyperv.ExecPowerShell(_vmName, path, _currentCredential);
         }
 
         public void Powershell(string path, Action<IVMControl, IExecResult> execResult, bool wait = true)
         {
-            _hyperv.ExecPowerShell(_vmName, path);
+            _hyperv.ExecPowerShell(_vmName, path, _currentCredential);
         }
 
         public void Wait(int seconds)
@@ -60,7 +60,7 @@ namespace VMLab.Hypervisor.HyperV
 
         public void WaitReady()
         {
-            _hyperv.WaitReady(_vmName);
+            _hyperv.WaitReady(_vmName, _currentCredential);
         }
 
         public void WaitPowerOff()
@@ -77,7 +77,7 @@ namespace VMLab.Hypervisor.HyperV
             {
                 try
                 {
-                    if (_hyperv.FileExists(_vmName, path) == exists)
+                    if (_hyperv.FileExists(_vmName, path, _currentCredential) == exists)
                         break;
                 }
                 catch
@@ -171,7 +171,7 @@ namespace VMLab.Hypervisor.HyperV
 
         public bool FileExistsInGuest(string path)
         {
-            return _hyperv.FileExists(_vmName, path);
+            return _hyperv.FileExists(_vmName, path, _currentCredential);
         }
     }
 }

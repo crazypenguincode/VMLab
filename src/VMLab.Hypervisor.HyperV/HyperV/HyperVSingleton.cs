@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
 using System.Text;
 using SystemInterface;
-using SystemInterface.Diagnostics;
 using SystemInterface.Threading;
 using Serilog;
+using VMLab.GraphModels;
 using VMLab.Script.FluentInterface;
 using IConsole = VMLab.Helper.IConsole;
 
@@ -96,35 +95,43 @@ namespace VMLab.Hypervisor.HyperV.HyperV
             DoPowershell(script.ToString());
         }
 
-        public void ExecPowerShell(string vmname, string path)
+        public void ExecPowerShell(string vmname, string path, Credential creds)
         {
             var script = new StringBuilder();
-            script.AppendLine($"Out-Default | Invoke-Command -VMName \"{vmname}\" -FilePath \"{path}\"");
+            AddCredential(script, creds);
+            script.AppendLine($"Out-Default | Invoke-Command -VMName \"{vmname}\" -FilePath \"{path}\" -Credential $creds");
             DoPowershell(script.ToString());
         }
 
-        public void ExecuteCommand(string vmname, string path, string args, bool wait)
+        public void ExecuteCommand(string vmname, string path, string args, bool wait, Credential creds)
         {
             var script = new StringBuilder();
-
+            AddCredential(script, creds);
             script.AppendLine(wait
-                ? $"Out-Default | Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ Start-Process -FilePath \"{path}\" -ArgumentList \"{args}\" -Wait }}"
-                : $"Out-Default | Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ Start-Process -FilePath \"{path}\" -ArgumentList \"{args}\" }}");
+                ? $"Out-Default | Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ Start-Process -FilePath \"{path}\" -ArgumentList \"{args}\" -Wait }} -Credential $creds"
+                : $"Out-Default | Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ Start-Process -FilePath \"{path}\" -ArgumentList \"{args}\" }} -Credential $creds");
             DoPowershell(script.ToString());
         }
 
-        public bool FileExists(string vmName, string path)
+        public bool FileExists(string vmName, string path, Credential creds)
         {
-            return DoPowerShell<bool>($"Invoke-Command -VMName \"{vmName}\" -ScriptBlock {{ Test-Path \"{path}\"}}");
+            var script = new StringBuilder();
+            AddCredential(script, creds);
+            script.AppendLine($"Invoke-Command -VMName \"{vmName}\" -ScriptBlock {{ Test-Path \"{path}\"}} -Credential $creds");
+            return DoPowerShell<bool>(script.ToString());
         }
 
-        public void WaitReady(string vmname)
+        public void WaitReady(string vmname, Credential creds)
         {
             while (true)
             {
                 try
                 {
-                    var count = DoPowerShell<int>($"Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ (Get-Process).Count }}", true);
+                    var script = new StringBuilder();
+
+                    AddCredential(script, creds);
+                    script.AppendLine($"Invoke-Command -VMName \"{vmname}\" -ScriptBlock {{ (Get-Process).Count }} -Credential $creds");
+                    var count = DoPowerShell<int>(script.ToString(), true);
 
                     if (count > 0)
                         break;
@@ -263,6 +270,12 @@ namespace VMLab.Hypervisor.HyperV.HyperV
 
             _powerShell.Streams.ClearStreams();
 
+        }
+
+        private void AddCredential(StringBuilder sb, Credential credential)
+        {
+            sb.AppendLine($"$pw = ConvertTo-SecureString \"{credential.Password}\" -AsPlainText -Force");
+            sb.AppendLine($"$creds =  New-Object System.Management.Automation.PSCredential (\"{credential.Username}\", $pw)");
         }
     }
 }

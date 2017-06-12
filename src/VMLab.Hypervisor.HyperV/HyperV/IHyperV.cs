@@ -1,4 +1,5 @@
-﻿using VMLab.Script.FluentInterface;
+﻿using VMLab.GraphModels;
+using VMLab.Script.FluentInterface;
 
 namespace VMLab.Hypervisor.HyperV.HyperV
 {
@@ -12,10 +13,10 @@ namespace VMLab.Hypervisor.HyperV.HyperV
         void SetFloppyImage(string vmName, string path);
         void AddNetwork(string vmName, string vswitch);
         void CreateDifferenceDisk(string source, string destination);
-        void ExecPowerShell(string vmname, string path);
-        void ExecuteCommand(string vmname, string path, string args, bool wait);
-        bool FileExists(string vmname, string path);
-        void WaitReady(string vmname);
+        void ExecPowerShell(string vmname, string path, Credential creds);
+        void ExecuteCommand(string vmname, string path, string args, bool wait, Credential creds);
+        bool FileExists(string vmname, string path, Credential creds);
+        void WaitReady(string vmname, Credential creds);
         void Restart(string vmname, bool force);
         void Stop(string vmname, bool force);
         void Start(string vmname);
