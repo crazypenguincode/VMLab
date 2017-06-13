@@ -22,7 +22,8 @@ Task("Restore")
     .IsDependentOn("Folder.Restore")
     .IsDependentOn("Nuget.Restore")
     .IsDependentOn("Appveyor.Restore")
-    .IsDependentOn("VMLab.Restore");
+    .IsDependentOn("VMLab.Restore")
+    .IsDependentOn("VMLab_Hypervisor_VMwareWorkstation.Restore");
 
 Task("Clean")
     .IsDependentOn("VMLab.Clean");
@@ -101,6 +102,21 @@ Task("VMLab.Restore.AssemblyInfo")
 
             CreateAssemblyInfo(SourceFolder + "/VMLab/Properties/AssemblyInfo.cs", 
                 new AssemblyInfoSettings { Product = "VMLab" }); // Don't bother setting versions, gitversion overwrites them.
+
+            CreateDirectory(SourceFolder + "/VMLab.Contract/Properties");
+
+            CreateAssemblyInfo(SourceFolder + "/VMLab.Contract/Properties/AssemblyInfo.cs", 
+                new AssemblyInfoSettings { Product = "VMLab.Contract" }); // Don't bother setting versions, gitversion overwrites them.
+
+            CreateDirectory(SourceFolder + "/VMLab.Core/Properties");
+
+            CreateAssemblyInfo(SourceFolder + "/VMLab.Core/Properties/AssemblyInfo.cs", 
+                new AssemblyInfoSettings { Product = "VMLab.Core" }); // Don't bother setting versions, gitversion overwrites them.
+
+            CreateDirectory(SourceFolder + "/VMLab.UnitTest/Properties");
+
+            CreateAssemblyInfo(SourceFolder + "/VMLab.UnitTest/Properties/AssemblyInfo.cs", 
+                new AssemblyInfoSettings { Product = "VMLab.UnitTest" }); // Don't bother setting versions, gitversion overwrites them.
     });
 
 Task("VMLab.Build.Compile")
