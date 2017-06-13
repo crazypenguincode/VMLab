@@ -8,7 +8,9 @@ Currently under heavy development and not considered stable yet.
 Simply run the msi located under the release section of this repository. In the future it will be installable from chocolatey.
 
 ## Usage
-Project documentation will be available soon.
+Usage documentation can be viewed [here](./docs/index.md).
+
+Eventually this will be setup with use the docs.
 
 ## Contributing
 1. Raise a issue in issues for the feature or bug you are fixing.

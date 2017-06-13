@@ -198,6 +198,8 @@ VM("myVM")
     });
 ```
 
+vm in example above uses the [IVMControl](vmcontrol.md) interface.
+
 ---
 
 ### OnDestroy
@@ -217,6 +219,7 @@ VM("myVM")
         vm.Powershell(".\\cleanup.ps1");
     });
 ```
+vm in example above uses the [IVMControl](vmcontrol.md) interface.
 
 ---
 
@@ -237,6 +240,7 @@ VM("myVM")
         //Do clean up here.
     });
 ```
+vm in example above uses the [IVMControl](vmcontrol.md) interface.
 
 ---
 

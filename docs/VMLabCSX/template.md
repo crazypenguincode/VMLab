@@ -263,6 +263,8 @@ Template("Windows 10 x64", "0.1.0")
     });
 ```
 
+vm in example above uses the [IVMControl](vmcontrol.md) interface.
+
 ---
 
 ### Headless
