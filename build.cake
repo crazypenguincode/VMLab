@@ -8,6 +8,7 @@ var ReleaseFolder = RepoRootFolder + "/Release";
 var BuildFolder = RepoRootFolder + "/Build";
 var SourceFolder = RepoRootFolder +"/Src";
 var SolutionFile = SourceFolder + "/VMLab.sln";
+var ToolsFolder = RepoRootFolder + "/Tools";
 
 var target = Argument("target", "Default");
 var version = GitVersion(new GitVersionSettings{UpdateAssemblyInfo = true}); //This updates all AssemblyInfo files automatically.

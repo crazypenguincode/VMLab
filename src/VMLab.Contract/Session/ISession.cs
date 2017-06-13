@@ -10,6 +10,5 @@ namespace VMLab.Script.FluentInterface
         string LabName { get; }
         string LabAuthor { get; }
         string LabDescription { get; }
-        
     }
 }
