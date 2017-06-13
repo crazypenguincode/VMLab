@@ -74,8 +74,7 @@ Task("VMLab.Build")
 
 Task("VMLab.Build.Plugins")
     .IsDependentOn("VMLab.Build.Plugins.Null")
-    .IsDependentOn("VMLab.Build.Plugins.VMwareWorkstation")
-    .IsDependentOn("VMLab.Build.Plugins.HyperV");
+    .IsDependentOn("VMLab.Build.Plugins.VMwareWorkstation");
 
 Task("VMLab.Clean.Main")
     .Does(() => {
@@ -114,14 +113,7 @@ Task("VMLab.Build.Plugins.VMwareWorkstation")
     .Does(() => {
         var files = GetFiles(BuildFolder + "/VMLab.Hypervisor.VMwareWorkstation/*.*");
         CopyFiles(files, BuildFolder + "/VMLab");
-    });
-
- Task("VMLab.Build.Plugins.HyperV")
-    .IsDependentOn("VMLab_Hypervisor_HyperV.Build")
-    .Does(() => {
-        var files = GetFiles(BuildFolder + "/VMLab.Hypervisor.HyperV/*.*");
-        CopyFiles(files, BuildFolder + "/VMLab");
-    });   
+    }); 
 
 Task("VMLab.Package.Clean")
     .Does(() => CleanDirectory(BuildFolder + "/VMLab.Package"))
@@ -203,43 +195,6 @@ Task("VMLab_Hypervisor_VMwareWorkstation.Build.Compile")
             .UseToolVersion(MSBuildToolVersion.VS2017)
             .WithTarget("VMLab_Hypervisor_VMwareWorkstation")
             .WithProperty("OutDir", BuildFolder + "/VMLab.Hypervisor.VMwareWorkstation")
-            .SetMSBuildPlatform(MSBuildPlatform.x64)
-            .SetPlatformTarget(PlatformTarget.MSIL));
-        });
-
-/*****************************************************************************************************
-VMLab.Hypervisor.HyperV
-*****************************************************************************************************/
-Task("VMLab_Hypervisor_HyperV.Clean")
-    .IsDependentOn("VMLab_Hypervisor_HyperV.Clean.Main");
-
-Task("VMLab_Hypervisor_HyperV.Restore")
-    .IsDependentOn("VMLab_Hypervisor_HyperV.Restore.AssemblyInfo");
-
-Task("VMLab_Hypervisor_HyperV.Build")
-    .IsDependentOn("VMLab_Hypervisor_HyperV.Build.Compile");
-
-Task("VMLab_Hypervisor_HyperV.Clean.Main")
-    .Does(() => {
-        CleanDirectory(BuildFolder + "/VMLab.Hypervisor.HyperV");
-    });
-
-Task("VMLab_Hypervisor_HyperV.Restore.AssemblyInfo")
-    .Does(() => {
-            CreateDirectory(SourceFolder + "/VMLab.Hypervisor.HyperV/Properties");
-
-            CreateAssemblyInfo(SourceFolder + "/VMLab.Hypervisor.HyperV/Properties/AssemblyInfo.cs", 
-                new AssemblyInfoSettings { Product = "VMLab.Hypervisor.HyperV" }); // Don't bother setting versions, gitversion overwrites them.
-    });
-
-Task("VMLab_Hypervisor_HyperV.Build.Compile")
-    .IsDependentOn("VMLab_Hypervisor_HyperV.Clean.Main")
-    .Does(() => {
-        MSBuild(SolutionFile, config =>
-            config.SetVerbosity(Verbosity.Minimal)
-            .UseToolVersion(MSBuildToolVersion.VS2017)
-            .WithTarget("VMLab_Hypervisor_HyperV")
-            .WithProperty("OutDir", BuildFolder + "/VMLab.Hypervisor.HyperV")
             .SetMSBuildPlatform(MSBuildPlatform.x64)
             .SetPlatformTarget(PlatformTarget.MSIL));
         });
