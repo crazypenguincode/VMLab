@@ -23,7 +23,8 @@ Task("Restore")
     .IsDependentOn("Nuget.Restore")
     .IsDependentOn("Appveyor.Restore")
     .IsDependentOn("VMLab.Restore")
-    .IsDependentOn("VMLab_Hypervisor_VMwareWorkstation.Restore");
+    .IsDependentOn("VMLab_Hypervisor_VMwareWorkstation.Restore")
+    .IsDependentOn("VMLab_Hypervisor_Null.Restore");
 
 Task("Clean")
     .IsDependentOn("VMLab.Clean");
