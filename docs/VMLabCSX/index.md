@@ -55,7 +55,7 @@ IVM VM(string name);
 
 Describes a VM to create in the lab environment that is created when the user runs ```vmlab start```. This method returns a IVM object which supplies a fluent interface that allows you to configure more options of the vm.
 
-For more information on how to create VMs see this.
+For more information on how to create VMs see [this](vm.md).
 
 ##### Example
 ```
