@@ -11,6 +11,7 @@ var SolutionFile = SourceFolder + "/VMLab.sln";
 
 var target = Argument("target", "Default");
 var version = GitVersion(new GitVersionSettings{UpdateAssemblyInfo = true}); //This updates all AssemblyInfo files automatically.
+var RunningInCI = EnvironmentVariable("CI");
 
 
 Task("Default")
@@ -19,6 +20,7 @@ Task("Default")
 Task("Restore")
     .IsDependentOn("Folder.Restore")
     .IsDependentOn("Nuget.Restore")
+    .IsDependentOn("Appveyor.Restore")
     .IsDependentOn("VMLab.Restore");
 
 Task("Clean")
@@ -52,6 +54,17 @@ Task("Folder.Restore")
         CreateDirectory(ReleaseFolder);
         CreateDirectory(BuildFolder);
     });
+
+/*****************************************************************************************************
+Appveyor Tasks
+*****************************************************************************************************/
+Task("Appveyor.Restore")
+    .IsDependentOn("Appveyor.Restore.GitVersion");
+
+Task("Appveyor.Restore.GitVersion")
+    .WithCriteria(RunningInCI == "True")
+    .Does(() => StartProcess(ToolsFolder + "/GitVersion.CommandLine/tools/GitVersion.exe", 
+        "/l console /output buildserver /updateAssemblyInfo"));
 
 /*****************************************************************************************************
 Global Nuget Tasks
