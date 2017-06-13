@@ -1,0 +1,25 @@
+version: 0.0.{build}
+skip_tags: true
+image: Visual Studio 2017
+before_build:
+  - ps: choco install netfx-4.7-devpack -y
+  - ps: .\Build.ps1 -Target Restore
+build_script:
+- ps: .\Build.ps1 -Target Package
+artifacts:
+- path: /Build/VMLab.msi/*.msi
+notifications:
+- provider: Email
+  to:
+  - wilfridtaylor@gmail.com
+  subject: Build Completed
+  on_build_success: true
+  on_build_failure: false
+  on_build_status_changed: false
+- provider: Email
+  to:
+  - wilfridtaylor@gmail.com
+  subject: Build Failed
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: false
