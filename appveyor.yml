@@ -3,7 +3,7 @@ skip_tags: true
 image: Visual Studio 2017
 before_build:
   - ps: choco install netfx-4.7-devpack -y
-  - pa: choco install vmware-workstation-player -y
+  - pa: .\citools\vix.exe /s /v/qn
   - ps: .\Build.ps1 -Target Restore
 build_script:
 - ps: .\Build.ps1 -Target Package
