@@ -4,6 +4,25 @@ This file is the heart of VMLab and is used to describe a Lab environment or a T
 ## File Syntax
 The vmlab.csx file is actually a C# Roslyn script file which contains configuration of how you want the VM environment to be laid out. This gives you a lot of flexibility but you don't need to know all the advanced syntax of C# to create a vmlab.csx file.
 
+## Session 
+Inside the vmlab.csx file there is a global variable called Session which can be accessed to retrieve information about the lab environment during actions.
+
+```
+public interface ISession
+{
+	IHost Host { get; }
+	IEnumerable<IVMControl> VMs { get; }
+	string LabName { get; }
+	string LabAuthor { get; }
+	string LabDescription { get; }
+}
+
+public interface IHost
+{
+	int Exec(string path, string args, bool wait = true); // Execute commands on host.
+}
+```
+
 ## Methods
 At its core vmlab supports the following methods (or functions) that can be called to do actions.
 
